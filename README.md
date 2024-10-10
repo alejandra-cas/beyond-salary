@@ -1,5 +1,11 @@
 # SkillScale Beyond Salary Project
 
+# Pipeline
+- merge_body.py
+- label_benefits.py
+- prepare_data.ipynb
+- regression_models.ipynb
+
 # Data
 - salary_sample_body_benefits.parquet.gzip
     - 20k sample extracted from dataset of 10 million job postings, filtered for no internships and only jobs with salary information
