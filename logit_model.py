@@ -1,10 +1,9 @@
 
 import statsmodels.api as sm
-import statsmodels.formula.api as smf
 import pandas as pd
 import numpy as np
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-benefits = ['CAREER_DEV', 'WLB', 'WELLBEING', 'RECOGNITION', 'FAMILY', 'CULTURE']
 
 def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary_vars = [], predictor = 'Has AI Skills', ref_category = None, get_vif = False):
     """
@@ -92,8 +91,20 @@ def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary
         vif["features"] = X.columns
         vif["VIF"] = vif_data
         print(vif)
-    
-    logit_model = sm.Logit(y, X).fit()
+        print("Correlation Matrix")
+        # create new df combine X and y for correlation matrix
+        dummy_df = pd.concat([X, y], axis=1)
+        dummy_corr_matrix = dummy_df.corr()
+        # print any correlations above 0.7
+        print(dummy_corr_matrix[dummy_corr_matrix > 0.6])
+        
+    # if error, continue to next model
+    try:
+        logit_model = sm.Logit(y, X).fit()
+    except Exception as error:
+        # print error
+        print(error)
+        return "Error"
 
     # Print the summary of the model
     print(logit_model.summary())
