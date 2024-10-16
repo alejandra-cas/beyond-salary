@@ -1,5 +1,6 @@
 # large datasets
 data/
+exports/
 
 # virtual environment
 skillscaleenv/

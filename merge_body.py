@@ -15,7 +15,7 @@ data = []
 
 # Track the number of bytes read
 bytes_read = 0
-
+print("Loading CSV by file size...")
 # Use tqdm to display the progress based on file size
 with tqdm(total=file_size, unit='B', unit_scale=True, desc="Loading CSV by file size") as pbar:
     for chunk in pd.read_csv(file_path, chunksize=chunk_size):
@@ -29,22 +29,28 @@ with tqdm(total=file_size, unit='B', unit_scale=True, desc="Loading CSV by file 
 print("Combining chunks into a single DataFrame...")
 body = pd.concat(data, ignore_index=True)
 
-salary_sample = pd.read_parquet('data/salary_sample_20k.parquet.gzip')
+# salary_sample = pd.read_parquet('data/salary_sample_20k.parquet.gzip')
 
-print("Merging the salary_sample and body DataFrames...")
-salary_sample_body = salary_sample.merge(body, left_on='ID', right_on='ID', how='left')
+# print("Merging the salary_sample and body DataFrames...")
+# salary_sample_body = salary_sample.merge(body, left_on='ID', right_on='ID', how='left')
 
-print("Saving salary_sample_body to parquet...")
-salary_sample_body.to_parquet('data/salary_sample_body.parquet.gzip', compression='gzip')
+# print("Saving salary_sample_body to parquet...")
+# salary_sample_body.to_parquet('data/salary_sample_body.parquet.gzip', compression='gzip')
 
-print("Loading the no salary sample...")
-all_sample = pd.read_parquet('data/nosalary_sample_20k.parquet.gzip')
+# print("Loading the no salary sample...")
+# all_sample = pd.read_parquet('data/nosalary_sample_20k.parquet.gzip')
 
-print("Merging the no salary sample and body DataFrames...")
-all_sample_body = all_sample.merge(body, left_on='ID', right_on='ID', how='left')
+# print("Merging the no salary sample and body DataFrames...")
+# all_sample_body = all_sample.merge(body, left_on='ID', right_on='ID', how='left')
 
-print("Saving no salary sample body to parquet...")
-all_sample_body.to_parquet('data/nosalary_sample_body.parquet.gzip', compression='gzip')
+# print("Saving no salary sample body to parquet...")
+# all_sample_body.to_parquet('data/nosalary_sample_body.parquet.gzip', compression='gzip')
 
-print("Saving body to parquet...")
-body.to_parquet('data/body.parquet.gzip', compression='gzip')
+# print("Saving body to parquet...")
+# body.to_parquet('data/body.parquet.gzip', compression='gzip')
+print("Loading the 10m sample...")
+sample_10m = pd.read_parquet('data/us_10m_nointernship__ai_skills.parquet.gzip')
+print("Merging the 10m sample and body DataFrames...")
+data_body = sample_10m.merge(body, left_on='ID', right_on='ID', how='left')
+print("Saving 10m sample body to parquet...")
+data_body.to_parquet('data/us_10m_nointernship_ai_skills_body.parquet.gzip', compression='gzip')

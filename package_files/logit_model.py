@@ -110,3 +110,18 @@ def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary
     print(logit_model.summary())
     # print(summary_col(logit_model, stars=True, float_format='%0.2f'))
     return logit_model
+
+
+def save_model_summaries(models, save_path):
+    summaries = []
+    for model in models:
+        summary = {
+            'params': model.params,
+            'pvalues': model.pvalues,
+            'conf_int': model.conf_int(),
+            'summary': model.summary().as_text()
+        }
+        summaries.append(summary)
+    
+    with open(save_path, 'wb') as f:
+        pickle.dump(summaries, f)

@@ -14,33 +14,49 @@
 - us-003_noint.parquet
     - 1 million OJV sample filtered for no internships
 
-# py files
+# Scripts
+- prepare_data.ipynb
+    - loads original OJV data
+    - loads data from thesis
+    - merges data from thesis to get AI and WHAM job labels 
+    - adds 'YEAR' column
+    - adds any missing WHAM labels from WHAM data
+    - exports random samples of 20k (with and without salary) and checks industry compositions
+
+- classify_ai_skills.py
+    - classifies jobs as AI or non-AI for any jobs with missing label after merge in prepare_data
+    
 - merge_body.py
-    - adds body column to OJV data sample and exports samples
+    - merges body column to OJV data, exports OJV data
 
 - label_benefits.py
-    - Checks whether the BODY column of OJV data contains specified keywords for each benefit. Adds a column for each benefit to a dataframe indicating True or False. Exports to 'data/salary_sample_body_benefits.parquet.gzip'
+    - Checks whether the BODY column of OJV data contains specified keywords for each benefit. Adds a column for each benefit to a dataframe indicating True or False. Imports and exports using given path
 
-- logit_model.py
-
-- model_defn.py
-
-# notebooks
-- prepare_data.ipynb
-    - imports salary_sample_body_benefits.parquet
-    - renames AI skills column to AI ROLE
+- prepare_data_2.ipynb
+    - imports OJV dataset 
+    - renames 'Has AI Skills' column to AI ROLE
     - adds EXPERIENCE_BUCKET column
+    - joins salary data
     - adds LOG_SALARY column
-    - exports to salary_sample_body_benefits.parquet
+    - fills in missing AI labels
+    - exports data
+
+- export_samples.py
+    - export samples of 20k OJVs with salary data, with salary & remote data, and with remote data but without requiring salary data 
 
 - descriptive_statistics.ipynb
     - AI and non-AI role demand over time (monthly)
     - change in benefits over time
     - top companies offering benefits
 
+- logit_model.py
+
+- model_defn.py
+
 - regression_models.ipynb
     - series of logit models with different controls
 
+# other notebooks
 - preliminary_analysis.ipynb
 - skillscale_preliminary.ipynb
     
