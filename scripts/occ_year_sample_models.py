@@ -60,7 +60,7 @@ def get_occ_year_data(df, occ, year):
     return df_occ_year
 
 models_dict = {}
-for benefit in benefits4:
+for benefit in benefits4[6:]:
     print(benefit)
     for occ, year in tqdm([(occ, year) for occ in occupations_select for year in years]):
         print(occ, year)
@@ -119,10 +119,11 @@ results = {
 
 results_df = pd.DataFrame(results)
 
+print("exporting...")
 # export results_df
-results_df.to_csv('../exports/models_occ_year_results.csv')
+results_df.to_csv('../exports/models_occ_year_results_remote.csv')
 
 # export models_dict to pickle
 import pickle
-with open('../exports/models_occ_year_dict.pickle', 'wb') as f:
+with open('../exports/models_occ_year_dict_remote.pickle', 'wb') as f:
     pickle.dump(models_dict, f)
