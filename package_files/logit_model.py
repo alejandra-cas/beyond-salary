@@ -3,6 +3,7 @@ import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from tqdm import tqdm
 
 
 def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary_vars = [], predictor = 'Has AI Skills', ref_category = None, get_vif = False):
@@ -34,8 +35,16 @@ def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary
     >>> model = run_wfh_logit(controls, predictor='Has AI Skills', data=data)
     >>> print(model.summary())
     """
+    if 'NAICS_2022_2_NAME' in cat_controls:
+        industry_counts = data['NAICS_2022_2_NAME'].value_counts()
+        small_industries = industry_counts[industry_counts < 50].index  # Set a threshold (e.g., 10 observations)
+        data['NAICS_2022_2_NAME'] = data['NAICS_2022_2_NAME'].replace(small_industries, 'Other')
     X = data[[predictor]]
-    
+    # count nas in predictor
+    print(f"Number of NAs in dependent: {data[dependent].isna().sum()}")
+    data = data.dropna(subset=[dependent])
+    if (dependent == 'wfh_wham' or dependent == 'PARENTAL_LEAVE'):
+        data = data[data['YEAR'] != 2018]
     if binary_vars:
         for var in binary_vars:
             X = pd.concat([X, data[[var]]], axis = 1)
@@ -82,6 +91,13 @@ def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary
     # print(X.corr())
     
     if get_vif:
+        print("Correlation Matrix")
+        # create new df combine X and y for correlation matrix
+        dummy_df = pd.concat([X, y], axis=1)
+        dummy_corr_matrix = dummy_df.corr()
+        # print any correlations above 0.7
+        print(dummy_corr_matrix)
+        
         print("VIF Results")
         vif_data = []
         for i in tqdm(range(X.shape[1]), desc="Calculating VIF"):
@@ -91,12 +107,7 @@ def run_logit_model(data, dependent, cat_controls=[], cont_controls = [], binary
         vif["features"] = X.columns
         vif["VIF"] = vif_data
         print(vif)
-        print("Correlation Matrix")
-        # create new df combine X and y for correlation matrix
-        dummy_df = pd.concat([X, y], axis=1)
-        dummy_corr_matrix = dummy_df.corr()
-        # print any correlations above 0.7
-        print(dummy_corr_matrix[dummy_corr_matrix > 0.6])
+
         
     # if error, continue to next model
     try:
