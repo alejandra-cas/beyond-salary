@@ -1,6 +1,7 @@
 # large datasets
 data/
 *.pkl
+*.pickle
 
 # virtual environment
 skillscaleenv/
