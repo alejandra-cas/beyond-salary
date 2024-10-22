@@ -7,7 +7,7 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 from package_files.benefits_defns import *
 
-path = '../../data/salary_sample_body_benefits_v3.parquet.gzip'
+path = '../../data/salary_sample_2018_2023.parquet.gzip'
 if path[-3:] == 'csv:':
     even_sample = pd.read_csv(path)
 elif path[-3:] == 'zip':
@@ -59,14 +59,25 @@ occ_year_df.drop(columns=['AI ROLE_ai', 'AI ROLE_non_ai'], inplace=True)
 
 
 results = pd.read_csv('../exports/models_occ_year_results.csv')
+
 # add coefficients
 coeff_df = results.merge(occ_year_df[['SOC_2021_2_NAME', 'YEAR','AI ROLE %',
        'AI ROLE % CHANGE', 'PRIOR YEAR % CHANGE', 'LOG_SALARY_ai', 'SALARY_ai',
        'LOG_SALARY_non_ai', 'SALARY_non_ai', 'SALARY_PREMIUM_LOG',
-       'SALARY_PREMIUM', 'MEAN SALARY', 'MEAN LOG SALARY']], left_on=['Occupation', 'Year'], right_on = [occupation, 'YEAR'])
+       'SALARY_PREMIUM']], left_on=['Occupation', 'Year'], right_on = [occupation, 'YEAR'])
 
 # % benefits by occ
-occ_benefit_group = even_sample_select.groupby([occupation, 'AI ROLE',benefit]).size().reset_index(name='benefit_count')
 occ_year_group = even_sample_select.groupby([occupation, 'YEAR']).size().reset_index(name='job_count')
-occ_year_benefit_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
-occ_year_benefit_group[f'Percent with {benefit}'] = occ_year_benefit_group['benefit_count']/occ_year_benefit_group['count']
+for benefit in benefits4:
+    occ_benefit_group = even_sample_select.groupby([occupation,'YEAR'])[benefit].mean().reset_index(name=f'Percent_with_{benefit}')
+    occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
+
+coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
+
+# occ_year_df = occ_year_df.merge(mean_salary, on=[occupation, 'YEAR'])
+# pd.set_option('display.max_rows', 100)
+# occ_year_df.rename(columns={'SALARY':'MEAN SALARY'}, inplace=True)
+# occ_year_df.drop(columns='SALARY', inplace=True)
+# occ_year_df.rename(columns={'LOG_SALARY':'MEAN LOG SALARY'}, inplace=True)
+
+coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
