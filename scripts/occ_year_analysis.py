@@ -30,6 +30,7 @@ even_sample_select = even_sample[even_sample[occupation].isin(occupations_select
 # get % AI roles per occupation-year
 ai_role_occupation = even_sample_select.groupby([occupation, 'YEAR'])['AI ROLE'].mean().reset_index()
 ai_role_occupation.rename(columns={'AI ROLE':'AI ROLE %'}, inplace=True)
+ai_role_occupation['AI ROLE %'] = ai_role_occupation['AI ROLE %']*100
 
 # # get % with benefit 
 # occupation_benefits = even_sample_select.groupby([occupation, 'YEAR', 'AI ROLE'])[benefits3].mean().reset_index()
@@ -69,7 +70,9 @@ coeff_df = results.merge(occ_year_df[['SOC_2021_2_NAME', 'YEAR','AI ROLE %',
 # % benefits by occ
 occ_year_group = even_sample_select.groupby([occupation, 'YEAR']).size().reset_index(name='job_count')
 for benefit in benefits4:
-    occ_benefit_group = even_sample_select.groupby([occupation,'YEAR'])[benefit].mean().reset_index(name=f'Percent_with_{benefit}')
+    label = benefits_labels_map[benefit]
+    occ_benefit_group = even_sample_select.groupby([occupation,'YEAR'])[benefit].mean().reset_index(name=f'Prevalence: {label}')
+    occ_benefit_group[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
     occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
 
 coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
@@ -79,5 +82,10 @@ coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
 # occ_year_df.rename(columns={'SALARY':'MEAN SALARY'}, inplace=True)
 # occ_year_df.drop(columns='SALARY', inplace=True)
 # occ_year_df.rename(columns={'LOG_SALARY':'MEAN LOG SALARY'}, inplace=True)
+
+coeff_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
+coeff_df.rename(columns={'SALARY_PREMIUM_LOG': 'Salary (Log) Premium'}, inplace=True)
+coeff_df.rename(columns={'AI ROLE % CHANGE': 'AI Demand % Change'}, inplace=True)
+coeff_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
 
 coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
