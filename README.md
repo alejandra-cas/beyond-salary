@@ -56,6 +56,12 @@
 - regression_models.ipynb
     - series of logit models with different controls
 
+- occ_year_analysis.py
+    - export coeff df for occ_year_analysis_coeffs
+
+- occ_year_analysis_coeffs.ipynb
+    - regressions on AI coefficient from occ-year models
+
 # other notebooks
 - preliminary_analysis.ipynb
 - skillscale_preliminary.ipynb
