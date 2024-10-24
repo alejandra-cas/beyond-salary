@@ -29,8 +29,9 @@ occupations_select = ['Architecture and Engineering Occupations','Arts, Design, 
 data_select = data[data[occupation].isin(occupations_select)]
 
 # get % AI roles per occupation-year
-ai_role_occupation = data_select.groupby([occupation, 'YEAR'])['AI ROLE'].mean().reset_index()
+ai_role_occupation = data_select.groupby([occupation, 'YEAR'])[['AI ROLE', 'SALARY']].mean().reset_index()
 ai_role_occupation.rename(columns={'AI ROLE':'AI ROLE %'}, inplace=True)
+ai_role_occupation.rename(columns={'SALARY':'MEAN SALARY'}, inplace=True)
 ai_role_occupation['AI ROLE %'] = ai_role_occupation['AI ROLE %']*100
 
 # # get % with benefit 
@@ -66,7 +67,7 @@ results = pd.read_csv('../exports/models_occ_year_results.csv')
 coeff_df = results.merge(occ_year_df[['SOC_2021_2_NAME', 'YEAR','AI ROLE %',
        'AI ROLE % CHANGE', 'PRIOR YEAR % CHANGE', 'LOG_SALARY_ai', 'SALARY_ai',
        'LOG_SALARY_non_ai', 'SALARY_non_ai', 'SALARY_PREMIUM_LOG',
-       'SALARY_PREMIUM', 'DURATION_CALC_ai', 'DURATION_CALC_non_ai']], left_on=['Occupation', 'Year'], right_on = [occupation, 'YEAR'])
+       'SALARY_PREMIUM', 'DURATION_CALC_ai', 'DURATION_CALC_non_ai', 'MEAN SALARY']], left_on=['Occupation', 'Year'], right_on = [occupation, 'YEAR'])
 
 # % benefits by occ
 occ_year_group = data_select.groupby([occupation, 'YEAR']).size().reset_index(name='job_count')
