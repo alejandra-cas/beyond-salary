@@ -76,6 +76,12 @@ for benefit in benefits4:
     occ_benefit_group = data_select.groupby([occupation,'YEAR'])[benefit].mean().reset_index(name=f'Prevalence: {label}')
     occ_benefit_group[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
     occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
+    occ_benefit_role = data_select.groupby([occupation,'YEAR', 'AI ROLE'])[benefit].mean().reset_index(name=f'Prevalence: {label}')
+    occ_benefit_role[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
+    occ_benefit_role_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 1]
+    occ_benefit_role_non_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 0]
+    occ_benefit_role_all = pd.merge(occ_benefit_role_ai, occ_benefit_role_non_ai, on=[occupation, 'YEAR'], suffixes=('(AI)', '(Non-AI)'))
+    occ_year_group = occ_year_group.merge(occ_benefit_role_all, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
 
 coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
 
@@ -91,4 +97,5 @@ coeff_df.rename(columns={'AI ROLE % CHANGE': 'AI Demand % Change'}, inplace=True
 coeff_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
 
 print("exporting coeff_df")
-coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
+print(coeff_df.columns)
+# coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
