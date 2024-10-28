@@ -72,15 +72,27 @@ coeff_df = results.merge(occ_year_df[['SOC_2021_2_NAME', 'YEAR','AI ROLE %',
 # % benefits by occ
 occ_year_group = data_select.groupby([occupation, 'YEAR']).size().reset_index(name='job_count')
 for benefit in benefits4:
+    print(benefit)
     label = benefits_labels_map[benefit]
     occ_benefit_group = data_select.groupby([occupation,'YEAR'])[benefit].mean().reset_index(name=f'Prevalence: {label}')
     occ_benefit_group[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
+    print("merging occ_year_group and occ_benefit_group")
     occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
+    print("occ_year_group")
+    print(occ_year_group.columns)
+    
     occ_benefit_role = data_select.groupby([occupation,'YEAR', 'AI ROLE'])[benefit].mean().reset_index(name=f'Prevalence: {label}')
-    occ_benefit_role[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
+    occ_benefit_role[f'Prevalence: {label}'] = occ_benefit_role[f'Prevalence: {label}']*100
+    print("occ_benefit_role")
+    print(occ_benefit_role.columns)
     occ_benefit_role_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 1]
     occ_benefit_role_non_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 0]
-    occ_benefit_role_all = pd.merge(occ_benefit_role_ai, occ_benefit_role_non_ai, on=[occupation, 'YEAR'], suffixes=('(AI)', '(Non-AI)'))
+    print("merging occ benefit roles")
+    occ_benefit_role_all = pd.merge(occ_benefit_role_ai, occ_benefit_role_non_ai, on=[occupation, 'YEAR'], suffixes=(' (AI)', ' (Non-AI)'))
+    print("occ_benefit_role_all")
+    print(occ_benefit_role_all.columns)
+    print("merging")
+    occ_benefit_role_all.drop(columns=['AI ROLE (AI)', 'AI ROLE (Non-AI)'], inplace=True)
     occ_year_group = occ_year_group.merge(occ_benefit_role_all, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
 
 coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
@@ -98,4 +110,4 @@ coeff_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
 
 print("exporting coeff_df")
 print(coeff_df.columns)
-# coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
+coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
