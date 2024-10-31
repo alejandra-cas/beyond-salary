@@ -2,7 +2,7 @@ import pandas as pd
 from tqdm import tqdm
 import os
 
-file_path = 'data/OII_US_POST_BODY.csv'
+file_path = '../data/US_10M_SAMP_2018_2024_BODY.csv'
 
 # Get the total file size in bytes
 file_size = os.path.getsize(file_path)
@@ -49,8 +49,8 @@ body = pd.concat(data, ignore_index=True)
 # print("Saving body to parquet...")
 # body.to_parquet('data/body.parquet.gzip', compression='gzip')
 print("Loading the 10m sample...")
-sample_10m = pd.read_parquet('data/us_10m_nointernship__ai_skills.parquet.gzip')
+sample_10m = pd.read_parquet('../data/us_10m_nointernship_2018_2024.parquet.gzip')
 print("Merging the 10m sample and body DataFrames...")
 data_body = sample_10m.merge(body, left_on='ID', right_on='ID', how='left')
 print("Saving 10m sample body to parquet...")
-data_body.to_parquet('data/us_10m_nointernship_ai_skills_body.parquet.gzip', compression='gzip')
+data_body.to_parquet('../data/us_10m_nointernship_2018_2024_body.parquet.gzip', compression='gzip')

@@ -1,9 +1,13 @@
 # SkillScale Beyond Salary Project
 
 # Pipeline
+- prepare_data.ipynb
+- classify_ai_skills.py
 - merge_body.py
 - label_benefits.py
-- prepare_data.ipynb
+- prepare_data_2.ipynb
+- export_samples.py
+
 - regression_models.ipynb
 
 # Data
@@ -18,10 +22,12 @@
 - prepare_data.ipynb
     - loads original OJV data
     - loads data from thesis
+    - filters out internships
     - merges data from thesis to get AI and WHAM job labels 
+    - rename 'Has AI Skills' column to 'AI ROLE'
     - adds 'YEAR' column
     - adds any missing WHAM labels from WHAM data
-    - exports random samples of 20k (with and without salary) and checks industry compositions
+
 
 - classify_ai_skills.py
     - classifies jobs as AI or non-AI for any jobs with missing label after merge in prepare_data

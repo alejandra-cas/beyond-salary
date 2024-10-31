@@ -18,14 +18,14 @@ print("Number of empty body text: ", empty_body_count)
 
 # career_dev = "training programs", "education assistance","tuition reimbursement", "tuition assistance", "mentorship", "career growth", "professional development", "leadership development", "career advancement", "leadership training", "growth opportunities", "personal development", "education reimbursement", "opportunities to grow and develop"
 edu_assistance = "education assistance","tuition reimbursement", "tuition assistance", "education reimbursement"
-wlb = "paid time off", "PTO", "extra vacation", "flexible vacation", "mental health day", "work-life balance", "work/life balance","generous time-off", "generous time off", "paid vacation", "paid holidays", "holiday pay", "vacation days", "company holiday", "sick leave", "vacation time", "paid days off", "paid flexible holidays"
+# wlb = "paid time off", "PTO", "extra vacation", "flexible vacation", "mental health day", "work-life balance", "work/life balance","generous time-off", "generous time off", "paid vacation", "paid holidays", "holiday pay", "vacation days", "company holiday", "sick leave", "vacation time", "paid days off", "paid flexible holidays"
 leave = "paid time off", "PTO", "extra vacation", "flexible vacation", "mental health day", "generous time-off", "generous time off", "paid vacation", "paid holidays", "holiday pay", "vacation days", "company holiday", "sick leave", "vacation time", "paid days off", "paid flexible holidays"
 wellbeing = "wellness stipend", "mental health support", "gym membership", "wellness program", "well-being stipend", "wellness programs", "mental health benefits", "employee well-being", "mental wellness support", "wellness and global well-being", "wellness stipend"
 health_wellbeing = "wellness stipend", "health benefits", "mental health support", "gym membership", "wellness program", "well-being stipend", "wellness programs", "mental health benefits", "employee well-being", "health care benefits"
 # recognition = "employee of the month", "long-term rewards", "recognition program", "peer recognition", "service awards", "employee recognition"
 # family = "parental leave", "childcare assistance", "childcare support", "childcare", "family support", "flexible maternity leave", "paternity leave", "maternity leave", "paid family leave", "child care discount", "paid caregiver/parental", "paid parental", "paid new parent leave"
-parental_leave = "parental leave", "family support", "flexible maternity leave", "paternity leave", "maternity leave", "paid family leave", "paid caregiver/parental", "paid parental", "paid new parent leave", "paid bonding leave", "parental bonding leave"
-culture = "diversity and inclusion", "team culture", "creative freedom", "values-driven", "inclusive culture", "diverse team", "inclusive environment", "value diversity", "diversity, equity", "culture of diversity", "diversity, inclusion", "inclusion and diversity", "commitment to diversity", "diversity, inclusion", "diversity, equity and inclusion", "diversity is respected", "inclusive diversity", "workforce diversity", "embracing diversity", "value diversity", "values diversity", "committed to diversity", "equity and diversity", "promoting diversity", "celebrate diversity", "encourage diversity", "support diversity", "diversity in the workplace", "equity, inclusion"
+# parental_leave = "parental leave", "family support", "flexible maternity leave", "paternity leave", "maternity leave", "paid family leave", "paid caregiver/parental", "paid parental", "paid new parent leave", "paid bonding leave", "parental bonding leave"
+# culture = "diversity and inclusion", "team culture", "creative freedom", "values-driven", "inclusive culture", "diverse team", "inclusive environment", "value diversity", "diversity, equity", "culture of diversity", "diversity, inclusion", "inclusion and diversity", "commitment to diversity", "diversity, inclusion", "diversity, equity and inclusion", "diversity is respected", "inclusive diversity", "workforce diversity", "embracing diversity", "value diversity", "values diversity", "committed to diversity", "equity and diversity", "promoting diversity", "celebrate diversity", "encourage diversity", "support diversity", "diversity in the workplace", "equity, inclusion"
 # keywords_list = [career_dev,wlb,wellbeing, health_wellbeing, recognition, family, parental_leave, culture]
 # recognition = "employee of the month", "long-term rewards", "recognition program", "peer recognition", "service awards", "employee recognition"
 # family = "parental leave", "childcare assistance", "childcare support", "childcare", "family support", "flexible maternity leave", "paternity leave", "maternity leave", "paid family leave", "child care discount", "paid caregiver/parental", "paid parental", "paid new parent leave"
@@ -102,43 +102,38 @@ def check_benefits(even_sample, keywords, benefit, exclusions=None):
 
 print("Checking benefits...")    
 # print time taken to check benefits
-import time
+
 start = time.time()
 # print start time
 print("Start time: ", start)
 # check_benefits(even_sample, career_dev, 'CAREER_DEV', exclusions=career_dev_to_exclude)
-# check_benefits(even_sample, edu_assistance, 'EDU_ASSISTANCE', exclusions=tuition_to_exclude)
+check_benefits(even_sample, edu_assistance, 'EDU_ASSISTANCE', exclusions=tuition_to_exclude)
 # print time
 print("Time taken for edu assistance: ", time.time()-start)
 
-# check time
-wlb_time = time.time()
-print("Checking work-life balance...")
-# check_benefits(even_sample, wlb, 'WLB')
-print("Time taken for work-life balance: ", time.time()-wlb_time)
-
 print("Checking leave...")
-check_benefits(even_sample, leave, 'LEAVE')
-even_sample.rename(columns={'LEAVE':'PAID_LEAVE'}, inplace=True)
+check_benefits(even_sample, leave, 'PAID LEAVE')
 
-# check_benefits(even_sample, wellbeing, 'WELLBEING', wellbeing_to_exclude)
+print("checking wellbeing...")
+check_benefits(even_sample, wellbeing, 'WELLBEING', wellbeing_to_exclude)
 print("Checking health & wellbeing...")
-# check_benefits(even_sample, health_wellbeing, 'HEALTH_WELLBEING', wellbeing_to_exclude)
+check_benefits(even_sample, health_wellbeing, 'HEALTH_WELLBEING', wellbeing_to_exclude)
 # check_benefits(even_sample, recognition, 'RECOGNITION', recognition_to_exclude)
 # check_benefits(even_sample, family, 'FAMILY', family_to_exclude)
 print("Checking parental leave...")
-# check_benefits(even_sample, parental_leave, 'PARENTAL_LEAVE')
+check_benefits(even_sample, parental_leave, 'PARENTAL_LEAVE')
 print("Checking culture...")
-# check_benefits(even_sample, culture, 'CULTURE')
+check_benefits(even_sample, culture, 'CULTURE')
 print("time taken to check benefits: ", time.time()-start)
 
 print(even_sample.head())
-
-print("Saving to parquet...")
 save_time = time.time()
-even_sample.to_parquet(output_path, compression='gzip')
+print("Saving to parquet...")
+even_sample.drop(columns=['BODY']).to_parquet('../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip', compression='gzip')
+# "saving with body"
+
+# even_sample.to_parquet(output_path, compression='gzip')
 print("Time taken to save to parquet: ", time.time()-save_time)
 
 # drop body column and export
-even_sample.drop(columns=['BODY']).to_parquet('data/us_10m_nointernship_ai_skills_benefits.parquet.gzip', compression='gzip')
 
