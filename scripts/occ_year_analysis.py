@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import sys
 import os
 
@@ -7,7 +8,8 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 sys.path.append(parent_dir)
 from package_files.benefits_defns import *
 
-path = '../data/us_10m_nointernship_ai_skills_benefits.parquet.gzip'
+path = input("Please enter the input file path: ")
+# path = '../data/us_10m_nointernship_ai_skills_benefits.parquet.gzip'
 print("reading data")
 if path[-3:] == 'csv:':
     data = pd.read_csv(path)
@@ -44,6 +46,10 @@ ai_role_occupation['AI ROLE %'] = ai_role_occupation['AI ROLE %']*100
 
 # salary premium
 occupation_salaries = data_select.groupby([occupation, 'YEAR', 'AI ROLE'])[['LOG_SALARY', 'SALARY', 'DURATION_CALC']].mean().reset_index()
+# get median
+occupation_salaries_median = data_select.groupby([occupation, 'YEAR', 'AI ROLE'])[['LOG_SALARY','SALARY']].median().reset_index()
+occupation_salaries_median.rename(columns={'SALARY':'MEDIAN_SALARY', 'LOG_SALARY': 'MEDIAN_LOG_SALARY'}, inplace=True)
+occupation_salaries = pd.merge(occupation_salaries, occupation_salaries_median, on=[occupation, 'YEAR', 'AI ROLE'])
 occupation_salaries_ai = occupation_salaries[occupation_salaries['AI ROLE'] == 1]
 occupation_salaries_non_ai = occupation_salaries[occupation_salaries['AI ROLE'] == 0]
 occupation_salaries = pd.merge(occupation_salaries_ai, occupation_salaries_non_ai, on=[occupation, 'YEAR'], suffixes=('_ai', '_non_ai'))
@@ -59,15 +65,18 @@ ai_role_occupation['AI ROLE % CHANGE'] = ai_role_occupation['AI ROLE % CHANGE']*
 ai_role_occupation['PRIOR YEAR % CHANGE'] = ai_role_occupation.groupby(occupation)['AI ROLE % CHANGE'].shift(1)
 occ_year_df = ai_role_occupation.merge(occupation_salaries, on=[occupation, 'YEAR'])
 occ_year_df.drop(columns=['AI ROLE_ai', 'AI ROLE_non_ai'], inplace=True)
+print("occ_year_df columns")
+# print(occ_year_df.columns)
 
-print("reading results")
-results = pd.read_csv('../exports/models_occ_year_results.csv')
-
+# print("reading results")
+# results = pd.read_csv('../exports/models_occ_year_results.csv')
+coeff_df = occ_year_df.copy()
 # add coefficients
-coeff_df = results.merge(occ_year_df[['SOC_2021_2_NAME', 'YEAR','AI ROLE %',
-       'AI ROLE % CHANGE', 'PRIOR YEAR % CHANGE', 'LOG_SALARY_ai', 'SALARY_ai',
-       'LOG_SALARY_non_ai', 'SALARY_non_ai', 'SALARY_PREMIUM_LOG',
-       'SALARY_PREMIUM', 'DURATION_CALC_ai', 'DURATION_CALC_non_ai', 'MEAN SALARY']], left_on=['Occupation', 'Year'], right_on = [occupation, 'YEAR'])
+# coeff_df = results.merge(occ_year_df, left_on=['Occupation', 'Year'], right_on = [occupation, 'YEAR'])
+# ['SOC_2021_2_NAME', 'YEAR','AI ROLE %',
+#        'AI ROLE % CHANGE', 'PRIOR YEAR % CHANGE', 'LOG_SALARY_ai', 'SALARY_ai',
+#        'LOG_SALARY_non_ai', 'SALARY_non_ai', 'SALARY_PREMIUM_LOG',
+#        'SALARY_PREMIUM', 'DURATION_CALC_ai', 'DURATION_CALC_non_ai', 'MEAN SALARY']
 
 # % benefits by occ
 occ_year_group = data_select.groupby([occupation, 'YEAR']).size().reset_index(name='job_count')
@@ -79,24 +88,24 @@ for benefit in benefits4:
     print("merging occ_year_group and occ_benefit_group")
     occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
     print("occ_year_group")
-    print(occ_year_group.columns)
+    # print(occ_year_group.columns)
     
     occ_benefit_role = data_select.groupby([occupation,'YEAR', 'AI ROLE'])[benefit].mean().reset_index(name=f'Prevalence: {label}')
     occ_benefit_role[f'Prevalence: {label}'] = occ_benefit_role[f'Prevalence: {label}']*100
     print("occ_benefit_role")
-    print(occ_benefit_role.columns)
+    # print(occ_benefit_role.columns)
     occ_benefit_role_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 1]
     occ_benefit_role_non_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 0]
     print("merging occ benefit roles")
     occ_benefit_role_all = pd.merge(occ_benefit_role_ai, occ_benefit_role_non_ai, on=[occupation, 'YEAR'], suffixes=(' (AI)', ' (Non-AI)'))
     print("occ_benefit_role_all")
-    print(occ_benefit_role_all.columns)
+    # print(occ_benefit_role_all.columns)
     print("merging")
     occ_benefit_role_all.drop(columns=['AI ROLE (AI)', 'AI ROLE (Non-AI)'], inplace=True)
     occ_year_group = occ_year_group.merge(occ_benefit_role_all, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
 
 coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
-
+coeff_df['Log Job Count'] = coeff_df['job_count'].apply(lambda x: np.log(x))
 # occ_year_df = occ_year_df.merge(mean_salary, on=[occupation, 'YEAR'])
 # pd.set_option('display.max_rows', 100)
 # occ_year_df.rename(columns={'SALARY':'MEAN SALARY'}, inplace=True)
@@ -110,4 +119,4 @@ coeff_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
 
 print("exporting coeff_df")
 print(coeff_df.columns)
-coeff_df.to_csv('../exports/occ_year_coeff_analysis.csv', index=False)
+coeff_df.to_csv('../exports/occ_year_data/occ_year_analysis_2024.csv', index=False)

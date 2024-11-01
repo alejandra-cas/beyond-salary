@@ -63,13 +63,17 @@
     - series of logit models with different controls
 
 - occ_year_analysis.py
-    - export coeff df for occ_year_analysis_coeffs
+    - export df with descriptive statistics for occupation-year model
+    - ~~export coeff df for occ_year_analysis_coeffs~~
 
-- occ_year_analysis_coeffs.ipynb
-    - regressions on AI coefficient from occ-year models
+- occ_year_model_new.ipynb
+    - model: % benefit for ai role = a + B1 * AI Demand + B2* Overall Prevalence...
 
 # other notebooks
 - preliminary_analysis.ipynb
 - skillscale_preliminary.ipynb
-    
+- occ_year_sample_models.ipynb
+    - run job-level models on each occupation-year to get AI coeffs
+- occ_year_analysis_coeffs.ipynb
+    - regressions on AI coefficient from occ-year models
 

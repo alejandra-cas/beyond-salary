@@ -7,8 +7,8 @@ import time
 # input_path = input("Please enter the input parquet file path: ")
 # output_path = input("Please enter the output parquet file path: ")
 
-input_path = '../data/body.parquet.gzip'
-output_path = '../data/remote_kw_labels.parquet.gzip'
+input_path = '../data/us_10m_nointernship_2018_2024_body.parquet.gzip'
+output_path = '../data/remote_kw_labels_2024.parquet.gzip'
 # even_sample = pd.read_parquet('data/salary_sample_body.parquet.gzip')
 load_time = time.time()
 print("Loading the input parquet file...")
@@ -19,7 +19,7 @@ elif input_path[-3:] == 'zip':
 
 print("Time taken to load the input parquet file: ", time.time()-load_time)
 print(even_sample.columns)
-
+even_sample = even_sample[['ID','BODY']]
 empty_body_count = even_sample['BODY'].isna().sum() + even_sample['BODY'].str.strip().eq("").sum()
 print("Number of empty body text: ", empty_body_count)
 
@@ -57,8 +57,8 @@ remote_to_exclude = [
     "remote monitoring", "remote sensing", "remote access systems", "remote control", 
     "remote diagnostics", "remote delivery", "#li-onsite", "onsite job", "work from home not available", "telework:no", 
     "remote: no", "100% on-site", "work at home option: No",
-    "remotely: no", "remote: n", "remotely: n", "telework: no", "remote: * no", "remotely: * no"
-    "remotely piloted", "data remotely", "remote type on-site", "interviewed remotely", "work remotely: * no", "remotely piloted", 
+    "remotely: no", "remote: n", "remotely: n", "telework: no", "remote: * no", "remotely: * no",
+    "remotely piloted", "data remotely", "remote type on-site", "interviewed remotely", "work remotely: * no", 
     "remote desktop", "must be able to work on-site", "not applicable for 100% remote", "remote testing", "remotely upgrading", "remote usability",
     "remote site", "remote machine", "remote iot", "no remote", "work remotely no", "remotely:no", "remotely? n", "remotely no", "remote areas", 
     "remote access", "remote position? no", "remotely tucked away", "supporting remote", "remotely sensed"
@@ -142,7 +142,7 @@ print(even_sample.head())
 print("Saving to parquet...")
 # drop body column and export
 save_time = time.time()
-even_sample.drop(columns=['BODY']).to_parquet('../data/remote_kw_labels_2.parquet.gzip', compression='gzip')
+even_sample.drop(columns=['BODY']).to_parquet(output_path, compression='gzip')
 # print("saving with body")
 
 # even_sample.to_parquet(output_path, compression='gzip')
