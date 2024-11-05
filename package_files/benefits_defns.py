@@ -20,5 +20,6 @@ benefit_colors = {
     'HEALTH_WELLBEING': '#e6a532',
     'PARENTAL_LEAVE': '#00a0e1',
     'CULTURE': '#d7642c',
-    'wfh_wham': '#af4b91'
+    'wfh_wham': '#af4b91', 
+    'REMOTE_KW': '#c765a6'
 }
