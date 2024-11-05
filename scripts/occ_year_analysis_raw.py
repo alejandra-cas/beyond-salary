@@ -89,14 +89,14 @@ for benefit in benefits4:
     print(benefit)
     label = benefits_labels_map[benefit]
     occ_benefit_group = data_select.groupby([occupation,'YEAR'])[benefit].sum().reset_index(name=f'Prevalence: {label}')
-    occ_benefit_group[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
+    # occ_benefit_group[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
     print("merging occ_year_group and occ_benefit_group")
     occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
     print("occ_year_group")
     # print(occ_year_group.columns)
     
     occ_benefit_role = data_select.groupby([occupation,'YEAR', 'AI ROLE'])[benefit].sum().reset_index(name=f'Prevalence: {label}')
-    occ_benefit_role[f'Prevalence: {label}'] = occ_benefit_role[f'Prevalence: {label}']*100
+    # occ_benefit_role[f'Prevalence: {label}'] = occ_benefit_role[f'Prevalence: {label}']*100
     print("occ_benefit_role")
     # print(occ_benefit_role.columns)
     occ_benefit_role_ai = occ_benefit_role[occ_benefit_role['AI ROLE'] == 1]
