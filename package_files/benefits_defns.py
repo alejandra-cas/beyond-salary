@@ -2,9 +2,9 @@
 benefits2 = ['CAREER_DEV', 'WLB', 'HEALTH_WELLBEING', 'RECOGNITION', 'FAMILY', 'CULTURE']
 benefits3 = ['CAREER_DEV', 'EDU_ASSISTANCE', 'WLB', 'WELLBEING', 'HEALTH_WELLBEING', 'RECOGNITION', 'FAMILY', 'PARENTAL_LEAVE', 'CULTURE']
 benefits3_labels = ['Career Development', 'Education Assistance', 'Work-Life Balance', 'Wellbeing', 'Health and Wellbeing','Recognition', 'Family', 'Parental Leave', 'Culture']
-benefits4 = ['EDU_ASSISTANCE','PAID_LEAVE','HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'wfh_wham', 'REMOTE_KW']
-benefits_labels_map = {'EDU_ASSISTANCE': 'Tuition Assistance', 'PAID_LEAVE': 'Paid Leave', 'HEALTH_WELLBEING': 'Health and Wellbeing', 'PARENTAL_LEAVE': 'Parental Leave', 'CULTURE': 'Workplace Culture', 'wfh_wham': 'Remote Work', 'REMOTE_KW': 'Remote Keywords'}
-benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work', 'Remote Keywords']
+benefits4 = ['EDU_ASSISTANCE','PAID_LEAVE','HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
+benefits_labels_map = {'EDU_ASSISTANCE': 'Tuition Assistance', 'PAID_LEAVE': 'Paid Leave', 'HEALTH_WELLBEING': 'Health and Wellbeing', 'PARENTAL_LEAVE': 'Parental Leave', 'CULTURE': 'Workplace Culture', 'wfh_wham': 'Remote Work', 'REMOTE_KW': 'Remote Work'}
+benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
 benefits5 = ['EDU_ASSISTANCE','PAID_LEAVE','HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE']
 
 region = 'STATE_NAME'
