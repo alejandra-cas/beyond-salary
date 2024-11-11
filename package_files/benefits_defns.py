@@ -23,3 +23,11 @@ benefit_colors = {
     'wfh_wham': '#af4b91', 
     'REMOTE_KW': '#c765a6'
 }
+
+benefit_colors_2 = {'EDU_ASSISTANCE': ['#41afaa', '#b3dfdd'],
+ 'PAID_LEAVE': ['#466eb4', '#b5c5e1'],
+ 'HEALTH_WELLBEING': ['#e6a532', '#f5dbad'],
+ 'PARENTAL_LEAVE': ['#00a0e1', '#99d9f3'],
+ 'CULTURE': ['#d7642c', '#efc1ab'],
+ 'wfh_wham': ['#af4b91', '#dfb7d3'],
+ 'REMOTE_KW': ['#af4b91', '#dfb7d3']}

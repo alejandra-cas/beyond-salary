@@ -76,4 +76,6 @@
     - run job-level models on each occupation-year to get AI coeffs
 - occ_year_analysis_coeffs.ipynb
     - regressions on AI coefficient from occ-year models
+- export_samples.ipynb
+    - comparison to national statistics
 
