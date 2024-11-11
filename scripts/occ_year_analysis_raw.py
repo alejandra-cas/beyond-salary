@@ -84,6 +84,7 @@ occ_year_group = data_select.groupby([occupation, 'YEAR']).agg(
     job_count=('ID', 'size'),   # Counts the number of rows (jobs) in each group
     ai_role_count=('AI ROLE', 'sum') # Counts the number of True values in AI ROLE
 ).reset_index()
+occ_year_group['AI Job Count Change'] = occ_year_group.groupby(occupation)['ai_role_count'].diff()
 
 for benefit in benefits4:
     print(benefit)
