@@ -122,15 +122,15 @@ ai_jobs = data[data['AI ROLE'] == 1]
 non_ai_jobs = data[data['AI ROLE'] == 0]
 
 # Group by occupation and YEAR and sum benefits for AI and non-AI jobs
-ai_counts = ai_jobs.groupby([occupation, 'YEAR'])[benefits4].sum().reset_index()
-non_ai_counts = non_ai_jobs.groupby([occupation, 'YEAR'])[benefits4].sum().reset_index()
+ai_counts = ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
+non_ai_counts = non_ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
 
 # Merge the counts for AI and non-AI jobs
 merged_counts = ai_counts.merge(non_ai_counts, on=[occupation, 'YEAR'], suffixes=('_ai', '_non_ai'))
 
 # Calculate the difference between AI and non-AI jobs for each benefit
 for benefit in benefits4:
-    merged_counts[f'{benefit}_difference'] = merged_counts[f'{benefit}_ai'] - merged_counts[f'{benefit}_non_ai']
+    merged_counts[f'{benefit}_difference'] = (merged_counts[f'{benefit}_ai'] - merged_counts[f'{benefit}_non_ai'])*100
 
 # Select only the columns with differences and occupation-year identifiers
 difference_summary = merged_counts[[occupation, 'YEAR'] + [f'{benefit}_difference' for benefit in benefits4]]
