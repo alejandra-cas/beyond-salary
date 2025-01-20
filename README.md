@@ -100,7 +100,7 @@ This project explores non-monetary benefit offerings for AI vs. non-AI jobs usin
     - Processes and analyzes wage information
     - **Data Used**: OJV data with salary information
 
-## Additional Scripts
+## Supporting Scripts
 
 The following scripts define key functions and lists that are used throughout the pipeline:
 
