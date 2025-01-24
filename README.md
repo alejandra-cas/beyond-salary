@@ -11,7 +11,7 @@ This project explores non-monetary benefit offerings for AI vs. non-AI jobs usin
 1. **prepare\_data.ipynb**
    - Loads original online job vacancy (OJV) data.
    - Filters out internships.
-   - Merges data from thesis to include AI and WHAM job labels.
+   - Merges previously labeled data to include AI and WHAM job labels.
    - Adds columns such as `YEAR` and updates missing WHAM labels.
 
 2. **classify\_ai\_skills.py**
