@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project explores non-monetary benefit offerings for AI vs. non-AI jobs using a dataset of nearly ten million online job vacancies. It uncovers trends in recent years for benefits such as paid leave, tuition assistance, health and wellbeing, parental leave, workplace culture, and remote work. Additionally, it examines the relationship between benefits offered for AI roles and job demand to determine whether high levels of AI demand are associated with higher levels of non-monetary benefits.
+This project explores non-monetary benefit offerings for AI vs. non-AI jobs using a dataset of nearly ten million online job vacancies. It uncovers trends in recent years for benefits such as paid leave, tuition assistance, health and wellbeing, parental leave, workplace culture, and remote work. Additionally, it examines the relationship between benefits offered for AI roles and job demand to determine whether high levels of AI demand are associated with higher levels of non-monetary benefits. The publication is in-progress and will be shared when available.
 
 ## Pipeline
 
