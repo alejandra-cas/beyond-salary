@@ -2,6 +2,6 @@
 data/
 *.pkl
 *.pickle
-
+small_samples/
 # virtual environment
 skillscaleenv/
