@@ -1,0 +1,19 @@
+Benefit,Population,Mean,Median,Min,Max,Std Dev
+Tuition Assistance,Overall,5581,3891,165,34378,6000
+Tuition Assistance,AI Roles,74,15,0,1083,183
+Tuition Assistance,Non-AI Roles,5507,3806,163,34357,5970
+Paid Leave,Overall,17761,12031,639,69352,16851
+Paid Leave,AI Roles,200,41,0,3000,480
+Paid Leave,Non-AI Roles,17561,11330,639,69290,16761
+Health & Wellbeing,Overall,3109,2106,161,10334,2834
+Health & Wellbeing,AI Roles,53,9,0,818,133
+Health & Wellbeing,Non-AI Roles,3056,2076,161,10332,2796
+Parental Leave,Overall,2596,1273,46,12445,3085
+Parental Leave,AI Roles,75,10,0,1262,212
+Parental Leave,Non-AI Roles,2521,1223,46,12434,2995
+Workplace Culture,Overall,7231,4563,312,32156,7376
+Workplace Culture,AI Roles,238,51,0,3953,556
+Workplace Culture,Non-AI Roles,6993,4530,310,30937,7094
+Remote Work,Overall,5143,2425,235,37712,6643
+Remote Work,AI Roles,197,26,0,4145,556
+Remote Work,Non-AI Roles,4946,2339,235,33567,6207

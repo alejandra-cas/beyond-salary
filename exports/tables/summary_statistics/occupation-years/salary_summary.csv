@@ -1,0 +1,5 @@
+Variable,Mean,Median,Min,Max,Std Dev
+Mean Salary (All Jobs),$66069,$61905,$35540,$122250,$21241
+Median Salary (AI Jobs),$81680,$77500,$26520,$187358,$34032
+Median Salary (Non-AI Jobs),$57134,$49920,$31200,$114507,$20753
+Salary Premium (%),138.0%,139.0%,65.9%,207.7%,29.4%

@@ -1,0 +1,25 @@
+Benefit,Prevalence Quartile,N Occupations,Median AI Salary ($),Median Non-AI Salary ($),Avg Benefit Rate (%),Avg AI Benefit Rate (%)
+Tuition Assistance,Low,4,81375,48745,6.48,7.84
+Tuition Assistance,Med-Low,4,76004,43320,10.05,9.79
+Tuition Assistance,Med-High,3,119658,77500,11.1,8.09
+Tuition Assistance,High,4,109159,86750,12.79,9.4
+Paid Leave,Low,4,94500,65000,26.71,20.41
+Paid Leave,Med-Low,4,109159,83000,34.54,26.53
+Paid Leave,Med-High,3,86000,44000,39.51,34.06
+Paid Leave,High,4,141460,65380,43.0,30.78
+Health & Wellbeing,Low,4,85572,46960,5.28,8.3
+Health & Wellbeing,Med-Low,4,109159,93130,6.28,4.77
+Health & Wellbeing,Med-High,3,65863,42640,6.8,6.01
+Health & Wellbeing,High,4,123064,62535,7.59,6.86
+Parental Leave,Low,4,85572,46960,4.45,3.99
+Parental Leave,Med-Low,4,71806,45105,6.7,7.45
+Parental Leave,Med-High,3,119658,77500,8.42,12.94
+Parental Leave,High,4,137010,86750,10.39,14.01
+Workplace Culture,Low,4,72712,43320,9.31,16.94
+Workplace Culture,Med-Low,4,81375,48745,11.76,24.92
+Workplace Culture,Med-High,3,104000,57000,16.26,35.34
+Workplace Culture,High,4,133604,86750,18.2,25.21
+Remote Work,Low,4,72712,43320,2.18,7.75
+Remote Work,Med-Low,4,81375,46665,6.84,26.91
+Remote Work,Med-High,3,119518,85000,11.49,17.4
+Remote Work,High,4,133604,81250,18.71,24.44

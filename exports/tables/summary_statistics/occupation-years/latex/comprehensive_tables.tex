@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{tabularx}
+
+\title{Beyond Salary: Comprehensive Occupation-Year Analysis Tables}
+\author{Analysis Summary}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Dataset Overview}
+\input{dataset_overview.tex}
+
+\section{AI Demand Analysis}
+\input{ai_demand_summary.tex}
+
+\section{Salary Analysis}
+\input{salary_summary.tex}
+
+\section{Benefits Analysis}
+\subsection{Overall Benefits Summary}
+\input{benefits_summary.tex}
+
+\subsection{Benefit Prevalence Rates}
+\input{benefit_prevalence_rates.tex}
+
+\section{Salary-Benefit Relationships}
+\subsection{Salaries by Benefit Availability}
+\input{salary_by_benefit_availability.tex}
+
+\subsection{Benefits by Salary Quartiles}
+\input{benefits_by_salary_quartile.tex}
+
+\subsection{Benefit-Salary Correlations}
+\input{benefit_salary_correlations.tex}
+
+\section{Temporal Trends}
+\subsection{Aggregate Yearly Trends}
+\input{yearly_trends.tex}
+
+\subsection{Benefit Trends Over Time}
+\input{yearly_benefit_trends.tex}
+
+\section{2024 Detailed Analysis}
+\subsection{Occupation Characteristics}
+\input{occupation_characteristics_2024.tex}
+
+\subsection{Top AI Occupations}
+\input{top_occupations_ai_demand_2024.tex}
+
+\subsection{Benefits in Top AI Occupations}
+\input{benefits_by_top_ai_occupations_2024.tex}
+
+\end{document}
