@@ -5,16 +5,27 @@ This repository contains the reproducible code and analysis for the academic pap
 ## Repository Structure
 
 ```
-├── analysis/           # Jupyter notebooks and Python scripts for analysis
-│   ├── generate_key_figures.py    # Generate main figures for paper
-├── scripts/            # Data preparation scripts
-│   ├── prepare_data.py           # Initial data merging and cleaning
-│   ├── prepare_data_2.py         # Secondary processing and AI classification
+├── analysis/           # Main analysis scripts
+│   ├── descriptive_analysis.py              # Descriptive statistics and data exploration
+│   ├── occupation_year_analysis.py          # Balanced sample differences analysis
+│   ├── occupation_year_balanced_sample_analysis.py  # Alternative balanced sample approach
+│   ├── regression_models_2024.py            # Individual and job-level regression models
+│   ├── salary_analysis.py                   # Salary premium analysis
+│   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
+│   └── test_data.py                          # Data validation and testing
+├── scripts/            # Data preparation and processing scripts
+│   ├── export_samples_2024.py               # Export balanced samples for analysis
+│   ├── label_benefits.py                    # Benefit labeling and classification
+│   ├── prepare_data.py                      # Initial data merging and cleaning
+│   └── prepare_data_2.py                    # Secondary processing and AI classification
 ├── src/               # Supporting Python modules
-│   └── package_files/ # Core utility functions and definitions
-├── results/           # Output files
-│   ├── figures/       # Generated visualizations
-│   └── tables/        # Analysis tables and results
+│   └── package_files/ # Core utility functions and model definitions
+│       ├── benefits_defns.py                # Benefit category definitions and mappings
+│       └── logit_model.py                   # Logistic regression utilities
+├── results/           # Generated outputs
+│   ├── figures/       # All visualizations and plots
+│   └── tables/        # Regression tables (HTML and LaTeX formats)
+│       └── job_level_model_2025/            # Individual benefit regression tables
 ├── data/              # Input data files (not included in repo)
 └── requirements/      # Dependencies and setup
     └── requirements.txt
@@ -40,9 +51,15 @@ This repository contains the reproducible code and analysis for the academic pap
    # Data preparation (run in order)
    python scripts/prepare_data.py
    python scripts/prepare_data_2.py
+   python scripts/label_benefits.py
+   python scripts/export_samples_2024.py
    
-   # Generate key figures
-   python analysis/generate_key_figures.py
+   # Core analyses
+   python analysis/descriptive_analysis.py
+   python analysis/regression_models_2024.py
+   python analysis/occupation_year_analysis.py
+   python analysis/salary_analysis.py
+   python analysis/scatterplot_analysis.py
    ```
 
 ## Key Analysis Components
@@ -50,27 +67,40 @@ This repository contains the reproducible code and analysis for the academic pap
 ### Data Preparation (`scripts/`)
 - **prepare_data.py**: Merges job posting data with AI skills labels and remote work classification
 - **prepare_data_2.py**: Adds experience buckets, completes AI skills classification, and processes salary data
+- **label_benefits.py**: Processes and labels workplace benefits from job postings
+- **export_samples_2024.py**: Creates balanced samples for regression analysis
 
-### Figure Generation (`analysis/`)
-- **generate_key_figures.py**: Creates the 5 main visualizations used in the paper:
-  1. % AI roles over time (overall and industry average)
-  2. Difference in benefit prevalence between AI and non-AI roles
-  3. Benefit prevalence by role type (AI vs non-AI)
-  4. Individual benefit trends over time
-  5. Benefit prevalence by occupation
+### Core Analysis (`analysis/`)
+- **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis
+- **regression_models_2024.py**: Runs logistic regression models for benefit analysis with three specifications:
+  1. Baseline (Year + Industry fixed effects)
+  2. Individual Controls (+ Education + Experience)
+  3. With Salary Control (+ Log Salary)
+- **occupation_year_analysis.py**: Balanced sample differences analysis at occupation-year level
+- **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
+- **scatterplot_analysis.py**: Creates correlation plots and scatter analyses
+- **test_data.py**: Data validation and quality checks
 
 ### Supporting Modules (`src/package_files/`)
-- **benefits_defns.py**: Benefit category definitions and mappings
-- **logit_model.py**: Statistical modeling utilities
+- **benefits_defns.py**: Benefit category definitions, labels, and mappings
+- **logit_model.py**: Logistic regression utilities with VIF calculation and model fitting
 
 ## Generated Outputs
 
-The analysis produces the following key figures:
-- `results/figures/pct_ai_roles_overall_industry.png`
-- `results/figures/benefits_over_time/benefit_diffs_time.png`
-- `results/figures/pct_jobs_by_benefit_and_role_type/benefits_ai_role_colors_10m_2024.png`
-- `results/figures/benefits_over_time/over_time_color_{benefit}.png` (6 files)
-- `results/figures/percent_by_occupation_colors_2024_{benefit}.png` (6 files)
+### Regression Tables
+- **Individual benefit tables**: `results/tables/job_level_model_2025/{benefit}_table.html`
+- **Combined wide table**: `results/tables/complete_wide_table_2024_corrected.html`
+- **LaTeX versions**: `results/tables/complete_wide_table_2024.tex`
+- **Balanced sample differences**: `results/tables/difference_regression_table_combined.html`
+
+### Key Figures
+- **Model coefficients plot**: `results/figures/model_coefficients_plot_industry_converged.png`
+- **AI roles over time**: `results/figures/pct_ai_roles_overall_industry.png`
+- **Benefit differences**: `results/figures/benefits_over_time/benefit_diffs_time.png`
+- **Individual benefit trends**: `results/figures/benefits_over_time/over_time_color_{benefit}.png` (6 files)
+- **Occupation analysis**: `results/figures/percent_by_occupation_colors_2024_{benefit}.png` (6 files)
+- **Salary analysis**: `results/figures/salary_by_benefit_combined.png`
+- **Scatterplots**: `results/figures/scatterplots/` (multiple correlation analyses)
 
 ## Data Sources
 
