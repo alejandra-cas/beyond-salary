@@ -1,4 +1,4 @@
-# Beyond Salary: AI Jobs and Benefit Analysis
+# Beyond Salary: AI Jobs and Non-Monetary Benefits
 
 This repository contains the reproducible code and analysis for the paper Beyond pay: AI skills reward more job benefits.
 
