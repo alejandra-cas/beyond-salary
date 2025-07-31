@@ -260,12 +260,12 @@ def main():
             print(f"Warning: Could not generate percentage scatterplots: {e}")
         
         print("\n" + "=" * 50)
-        print("✅ SCATTERPLOT ANALYSIS COMPLETE!")
-        print(f"📊 Outputs saved to: {output_dir}")
+        print("SCATTERPLOT ANALYSIS COMPLETE")
+        print(f"Outputs saved to: {output_dir}")
         print("=" * 50)
         
     except Exception as e:
-        print(f"❌ Error during scatterplot analysis: {e}")
+        print(f"Error during scatterplot analysis: {e}")
         import traceback
         traceback.print_exc()
 
