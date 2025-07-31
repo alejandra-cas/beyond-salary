@@ -1,6 +1,6 @@
 # Beyond Salary: AI Jobs and Benefit Analysis
 
-This repository contains the reproducible code and analysis for the academic paper on AI job postings and workplace benefits.
+This repository contains the reproducible code and analysis for the paper Beyond pay: AI skills reward more job benefits.
 
 ## Repository Structure
 

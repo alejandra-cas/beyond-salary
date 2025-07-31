@@ -1,1 +1,2 @@
-data/
+data/*
+!data/ai_skill_ids.pkl
