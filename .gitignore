@@ -1,7 +1,2 @@
-# large datasets
-data/
-*.pkl
-*.pickle
-
-# virtual environment
-skillscaleenv/
+data/*
+!data/ai_skill_ids.pkl

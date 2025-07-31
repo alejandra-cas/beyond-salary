@@ -1,135 +1,130 @@
-# SkillScale Beyond Salary Project
+# Beyond Salary: AI Jobs and Benefit Analysis
 
-## Overview
+This repository contains the reproducible code and analysis for the paper Beyond pay: AI skills reward more job benefits.
 
-This project explores non-monetary benefit offerings for AI vs. non-AI jobs using a dataset of nearly ten million online job vacancies. It uncovers trends in recent years for benefits such as paid leave, tuition assistance, health and wellbeing, parental leave, workplace culture, and remote work. Additionally, it examines the relationship between benefits offered for AI roles and job demand to determine whether high levels of AI demand are associated with higher levels of non-monetary benefits. The publication is in-progress and will be shared when available.
 
-## Pipeline
+## Repository Structure
 
-### Data Preparation
+```
+├── analysis/           # Main analysis scripts
+│   ├── descriptive_analysis.py              # Descriptive statistics and data exploration
+│   ├── join_remote_kw.ipynb                 # Jupyter notebook for remote work keyword analysis
+│   ├── occupation_year_balanced_sample_analysis.py  # Occupation-year models
+│   ├── regression_models_2024.py            # Job-level regression models
+│   ├── salary_analysis.py                   # Salary premium analysis
+│   └── scatterplot_analysis.py              # Correlation and scatterplot analysis
+├── scripts/            # Data preparation and processing scripts
+│   ├── export_samples_2024.py               # Export balanced samples for analysis
+│   ├── label_benefits.py                    # Benefit labeling and classification
+│   ├── label_benefits_remote.py             # Remote work benefit labeling
+│   ├── prepare_data.py                      # Initial data merging and cleaning
+│   └── prepare_data_2.py                    # Secondary processing and AI classification
+├── src/                # Supporting Python modules
+│   └── package_files/  # Core utility functions and model definitions
+│       ├── __init__.py                      # Package initialization
+│       ├── benefits_defns.py                # Benefit category definitions and mappings
+│       └── logit_model.py                   # Logistic regression utilities
+├── data/               # Input data files and processed datasets (not included in repo)
+│   ├── ai_skill_ids.pkl                     # AI skill identifiers (included)
+│   ├── balanced_sample_diffs.csv            # Pre-calculated balanced sample differences
+│   ├── keywords_list.pkl                    # Benefit keywords for classification
+│   ├── occ_year_analysis_2024_raw.csv       # Occupation-year level analysis data
+│   ├── us_10m_nointernship_2018_2024_benefits.parquet.gzip  # Main processed dataset
+│   ├── small_samples/                       # Balanced samples for regression analysis
+│   │   ├── 2024_salary_sample.parquet.gzip
+│   │   └── 2024_nosalary_sample.parquet.gzip
+│   └── [additional processed data files]
+├── results/            # Generated outputs
+│   ├── figures/        
+│   │   ├── benefits_over_time/              # Time trend plots
+│   │   ├── pct_jobs_by_benefit_and_role_type/  # Benefit prevalence plots
+│   │   └── scatterplots/                    # Correlation analyses
+│   └── tables/         # Regression tables (HTML and LaTeX formats)
+│       ├── job_level_model_2025/            # Individual benefit regression tables
+│       └── occ_year_models/                  # Occupation-year tables
+└── requirements/       # Dependencies and setup
+    └── requirements.txt
+```
 
-1. **prepare\_data.ipynb**
-   - Loads original online job vacancy (OJV) data.
-   - Filters out internships.
-   - Merges previously labeled data to include AI and WHAM job labels.
-   - Adds columns such as `YEAR` and updates missing WHAM labels.
+## Setup Instructions
 
-2. **classify\_ai\_skills.py**
-   - Classifies jobs as AI or non-AI for any jobs with missing labels after the merge in `prepare_data.ipynb`.
-   - **Data Used**: Data output from `prepare_data.ipynb`
+1. **Install Dependencies**
+   ```bash
+   pip install -r requirements/requirements.txt
+   ```
 
-3. **merge\_body.py**
-   - Merges the `BODY` column to OJV data.
-   - Exports updated OJV data.
+2. **Data Requirements**
+   - `US_10M_SAMP_2018_2024.csv` - Original job postings dataset
+   - `us_10m_nointernship_2018_2024_benefits.parquet.gzip` - Processed data with benefits
+   - `ai_skill_ids.pkl` - AI skill identifiers
+   - `ID_CNTRY_ALL_WHAM.csv` - Remote work classification data (LLM)
+   - `SALARIES.csv` - Salary data for sample
 
-4. **label\_benefits.py**
-   - Checks whether the `BODY` column of OJV data contains specified keywords for each benefit.
-   - Adds a column for each benefit indicating `True` or `False`.
-   - **Data Used**: Merged OJV data from `merge_body.py`
-
-5. **prepare\_data\_2.ipynb**
-   - Renames the `Has AI Skills` column to `AI ROLE`.
-   - Adds an `EXPERIENCE_BUCKET` column and joins salary data.
-   - Adds a `LOG_SALARY` column and fills in missing AI labels.
-   - Exports processed data.
-   - **Data Used**: Updated OJV dataset from `label_benefits.py`
-
-### Data Sampling
-
-6. **export\_samples.py**
-   - Exports samples of 20k OJVs with different criteria, such as salary and remote data.
-   - e.g. export samples of 20k OJVs with salary data, with salary & remote data, and with remote data but without requiring salary data 
-   - **Data Used**: Processed OJV data
-
-### Descriptive Analysis
-
-7. **descriptive\_statistics.ipynb**
-   - Analyzes demand for AI and non-AI roles over time.
-   - Tracks changes in benefits over time.
-   - Identifies top companies offering benefits.
-
-8. **join_remote_kw.ipynb**
-   - Join remote keyword classifications to processed OJV data and export updated df
-
-9. **duration.ipynb**
-   - Explores the duration of job postings and related trends.
-
-10. **national_comparison.ipynb**
-    - Compares representativeness of OJV data vs. national statistics
-
-### Modeling
-
-11. **regression\_models.ipynb**
-    - Runs logit models with different controls to explore relationships between benefits and demand.
-
-12. **occ\_year\_analysis.py**
-    - Exports dataframes with descriptive statistics for occupation-year models.
+3. **Run Analysis**
+   ```bash
+   # Data preparation (run in order)
+   python scripts/prepare_data.py
+   python scripts/prepare_data_2.py
+   python scripts/label_benefits.py
+   python scripts/label_benefits_remote.py
+   python scripts/export_samples_2024.py
    
-12. **occ\_year\_analysis_raw.py**
-    - Exports dataframes with descriptive statistics for occupation-year models with raw numbers.
+   # Core analyses (all working and tested)
+   python analysis/descriptive_analysis.py
+   python analysis/regression_models_2024.py
+   python analysis/occupation_year_balanced_sample_analysis.py
+   python analysis/salary_analysis.py
+   python analysis/scatterplot_analysis.py
+   ```
 
-13. **occ\_year\_model\_new.ipynb**
-    - Builds models exploring the relationship between AI role benefits and demand on occ-year level, including control variables.
-    - **Data Used**: Occupation-year data
+## Key Analysis Components
 
-14. **compounding_effects.ipynb**
-    - Investigates the compounding effects of job benefits.
-    - **Data Used**: Processed OJV data
+### Data Preparation (`scripts/`)
+- **prepare_data.py**: Merges job posting data with AI skills labels and remote work classification
+- **prepare_data_2.py**: Adds experience buckets, completes AI skills classification, and processes salary data
+- **label_benefits.py**: Processes and labels workplace benefits from job postings
+- **label_benefits_remote.py**: Specialized remote work benefit labeling and processing
+- **join_remote_kw.ipynb**: Join remote keyword labels to data
+- **export_samples_2024.py**: Creates balanced samples for regression analysis
 
-15. **occ_year_analysis_coeffs.ipynb**
-    - Runs models looking at the effect of demand on the strength of AI role coefficients
-    - **Data Used**: "occ_year_coeff_analysis.csv"
+### Core Analysis (`analysis/`)
+- **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis
+- **regression_models_2024.py**: Runs logistic regression models for benefit analysis with three specifications:
+  1. Baseline (Year + Industry fixed effects)
+  2. Individual Controls (+ Education + Experience)
+  3. With Salary Control (+ Log Salary)
+- **occupation_year_balanced_sample_analysis.py**: Benefit differences analysis at occupation-year level
+- **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
+- **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
+- **join_remote_kw.ipynb**: Jupyter notebook for remote work keyword processing and evaluation
 
-### Validation
+### Supporting Modules (`src/package_files/`)
+- **benefits_defns.py**: Benefit category definitions, labels, and mappings
+- **logit_model.py**: Logistic regression utilities for model fitting
 
-16. **evaluate_accuracy.ipynb**
-    - Evaluates the accuracy of benefit and AI skill classifications.
-    - **Data Used**: highlighted_job_postings_2_exploded.xlsx
+## Generated Outputs
 
-17. **manual_check_export.ipynb**
-    - Manually checks and exports data for validation purposes.
-    - **Data Used**: Sample of labeled data with benefits
+### Regression Tables
+- **Individual benefit tables**: `results/tables/job_level_model_2025/{benefit}_table.html`
+- **Combined wide table**: `results/tables/complete_wide_table_2024_corrected.html`
+- **LaTeX versions**: `results/tables/complete_wide_table_2024.tex`
+- **Occupation-year differences**: `results/tables/occ_year_models/difference_regression_table_combined.html`
 
-### Visualization
+### Key Figures
+- **Model coefficients plot**: `results/figures/model_coefficients_plot_industry_converged.png`
+- **AI roles over time**: `results/figures/pct_ai_roles_overall_industry.png`
+- **Benefit differences**: `results/figures/benefits_over_time/benefit_diffs_time.png`
+- **Individual benefit trends**: `results/figures/benefits_over_time/over_time_color_{benefit}.png` (6 files)
+- **Occupation analysis**: `results/figures/percent_by_occupation_colors_2024_{benefit}.png` (6 files)
+- **Salary analysis**: `results/figures/salary_by_benefit_combined.png`
+- **Scatterplots**: `results/figures/scatterplots/` (multiple correlation analyses)
 
-18. **scatterplot.ipynb**
-    - Generates scatterplots to visualize AI demand and benefit correlations.
-    - **Data Used**: Occ-year analysis df
 
-19. **wage_info.ipynb**
-    - Processes and analyzes wage information
-    - **Data Used**: OJV data with salary information
+## Citation
 
-## Supporting Scripts
+  If you use this code or data in your research, please cite:
 
-The following scripts define key functions and lists that are used throughout the pipeline:
+  Castaneda, Bone & Stephany. "Beyond pay: AI skills reward more job benefits." Working Paper, 2025.
 
-1. **benefits_defns.py**
-   - Contains definitions and lists for benefit keywords used in labeling.
-   - Supports `label_benefits.py` and other related scripts.
+## License
 
-2. **logit_model.py**
-   - Implements functions for building and analyzing logistic regression models.
-   - Supports notebooks and scripts in the modeling pipeline.
-
-## Archive
-1. **check_ai_skills.ipynb**
-    - Validates length of AI skills used to classify AI roles.
-2. **keyword_definitions.ipynb**
-    - Documents and defines keywords used for benefit labeling.
-    - **Data Used**: Keywords metadata
-3. **remote_keywords.ipynb**
-    - Scrutinizes text data to identify remote work keywords
-    - **Data Used**: OJV data samples
-4. **test_keyword_search.ipynb**
-    - Tests and refines the keyword search functionality.
-    - **Data Used**: Processed OJV data
-5. **preliminary_analysis.ipynb**
-   - preliminary exploratory analysis
-6. **skillscale_preliminary.ipynb**
-    - preliminary exploratory analysis
-7. **occ_year_sample_models.ipynb**
-    - run job-level models on each occupation-year to get AI coeffs
-8. **occ_year_analysis_coeffs.ipynb**
-    - regressions on AI coefficient from occ-year models
-9. **export_samples.ipynb**
