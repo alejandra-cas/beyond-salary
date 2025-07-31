@@ -124,7 +124,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
   If you use this code or data in your research, please cite:
 
-  Castaneda, Stephany & Bone. "Beyond pay: AI skills reward more job benefits." Working Paper, 2025.
+  Castaneda, Bone & Stephany. "Beyond pay: AI skills reward more job benefits." Working Paper, 2025.
 
 ## License
 
