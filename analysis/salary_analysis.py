@@ -122,7 +122,7 @@ def load_and_prepare_data():
             usdf_salary[benefit] = usdf_salary[benefit].astype(bool)
     
     print(f"Final data shape: {usdf_salary.shape}")
-    print(f"Year range: {usdf_salary['YEAR'].min()} - {usdf_salary['YEAR'].max()}")
+    # print(f"Year range: {usdf_salary['YEAR'].min()} - {usdf_salary['YEAR'].max()}")
     print(f"AI Role distribution: {usdf_salary['AI ROLE'].value_counts()}")
     
     return usdf_salary
@@ -245,7 +245,7 @@ def generate_combined_figure(salary_stats):
     
     print(f"Saving figure to: {output_path}")
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
-    plt.show()
+    # plt.show()
     
     print("Salary analysis complete!")
     return output_path

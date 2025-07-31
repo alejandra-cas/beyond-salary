@@ -67,7 +67,7 @@ def load_occupation_year_data():
     
     # Try different possible data paths
     possible_paths = [
-        '../exports/occ_year_data/occ_year_analysis_2024_raw.csv',
+        '../data/occ_year_analysis_2024_raw.csv',
         'exports/occ_year_data/occ_year_analysis_2024_raw.csv'
     ]
     

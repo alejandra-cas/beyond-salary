@@ -73,8 +73,9 @@ plt.rcParams.update({"font.size": 14})
 
 def load_data():
     """Load the main dataset."""
-    path_all = "../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip"
+    path_all = "/Users/alejandracastaneda/Documents/data/us_10m_nointernship_2018_2024_benefits.parquet.gzip"
     usdf = pd.read_parquet(path_all)
+    print("Data loaded")
     usdf["POSTED"] = pd.to_datetime(usdf["POSTED"])
     usdf["QUARTER"] = usdf["POSTED"].dt.to_period("Q")
     usdf = usdf[usdf["QUARTER"] != "2024Q3"]  # Remove incomplete quarter
@@ -150,7 +151,7 @@ def generate_ai_roles_over_time_plot(usdf):
     plt.savefig(
         "../results/figures/pct_ai_roles_overall_industry.png", bbox_inches="tight"
     )
-    plt.show()
+    # plt.show()
 
 
 def count_benefits(data, benefit, period):
@@ -207,7 +208,7 @@ def generate_benefit_differences_plot(usdf):
     pct_diff_df.sort_index(inplace=True)
 
     # Convert index to PeriodIndex for chronological ordering
-    pct_diff_df.index = pd.PeriodIndex(pct_diff_df.index, freq="Q")
+    # pct_diff_df.index = pd.PeriodIndex(pct_diff_df.index, freq="Q")
 
     # Create plot
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -218,8 +219,8 @@ def generate_benefit_differences_plot(usdf):
     )
 
     # Set x-ticks to show quarters at regular intervals
-    ax.set_xticks(range(0, len(pct_diff_df), 4))
-    ax.set_xticklabels(pct_diff_df.index[::4].strftime("%Y-Q%q"), rotation=45)
+    # ax.set_xticks(range(0, len(pct_diff_df), 4))
+    # ax.set_xticklabels(pct_diff_df.index[::4].strftime("%Y-Q%q"), rotation=45)
 
     ax.set_xlabel(None)
     ax.set_ylabel("Difference in Percent Jobs with Benefit, AI - Non-AI")
@@ -227,7 +228,7 @@ def generate_benefit_differences_plot(usdf):
 
     plt.tight_layout()
     plt.savefig("../results/figures/benefits_over_time/benefit_diffs_time.png")
-    plt.show()
+    # plt.show()    
 
 
 def generate_benefits_by_role_plot(usdf):
@@ -274,7 +275,7 @@ def generate_benefits_by_role_plot(usdf):
         "../results/figures/pct_jobs_by_benefit_and_role_type/benefits_ai_role_colors_10m_2024.png",
         bbox_inches="tight",
     )
-    plt.show()
+    # plt.show()
 
 
 def plot_benefits_over_time(merged_data, benefit, period):
@@ -295,7 +296,7 @@ def plot_benefits_over_time(merged_data, benefit, period):
     ax.set_title(benefits_labels_map[benefit])
     ax.set_ylim(0, 50)
     plt.savefig(f"../results/figures/benefits_over_time/over_time_color_{benefit}.png")
-    plt.show()
+    # plt.show()
 
 
 def generate_benefits_over_time_plots(usdf):
@@ -374,7 +375,7 @@ def plot_benefit_occ_percents(df, benefit):
     plt.subplots_adjust(bottom=0.2, left=0.1, right=0.9, top=0.9)
     plt.tight_layout()
     plt.savefig(f"../results/figures/percent_by_occupation_colors_2024_{benefit}.png")
-    plt.show()
+    # plt.show()
 
 
 def generate_benefits_by_occupation_plots(usdf):
