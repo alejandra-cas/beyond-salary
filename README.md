@@ -27,7 +27,6 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ├── data/               # Input data files and processed datasets (not included in repo)
 │   ├── ai_skill_ids.pkl                     # AI skill identifiers (included)
 │   ├── balanced_sample_diffs.csv            # Pre-calculated balanced sample differences
-│   ├── keywords_list.pkl                    # Benefit keywords for classification
 │   ├── occ_year_analysis_2024_raw.csv       # Occupation-year level analysis data
 │   ├── us_10m_nointernship_2018_2024_benefits.parquet.gzip  # Main processed dataset
 │   ├── small_samples/                       # Balanced samples for regression analysis
