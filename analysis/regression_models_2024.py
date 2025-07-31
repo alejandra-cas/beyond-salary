@@ -2,11 +2,11 @@
 """
 Regression Models for 2024 Analysis (Including Data up to 2024)
 
-This script runs the logistic regression models for the 2024 paper analysis,
-preserving all original model logic including:
+This script runs the job-level logistic regression models.  
+Notes:
 - PARENTAL_LEAVE models exclude 2018 data
 - Industry grouping for small categories
-- Proper reference category handling
+- Includes proper reference category handling
 
 Generates:
 1. Model coefficients plot
