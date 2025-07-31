@@ -2,8 +2,6 @@
 
 This repository contains the reproducible code and analysis for the paper Beyond pay: AI skills reward more job benefits.
 
-Alejandra Castaneda
-University of Oxford
 
 ## Repository Structure
 
