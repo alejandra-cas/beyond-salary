@@ -1,2 +1,8 @@
 data/*
 !data/ai_skill_ids.pkl
+.DS_Store
+__pycache__/
+notebooks/
+notebooks_no_output/
+Resources/
+exports/
