@@ -61,14 +61,14 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
 3. **Run Analysis**
    ```bash
-   # Data preparation (run in order)
+   # Data preparation
    python scripts/prepare_data.py
    python scripts/prepare_data_2.py
    python scripts/label_benefits.py
    python scripts/label_benefits_remote.py
    python scripts/export_samples_2024.py
    
-   # Core analyses (all working and tested)
+   # Core analyses
    python analysis/descriptive_analysis.py
    python analysis/regression_models_2024.py
    python analysis/occupation_year_balanced_sample_analysis.py
