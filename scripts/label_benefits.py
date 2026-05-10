@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-input_path = input("Please enter the input parquet file path: ")
-output_path = input("Please enter the output parquet file path: ")
+input_path = "../../../VData/scro4406/data_v1.parquet"
+output_path = '../../../VData/scro4406/labeled_v1.parquet'
 
 # even_sample = pd.read_parquet('data/salary_sample_body.parquet.gzip')
 load_time = time.time()
@@ -237,11 +237,11 @@ save_time = time.time()
 print("Saving to parquet...")
 
 # drop body column and export
-even_sample.drop(columns=["BODY"]).to_parquet(
-    "../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip", compression="gzip"
-)
+# even_sample.drop(columns=["BODY"]).to_parquet(
+#     "../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip", compression="gzip"
+# )
 
 # "saving with body"
-# even_sample.to_parquet(output_path, compression='gzip')
+even_sample.to_parquet(output_path, compression='gzip')
 
 print("Time taken to save to parquet: ", time.time() - save_time)

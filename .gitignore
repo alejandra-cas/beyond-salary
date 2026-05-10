@@ -6,3 +6,4 @@ notebooks/
 notebooks_no_output/
 Resources/
 exports/
+.env

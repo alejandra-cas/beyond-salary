@@ -13,11 +13,11 @@ from pathlib import Path
 def load_data_paths():
     """Define input and output data paths."""
     return {
-        "jobs_csv": "../data/US_10M_SAMP_2018_2024.csv",  # jobs data
+        "jobs_csv": "../../../VData/scro4406/initial_data.parquet",  # jobs data
         "processed_ai_data": "/data/sant6443/thesis/data/us_10m_wham_nointernship_2019_2023.parquet.gzip",  # processed data from thesis with AI skills labels
         "wham_data": "../data/ID_CNTRY_ALL_WHAM.csv",  # data with LLM remote work classification
         "ai_skills_pkl": "../data/ai_skill_ids.pkl",  # AI skills IDs for classification
-        "output_parquet": "../data/us_10m_nointernship_2018_2024.parquet.gzip",  # output file
+        "output_parquet": "../../../VData/scro4406/data_v1.parquet"
     }
 
 
@@ -79,10 +79,12 @@ def main():
     paths = load_data_paths()
 
     print("Loading main jobs data...")
-    all_data = pd.read_csv(paths["jobs_csv"])
+    # MBB change
+    all_data = pd.read_parquet(paths["jobs_csv"])
 
     # Filter out internships
-    all_data = all_data[all_data["IS_INTERNSHIP"] == False]
+    # already did this in test.ipynb
+    # all_data = all_data[all_data["IS_INTERNSHIP"] == False]
     print(f"Data after removing internships: {len(all_data):,} rows")
 
     # Load processed data with AI skills

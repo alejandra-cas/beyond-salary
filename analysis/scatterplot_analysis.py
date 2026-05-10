@@ -24,11 +24,11 @@ try:
     from package_files.benefits_defns import *
 except ImportError:
     # Fallback definitions
-    benefits4 = ['EDU_ASSISTANCE', 'PAID_LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
+    benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
     
     benefits_labels_map = {
         'EDU_ASSISTANCE': 'Tuition Assistance', 
-        'PAID_LEAVE': 'Paid Leave', 
+        'PAID LEAVE': 'Paid Leave', 
         'HEALTH_WELLBEING': 'Health and Wellbeing', 
         'PARENTAL_LEAVE': 'Parental Leave', 
         'CULTURE': 'Workplace Culture', 
@@ -39,7 +39,7 @@ except ImportError:
     
     benefit_colors = {
         'EDU_ASSISTANCE': '#41afaa',
-        'PAID_LEAVE': '#466eb4',
+        'PAID LEAVE': '#466eb4',
         'HEALTH_WELLBEING': '#e6a532',
         'PARENTAL_LEAVE': '#00a0e1',
         'CULTURE': '#d7642c',

@@ -25,11 +25,11 @@ try:
     from package_files.benefits_defns import *
 except ImportError:
     # Fallback benefit definitions if import fails
-    benefits4 = ['EDU_ASSISTANCE', 'PAID_LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
+    benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
     
     benefits_labels_map = {
         'EDU_ASSISTANCE': 'Tuition Assistance', 
-        'PAID_LEAVE': 'Paid Leave', 
+        'PAID LEAVE': 'Paid Leave', 
         'HEALTH_WELLBEING': 'Health and Wellbeing', 
         'PARENTAL_LEAVE': 'Parental Leave', 
         'CULTURE': 'Workplace Culture', 
@@ -38,7 +38,7 @@ except ImportError:
     
     benefit_colors = {
         'EDU_ASSISTANCE': '#41afaa',
-        'PAID_LEAVE': '#466eb4',
+        'PAID LEAVE': '#466eb4',
         'HEALTH_WELLBEING': '#e6a532',
         'PARENTAL_LEAVE': '#00a0e1',
         'CULTURE': '#d7642c',
@@ -82,9 +82,9 @@ def load_and_prepare_data():
     
     # Try different possible data paths
     possible_paths = [
-        '../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip',
-        '../data/2024_salary_sample.parquet.gzip',
-        'data/us_10m_nointernship_2018_2024_benefits.parquet.gzip'
+        '../../../VData/scro4406/labeled_v1.parquet',
+        # '../data/2024_salary_sample.parquet.gzip',
+        # '../../../VData/scro4406/merged_data_v1.parquet'
     ]
     
     usdf_salary = None
@@ -93,6 +93,9 @@ def load_and_prepare_data():
             if os.path.exists(path):
                 usdf_salary = pd.read_parquet(path)
                 print(f"Loaded data from: {path}")
+                remote_kw = '../../../VData/scro4406/data_v2.parquet'
+                remote_df = pd.read_parquet(remote_kw)
+                usdf_salary = usdf_salary.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
                 break
         except Exception as e:
             print(f"Failed to load {path}: {e}")
@@ -231,7 +234,7 @@ def generate_combined_figure(salary_stats):
         
         # Add legend only to first subplot
         if i == 0:
-            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+            ax.legend(bbox_to_anchor=(.05, 1), loc='upper left', fontsize=10)
         
         # Add grid
         ax.grid(True, alpha=0.3)
@@ -240,7 +243,7 @@ def generate_combined_figure(salary_stats):
     plt.tight_layout()
     
     # Save figure
-    output_path = '../results/figures/salary_by_benefit_combined.png'
+    output_path = 'results/figures/salary_by_benefit_combined.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     print(f"Saving figure to: {output_path}")

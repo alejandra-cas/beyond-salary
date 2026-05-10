@@ -31,7 +31,7 @@ benefits3_labels = [
 ]
 benefits4 = [
     "EDU_ASSISTANCE",
-    "PAID_LEAVE",
+    "PAID LEAVE",
     "HEALTH_WELLBEING",
     "PARENTAL_LEAVE",
     "CULTURE",
@@ -39,7 +39,7 @@ benefits4 = [
 ]
 benefits_labels_map = {
     "EDU_ASSISTANCE": "Tuition Assistance",
-    "PAID_LEAVE": "Paid Leave",
+    "PAID LEAVE": "Paid Leave",
     "HEALTH_WELLBEING": "Health and Wellbeing",
     "PARENTAL_LEAVE": "Parental Leave",
     "CULTURE": "Workplace Culture",
@@ -56,7 +56,7 @@ benefits4_labels = [
 ]
 benefits5 = [
     "EDU_ASSISTANCE",
-    "PAID_LEAVE",
+    "PAID LEAVE",
     "HEALTH_WELLBEING",
     "PARENTAL_LEAVE",
     "CULTURE",
@@ -71,7 +71,7 @@ experience = "EXPERIENCE_BUCKET"
 
 benefit_colors = {
     "EDU_ASSISTANCE": "#41afaa",
-    "PAID_LEAVE": "#466eb4",
+    "PAID LEAVE": "#466eb4",
     "HEALTH_WELLBEING": "#e6a532",
     "PARENTAL_LEAVE": "#00a0e1",
     "CULTURE": "#d7642c",
@@ -81,7 +81,7 @@ benefit_colors = {
 
 benefit_colors_2 = {
     "EDU_ASSISTANCE": ["#41afaa", "#b3dfdd"],
-    "PAID_LEAVE": ["#466eb4", "#b5c5e1"],
+    "PAID LEAVE": ["#466eb4", "#b5c5e1"],
     "HEALTH_WELLBEING": ["#e6a532", "#f5dbad"],
     "PARENTAL_LEAVE": ["#00a0e1", "#99d9f3"],
     "CULTURE": ["#d7642c", "#efc1ab"],

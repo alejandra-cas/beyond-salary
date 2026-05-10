@@ -7,15 +7,15 @@ import time
 # input_path = input("Please enter the input parquet file path: ")
 # output_path = input("Please enter the output parquet file path: ")
 
-input_path = '../data/us_10m_nointernship_2018_2024_body.parquet.gzip'
-output_path = '../data/remote_kw_labels_2024.parquet.gzip'
+input_path = '../../../VData/scro4406/labeled_v1.parquet'
+output_path = '../../../VData/scro4406/data_v2.parquet'
 # even_sample = pd.read_parquet('data/salary_sample_body.parquet.gzip')
 load_time = time.time()
 print("Loading the input parquet file...")
-if input_path[-3:] == 'csv:':
-    even_sample = pd.read_csv(input_path)
-elif input_path[-3:] == 'zip':
-    even_sample = pd.read_parquet(input_path)
+# if input_path[-3:] == 'csv:':
+#     even_sample = pd.read_csv(input_path)
+# elif input_path[-3:] == 'zip':
+even_sample = pd.read_parquet(input_path)
 
 print("Time taken to load the input parquet file: ", time.time()-load_time)
 print(even_sample.columns)

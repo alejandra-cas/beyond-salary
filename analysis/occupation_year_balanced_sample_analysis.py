@@ -17,17 +17,17 @@ import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 # Configuration and definitions (from benefits_defns.py)
-benefits4 = ['EDU_ASSISTANCE','PAID_LEAVE','HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
+benefits4 = ['EDU_ASSISTANCE','PAID LEAVE','HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
 benefits_labels_map = {
     'EDU_ASSISTANCE': 'Tuition Assistance', 
-    'PAID_LEAVE': 'Paid Leave', 
+    'PAID LEAVE': 'Paid Leave', 
     'HEALTH_WELLBEING': 'Health and Wellbeing', 
     'PARENTAL_LEAVE': 'Parental Leave', 
     'CULTURE': 'Workplace Culture', 
     'REMOTE_KW': 'Remote Work'
 }
 benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
-occupation = 'SOC_2021_2_NAME'
+occupation = 'COUNTY_NAME'
 
 def create_regression_table_html(models, model_names, output_path):
     """
@@ -151,6 +151,7 @@ def create_regression_table_html(models, model_names, output_path):
     """
     
     with open(output_path, 'w') as f:
+        print(output_path)
         f.write(html_content)
     
     return html_content
@@ -300,6 +301,9 @@ def create_balanced_sample(data_path):
     """
     print("Reading data...")
     data = pd.read_parquet(data_path)
+    remote_kw = '../../../VData/scro4406/data_v2.parquet'
+    remote_df = pd.read_parquet(remote_kw)
+    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     
     # Select specific occupations (from notebook)
     occupations_select = [
@@ -361,15 +365,17 @@ def calculate_benefit_differences(balanced_sample):
     non_ai_jobs = balanced_sample[balanced_sample['AI ROLE'] == 0]
     
     # Group by occupation and YEAR and sum benefits for AI and non-AI jobs
-    ai_counts = ai_jobs.groupby([occupation, 'YEAR'])[benefits4].sum().reset_index()
-    non_ai_counts = non_ai_jobs.groupby([occupation, 'YEAR'])[benefits4].sum().reset_index()
+    ai_counts = ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
+    non_ai_counts = non_ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
     
     # Merge the counts for AI and non-AI jobs
     merged_counts = ai_counts.merge(non_ai_counts, on=[occupation, 'YEAR'], suffixes=('_ai', '_non_ai'))
     
     # Calculate the difference between AI and non-AI jobs for each benefit
     for benefit in benefits4:
-        merged_counts[f'{benefit}_difference'] = merged_counts[f'{benefit}_ai'] - merged_counts[f'{benefit}_non_ai']
+        merged_counts[f'{benefit}_difference'] = merged_counts[f'{benefit}_ai']
+        
+    print(merged_counts)
     
     # Select only the columns with differences and occupation-year identifiers
     difference_summary = merged_counts[[occupation, 'YEAR'] + [f'{benefit}_difference' for benefit in benefits4]]
@@ -382,7 +388,7 @@ def load_occupation_year_data(occ_year_data_path):
     This contains the covariates for the regression models.
     """
     print("Loading occupation-year data...")
-    df = pd.read_csv(occ_year_data_path)
+    df = pd.read_parquet(occ_year_data_path)
     
     # Add log job count
     df['Log Job Count'] = df['job_count'].apply(lambda x: np.log(x))
@@ -538,26 +544,33 @@ def main():
     print("=" * 60)
     
     # File paths (adjust as needed)
-    data_path = '../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip'
-    occ_year_data_path = '../data/occ_year_analysis_2024_raw.csv'
-    balanced_diffs_path = '../data/balanced_sample_diffs.csv'
-    output_dir = '../results/tables/occ_year_models'
+    data_path = '../../../VData/scro4406/labeled_v1.parquet'
+    occ_year_data_path = '../../../VData/scro4406/occ_year_analysis_2024_raw.parquet'
+    balanced_diffs_path = '../../../VData/scro4406/balanced_sample_diffs.csv'
+    output_dir = './results/tables/occ_year_models'
     
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
     
     # Step 1: Create balanced sample (if needed)
-    if os.path.exists(balanced_diffs_path):
-        print("Loading existing balanced sample differences...")
-        balanced_diffs = pd.read_csv(balanced_diffs_path)
-    else:
-        print("Creating balanced sample from scratch...")
-        balanced_sample = create_balanced_sample(data_path)
-        balanced_diffs = calculate_benefit_differences(balanced_sample)
-        
-        # Save the balanced sample differences
-        balanced_diffs.to_csv(balanced_diffs_path, index=False)
-        print(f"Balanced sample differences saved to: {balanced_diffs_path}")
+    # if os.path.exists(balanced_diffs_path):
+    #     print("Loading existing balanced sample differences...")
+    #     balanced_diffs = pd.read_csv(balanced_diffs_path)
+    # else:
+    print("Creating balanced sample from scratch...")
+    
+    # MBB don't use balanced sample
+    # balanced_sample = create_balanced_sample(data_path)
+    data = pd.read_parquet(data_path)
+    remote_kw = '../../../VData/scro4406/data_v2.parquet'
+    remote_df = pd.read_parquet(remote_kw)
+    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
+    
+    balanced_diffs = calculate_benefit_differences(data)
+
+    # Save the balanced sample differences
+    balanced_diffs.to_csv(balanced_diffs_path, index=False)
+    print(f"Balanced sample differences saved to: {balanced_diffs_path}")
     
     # Step 2: Load occupation-year data
     occ_year_df = load_occupation_year_data(occ_year_data_path)

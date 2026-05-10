@@ -4,17 +4,17 @@ import sys
 import os
 
 # Add parent directory to sys.path
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+parent_dir = os.path.abspath(os.path.join(os.getcwd()) + "/src")
 sys.path.append(parent_dir)
 from package_files.benefits_defns import *
 
 # path = input("Please enter the input file path: ")
-path = '../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip'
+path = '../../../VData/scro4406/labeled_v1.parquet'
 print("reading data")
-if path[-3:] == 'csv:':
-    data = pd.read_csv(path)
-elif path[-3:] == 'zip':
-    data = pd.read_parquet(path)
+data = pd.read_parquet(path)
+remote_kw = '../../../VData/scro4406/data_v2.parquet'
+remote_df = pd.read_parquet(remote_kw)
+data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
 print("data read")
 occupations_select = ['Architecture and Engineering Occupations','Arts, Design, Entertainment, Sports, and Media Occupations','Business and Financial Operations Occupations','Community and Social Service Occupations','Computer and Mathematical Occupations',
 'Educational Instruction and Library Occupations',
@@ -27,8 +27,10 @@ occupations_select = ['Architecture and Engineering Occupations','Arts, Design, 
 'Sales and Related Occupations',
 'Transportation and Material Moving Occupations',
 ]
+occupation = 'NAICS_2022_2_NAME'
 
-data_select = data[data[occupation].isin(occupations_select)]
+# data_select = data[data[occupation].isin(occupations_select)]
+data_select = data[data[occupation].notna()]
 data_select['LOG_SALARY'] = np.log(data_select['SALARY'])
 # get % AI roles per occupation-year
 ai_role_occupation = data_select.groupby([occupation, 'YEAR'])[['AI ROLE', 'SALARY']].mean().reset_index()
@@ -85,6 +87,8 @@ occ_year_group = data_select.groupby([occupation, 'YEAR']).agg(
     ai_role_count=('AI ROLE', 'sum') # Counts the number of True values in AI ROLE
 ).reset_index()
 occ_year_group['AI Job Count Change'] = occ_year_group.groupby(occupation)['ai_role_count'].diff()
+# MBB added for county filter
+occ_year_group = occ_year_group[occ_year_group["job_count"] > 1000]
 
 for benefit in benefits4:
     print(benefit)
@@ -92,7 +96,7 @@ for benefit in benefits4:
     occ_benefit_group = data_select.groupby([occupation,'YEAR'])[benefit].sum().reset_index(name=f'Prevalence: {label}')
     # occ_benefit_group[f'Prevalence: {label}'] = occ_benefit_group[f'Prevalence: {label}']*100
     print("merging occ_year_group and occ_benefit_group")
-    occ_year_group = occ_year_group.merge(occ_benefit_group, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
+    occ_year_group = occ_year_group.merge(occ_benefit_group, on = [occupation,'YEAR'], how = 'left')
     print("occ_year_group")
     # print(occ_year_group.columns)
     
@@ -108,9 +112,9 @@ for benefit in benefits4:
     # print(occ_benefit_role_all.columns)
     print("merging")
     occ_benefit_role_all.drop(columns=['AI ROLE (AI)', 'AI ROLE (Non-AI)'], inplace=True)
-    occ_year_group = occ_year_group.merge(occ_benefit_role_all, on = ['SOC_2021_2_NAME','YEAR'], how = 'left')
+    occ_year_group = occ_year_group.merge(occ_benefit_role_all, on = [occupation,'YEAR'], how = 'left')
 
-coeff_df = coeff_df.merge(occ_year_group, on = ['SOC_2021_2_NAME','YEAR'])
+coeff_df = coeff_df.merge(occ_year_group, on = [occupation,'YEAR'])
 coeff_df['Log Job Count'] = coeff_df['job_count'].apply(lambda x: np.log(x))
 # occ_year_df = occ_year_df.merge(mean_salary, on=[occupation, 'YEAR'])
 # pd.set_option('display.max_rows', 100)
@@ -143,4 +147,4 @@ coeff_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
 
 print("exporting coeff_df")
 print(coeff_df.columns)
-coeff_df.to_csv('../exports/occ_year_data/occ_year_analysis_2024_raw.csv', index=False)
+coeff_df.to_parquet('../../../VData/scro4406/occ_year_analysis_2024_raw.parquet', index=False)

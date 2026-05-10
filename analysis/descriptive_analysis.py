@@ -18,7 +18,7 @@ from matplotlib.colors import to_rgba
 # Benefit definitions and colors
 benefits4 = [
     "EDU_ASSISTANCE",
-    "PAID_LEAVE",
+    "PAID LEAVE",
     "HEALTH_WELLBEING",
     "PARENTAL_LEAVE",
     "CULTURE",
@@ -27,7 +27,7 @@ benefits4 = [
 
 benefits_labels_map = {
     "EDU_ASSISTANCE": "Tuition Assistance",
-    "PAID_LEAVE": "Paid Leave",
+    "PAID LEAVE": "Paid Leave",
     "HEALTH_WELLBEING": "Health and Wellbeing",
     "PARENTAL_LEAVE": "Parental Leave",
     "CULTURE": "Workplace Culture",
@@ -45,7 +45,7 @@ benefits4_labels = [
 
 benefit_colors = {
     "EDU_ASSISTANCE": "#41afaa",
-    "PAID_LEAVE": "#466eb4",
+    "PAID LEAVE": "#466eb4",
     "HEALTH_WELLBEING": "#e6a532",
     "PARENTAL_LEAVE": "#00a0e1",
     "CULTURE": "#d7642c",
@@ -55,7 +55,7 @@ benefit_colors = {
 
 benefit_colors_2 = {
     "EDU_ASSISTANCE": ["#41afaa", "#b3dfdd"],
-    "PAID_LEAVE": ["#466eb4", "#b5c5e1"],
+    "PAID LEAVE": ["#466eb4", "#b5c5e1"],
     "HEALTH_WELLBEING": ["#e6a532", "#f5dbad"],
     "PARENTAL_LEAVE": ["#00a0e1", "#99d9f3"],
     "CULTURE": ["#d7642c", "#efc1ab"],
@@ -73,8 +73,11 @@ plt.rcParams.update({"font.size": 14})
 
 def load_data():
     """Load the main dataset."""
-    path_all = "/Users/alejandracastaneda/Documents/data/us_10m_nointernship_2018_2024_benefits.parquet.gzip"
+    path_all = '../../../VData/scro4406/labeled_v1.parquet'
+    remote_kw = '../../../VData/scro4406/data_v2.parquet'
     usdf = pd.read_parquet(path_all)
+    remote_df = pd.read_parquet(remote_kw)
+    usdf = usdf.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     print("Data loaded")
     usdf["POSTED"] = pd.to_datetime(usdf["POSTED"])
     usdf["QUARTER"] = usdf["POSTED"].dt.to_period("Q")
@@ -85,9 +88,9 @@ def load_data():
 def create_figures_directory():
     """Create directories for saving figures if they don't exist."""
     directories = [
-        "../results/figures",
-        "../results/figures/benefits_over_time",
-        "../results/figures/pct_jobs_by_benefit_and_role_type",
+        "results/figures",
+        "results/figures/benefits_over_time",
+        "results/figures/pct_jobs_by_benefit_and_role_type",
     ]
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
@@ -125,9 +128,9 @@ def generate_ai_roles_over_time_plot(usdf):
     # Merge data
     pct_df_all = percent_data.merge(avg_ind_year, on="QUARTER")
     pct_df_all.set_index("QUARTER", inplace=True)
-    pct_df_all.drop(
-        pct_df_all.index[-1], inplace=True
-    )  # Remove last incomplete quarter
+    # pct_df_all.drop(
+    #     pct_df_all.index[-1], inplace=True
+    # )  # Remove last incomplete quarter
 
     # Create plot
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -149,7 +152,7 @@ def generate_ai_roles_over_time_plot(usdf):
     plt.xlabel(None)
     plt.ylabel("% AI Roles", fontsize=18)
     plt.savefig(
-        "../results/figures/pct_ai_roles_overall_industry.png", bbox_inches="tight"
+        "results/figures/pct_ai_roles_overall_industry.png", bbox_inches="tight"
     )
     # plt.show()
 
@@ -227,7 +230,7 @@ def generate_benefit_differences_plot(usdf):
     ax.legend(benefits4_labels)
 
     plt.tight_layout()
-    plt.savefig("../results/figures/benefits_over_time/benefit_diffs_time.png")
+    plt.savefig("results/figures/benefits_over_time/benefit_diffs_time.png")
     # plt.show()    
 
 
@@ -272,7 +275,7 @@ def generate_benefits_by_role_plot(usdf):
     ax.legend(handles=legend_elements, title=None)
 
     plt.savefig(
-        "../results/figures/pct_jobs_by_benefit_and_role_type/benefits_ai_role_colors_10m_2024.png",
+        "results/figures/pct_jobs_by_benefit_and_role_type/benefits_ai_role_colors_10m_2024.png",
         bbox_inches="tight",
     )
     # plt.show()
@@ -295,7 +298,7 @@ def plot_benefits_over_time(merged_data, benefit, period):
     ax.legend(title="AI Role", labels=["Yes", "No"])
     ax.set_title(benefits_labels_map[benefit])
     ax.set_ylim(0, 50)
-    plt.savefig(f"../results/figures/benefits_over_time/over_time_color_{benefit}.png")
+    plt.savefig(f"results/figures/benefits_over_time/over_time_color_{benefit}.png")
     # plt.show()
 
 
@@ -374,7 +377,7 @@ def plot_benefit_occ_percents(df, benefit):
     plt.legend(title="AI ROLE", bbox_to_anchor=(1.02, 1), loc="upper left")
     plt.subplots_adjust(bottom=0.2, left=0.1, right=0.9, top=0.9)
     plt.tight_layout()
-    plt.savefig(f"../results/figures/percent_by_occupation_colors_2024_{benefit}.png")
+    plt.savefig(f"results/figures/percent_by_occupation_colors_2024_{benefit}.png")
     # plt.show()
 
 

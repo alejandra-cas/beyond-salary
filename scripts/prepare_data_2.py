@@ -100,11 +100,11 @@ def print_sample_ai_skills(df, year=2018, n_samples=3):
 def main():
     """Main data preparation pipeline."""
     # Configuration
-    input_file = "../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip"
-    salary_file = "../data/SALARIES.csv"
-    ai_skills_file = "../data/ai_skill_ids.pkl"
-    output_with_body = "../data/us_10m_nointernship_ai_skills_body.parquet.gzip"
-    output_without_body = "../data/us_10m_nointernship_ai_skills_benefits.parquet.gzip"
+    input_file = "../../../VData/scro4406/initial_data.parquet"
+    # salary_file = "../data/SALARIES.csv"
+    # ai_skills_file = "../data/ai_skill_ids.pkl"
+    output_with_body = "../../../VData/scro4406/data_v1.parquet"
+    # output_without_body = "../data/us_10m_nointernship_ai_skills_benefits.parquet.gzip"
 
     print("Loading data...")
     if input_file.endswith(".csv"):
@@ -123,31 +123,31 @@ def main():
         print("Log salary column added")
 
     # Merge additional salary data
-    df = merge_additional_salaries(df, salary_file)
+    # df = merge_additional_salaries(df, salary_file)
 
     # Load AI skill IDs for classification
-    if Path(ai_skills_file).exists():
-        with open(ai_skills_file, "rb") as f:
-            ai_skill_ids = pickle.load(f)
+    # if Path(ai_skills_file).exists():
+    #     with open(ai_skills_file, "rb") as f:
+    #         ai_skill_ids = pickle.load(f)
 
-        print(f"Loaded {len(ai_skill_ids)} AI skill IDs")
+    #     print(f"Loaded {len(ai_skill_ids)} AI skill IDs")
 
-        # Classify remaining AI roles
-        df = classify_ai_skills(df, ai_skill_ids)
+    #     # Classify remaining AI roles
+    #     df = classify_ai_skills(df, ai_skill_ids)
 
-        # Print sample for verification
-        print_sample_ai_skills(df)
-    else:
-        print("Warning: AI skills file not found, skipping AI classification")
+    #     # Print sample for verification
+    #     print_sample_ai_skills(df)
+    # else:
+    #     print("Warning: AI skills file not found, skipping AI classification")
 
     # Save outputs
     print(f"Saving data with body to {output_with_body}")
     df.to_parquet(output_with_body, compression="gzip")
 
-    print(f"Saving data without body to {output_without_body}")
-    df.drop(columns=["BODY"], errors="ignore").to_parquet(
-        output_without_body, compression="gzip"
-    )
+    # print(f"Saving data without body to {output_without_body}")
+    # df.drop(columns=["BODY"], errors="ignore").to_parquet(
+    #     output_without_body, compression="gzip"
+    # )
 
     print("Data preparation complete!")
     print(f"Final dataset shape: {df.shape}")

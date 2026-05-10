@@ -4,7 +4,7 @@ Regression Models for 2024 Analysis (Including Data up to 2024)
 
 This script runs the job-level logistic regression models.  
 Notes:
-- PARENTAL_LEAVE models exclude 2018 data
+- PARENTAL_LEAVE models exclude 2018 data #TODO why?
 - Industry grouping for small categories
 - Includes proper reference category handling
 
@@ -43,7 +43,7 @@ occupation = 'SOC_2021_2_NAME'
 experience = 'EXPERIENCE_BUCKET'
 
 # Benefits to analyze (2024 models)
-benefits4 = ['EDU_ASSISTANCE', 'PAID_LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
+benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
 benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
 
 # Color scheme for plots
@@ -54,20 +54,24 @@ def load_and_prepare_data():
     print("Loading 2024 dataset...")
     
     # Load the data (adjust path as needed)
-    data_path = '/Users/alejandracastaneda/Library/CloudStorage/OneDrive-Personal/beyond_salary_clean/beyond-salary/data/small_samples/2024_salary_sample.parquet.gzip'
+    data_path = '../../../VData/scro4406/labeled_v1.parquet'
     if not os.path.exists(data_path):
         print(f"Warning: {data_path} not found. Please update the path.")
         return None
     
     even_sample = pd.read_parquet(data_path)
     
+    remote_kw = '../../../VData/scro4406/data_v2.parquet'
+    remote_df = pd.read_parquet(remote_kw)
+    even_sample = even_sample.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
+
     # Create experience buckets
     print("Creating experience buckets...")
     bins = [-2, -1, 0, 2, 5, 10, 20, 100]
     labels = ['Missing', '0 years', '1-2 years', '3-5 years', '6-10 years', '11-20 years', '21+ years']
     even_sample['EXPERIENCE_BUCKET'] = pd.cut(even_sample['MIN_YEARS_EXPERIENCE'], bins=bins, labels=labels, right=True)
     even_sample['EXPERIENCE_BUCKET'] = even_sample['EXPERIENCE_BUCKET'].astype(str)
-    even_sample['EXPERIENCE_BUCKET'] = even_sample['EXPERIENCE_BUCKET'].replace('nan', 'None Listed')
+    even_sample['EXPERIENCE_BUCKET'] = even_sample['EXPERIENCE_BUCKET'].replace('nan', 'None Listed') # why not use this as continuous?
     
     # Create log salary
     print("Creating log salary...")
@@ -244,11 +248,11 @@ def generate_coefficients_plot(results_df):
     plt.tight_layout()
     
     # Save plot
-    os.makedirs('../results/figures', exist_ok=True)
-    plt.savefig('../results/figures/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
+    os.makedirs('results/figures', exist_ok=True)
+    plt.savefig('results/figures/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
     # plt.show()
     
-    print("Model coefficients plot saved to ../results/figures/model_coefficients_plot_industry_converged.png")
+    print("Model coefficients plot saved to results/figures/model_coefficients_plot_industry_converged.png")
 
 # Update the function to use the requested labels
 def create_clean_formatted_table_updated(models, benefit_name):
@@ -310,8 +314,8 @@ def create_clean_formatted_table_updated(models, benefit_name):
     table_rows.append("<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>")
     
     # AI ROLE
-    ai_coeffs = [f"{model.params['AI ROLE']:.3f}" for model in models]
-    ai_ses = [f"({model.bse['AI ROLE']:.3f})" for model in models]
+    ai_coeffs = [f"{model.params['AI ROLE']:.2f}" for model in models]
+    ai_ses = [f"({model.bse['AI ROLE']:.2f})" for model in models]
     ai_stars = []
     for model in models:
         pval = model.pvalues['AI ROLE']
@@ -333,8 +337,8 @@ def create_clean_formatted_table_updated(models, benefit_name):
         table_rows.append("<tr><td style='text-align:left'><strong>Experience (ref. None Listed)</strong></td><td></td><td></td><td></td></tr>")
         for var in exp_in_model:
             if var in models[1].params:  # Check if variable is in model 2 and 3
-                coeffs = ["", f"{models[1].params[var]:.3f}", f"{models[2].params[var]:.3f}"]
-                ses = ["", f"({models[1].bse[var]:.3f})", f"({models[2].bse[var]:.3f})"]
+                coeffs = ["", f"{models[1].params[var]:.2f}", f"{models[2].params[var]:.2f}"]
+                ses = ["", f"({models[1].bse[var]:.2f})", f"({models[2].bse[var]:.2f})"]
                 
                 # Add significance stars
                 stars = ["", "", ""]
@@ -355,8 +359,8 @@ def create_clean_formatted_table_updated(models, benefit_name):
         table_rows.append("<tr><td style='text-align:left'><strong>Education (ref. No Education Listed)</strong></td><td></td><td></td><td></td></tr>")
         for var in edu_in_model:
             if var in models[1].params:  # Check if variable is in model 2 and 3
-                coeffs = ["", f"{models[1].params[var]:.3f}", f"{models[2].params[var]:.3f}"]
-                ses = ["", f"({models[1].bse[var]:.3f})", f"({models[2].bse[var]:.3f})"]
+                coeffs = ["", f"{models[1].params[var]:.2f}", f"{models[2].params[var]:.2f}"]
+                ses = ["", f"({models[1].bse[var]:.2f})", f"({models[2].bse[var]:.2f})"]
                 
                 # Add significance stars
                 stars = ["", "", ""]
@@ -374,8 +378,8 @@ def create_clean_formatted_table_updated(models, benefit_name):
     
     # LOG_SALARY if present (now labeled as log(Salary))
     if 'LOG_SALARY' in models[2].params:
-        coeff = f"{models[2].params['LOG_SALARY']:.3f}"
-        se = f"({models[2].bse['LOG_SALARY']:.3f})"
+        coeff = f"{models[2].params['LOG_SALARY']:.2f}"
+        se = f"({models[2].bse['LOG_SALARY']:.2f})"
         pval = models[2].pvalues['LOG_SALARY']
         if pval < 0.01:
             star = "***"
@@ -390,8 +394,8 @@ def create_clean_formatted_table_updated(models, benefit_name):
         table_rows.append(f"<tr><td></td><td></td><td></td><td>{se}</td></tr>")
     
     # Constant (now labeled as const)
-    const_coeffs = [f"{model.params['const']:.3f}" for model in models]
-    const_ses = [f"({model.bse['const']:.3f})" for model in models]
+    const_coeffs = [f"{model.params['const']:.2f}" for model in models]
+    const_ses = [f"({model.bse['const']:.2f})" for model in models]
     const_stars = []
     for model in models:
         pval = model.pvalues['const']
@@ -417,7 +421,7 @@ def create_clean_formatted_table_updated(models, benefit_name):
     # Statistics
     table_rows.append("<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>")
     observations = [str(int(model.nobs)) for model in models]
-    pseudo_r2 = [f"{model.prsquared:.3f}" for model in models]
+    pseudo_r2 = [f"{model.prsquared:.2f}" for model in models]
     
     table_rows.append(f"<tr><td style='text-align:left'>Observations</td><td>{observations[0]}</td><td>{observations[1]}</td><td>{observations[2]}</td></tr>")
     table_rows.append(f"<tr><td style='text-align:left'>Pseudo R²</td><td>{pseudo_r2[0]}</td><td>{pseudo_r2[1]}</td><td>{pseudo_r2[2]}</td></tr>")
@@ -468,8 +472,8 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
     
     for models in all_model_progressions:
         for model in models:
-            coeff = f"{model.params['AI ROLE']:.3f}"
-            se = f"({model.bse['AI ROLE']:.3f})"
+            coeff = f"{model.params['AI ROLE']:.2f}"
+            se = f"({model.bse['AI ROLE']:.2f})"
             pval = model.pvalues['AI ROLE']
             
             if pval < 0.01:
@@ -510,8 +514,8 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
                     se_row += "<td></td>"
                 else:
                     if exp_var in model.params:
-                        coeff = f"{model.params[exp_var]:.3f}"
-                        se = f"({model.bse[exp_var]:.3f})"
+                        coeff = f"{model.params[exp_var]:.2f}"
+                        se = f"({model.bse[exp_var]:.2f})"
                         pval = model.pvalues[exp_var]
                         
                         if pval < 0.01:
@@ -555,8 +559,8 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
                     se_row += "<td></td>"
                 else:
                     if edu_var in model.params:
-                        coeff = f"{model.params[edu_var]:.3f}"
-                        se = f"({model.bse[edu_var]:.3f})"
+                        coeff = f"{model.params[edu_var]:.2f}"
+                        se = f"({model.bse[edu_var]:.2f})"
                         pval = model.pvalues[edu_var]
                         
                         if pval < 0.01:
@@ -590,8 +594,8 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
                 salary_se_row += "<td></td>"
             else:
                 if 'LOG_SALARY' in model.params:
-                    coeff = f"{model.params['LOG_SALARY']:.3f}"
-                    se = f"({model.bse['LOG_SALARY']:.3f})"
+                    coeff = f"{model.params['LOG_SALARY']:.2f}"
+                    se = f"({model.bse['LOG_SALARY']:.2f})"
                     pval = model.pvalues['LOG_SALARY']
                     
                     if pval < 0.01:
@@ -620,8 +624,8 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
     
     for models in all_model_progressions:
         for model in models:
-            coeff = f"{model.params['const']:.3f}"
-            se = f"({model.bse['const']:.3f})"
+            coeff = f"{model.params['const']:.2f}"
+            se = f"({model.bse['const']:.2f})"
             pval = model.pvalues['const']
             
             if pval < 0.01:
@@ -679,7 +683,7 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
     r2_row = "<tr><td style='text-align:left'>Pseudo R²</td>"
     for models in all_model_progressions:
         for model in models:
-            r2_row += f"<td>{model.prsquared:.3f}</td>"
+            r2_row += f"<td>{model.prsquared:.2f}</td>"
     r2_row += "</tr>"
     table_rows.append(r2_row)
     
@@ -696,7 +700,7 @@ def generate_individual_tables(models_2024):
     print("\nGenerating individual benefit tables...")
     
     # Create output directory
-    os.makedirs('../results/tables/job_level_model_2025', exist_ok=True)
+    os.makedirs('results/tables/job_level_model_2025', exist_ok=True)
     
     for i, benefit in enumerate(benefits4):
         benefit_label = benefits4_labels[i]
@@ -705,7 +709,7 @@ def generate_individual_tables(models_2024):
         html_table = create_clean_formatted_table_updated(model_progression, benefit_label)
         
         # Save individual table
-        filename = f"../results/tables/job_level_model_2025/{benefit.lower()}_table.html"
+        filename = f"results/tables/job_level_model_2025/{benefit.lower()}_table.html"
         with open(filename, 'w') as f:
             f.write(html_table)
         
@@ -716,13 +720,13 @@ def generate_wide_table(models_2024):
     print("\nGenerating wide table with all benefits...")
     
     # Create output directory
-    os.makedirs('../results/tables', exist_ok=True)
+    os.makedirs('results/tables', exist_ok=True)
     
     # Generate wide HTML table
     wide_table_html = create_wide_table_all_benefits_reordered(models_2024, benefits4)
     
     # Save HTML version
-    html_filename = '../results/tables/complete_wide_table_2024_corrected.html'
+    html_filename = 'results/tables/complete_wide_table_2024_corrected.html'
     with open(html_filename, 'w') as f:
         f.write(f"""<!DOCTYPE html>
 <html>
@@ -743,7 +747,7 @@ def generate_wide_table(models_2024):
     
     # Generate and save LaTeX version
     latex_table = html_to_latex_table_dynamic(models_2024)
-    latex_filename = '../results/tables/complete_wide_table_2024.tex'
+    latex_filename = 'results/tables/complete_wide_table_2024.tex'
     
     with open(latex_filename, 'w') as f:
         f.write(latex_table)
@@ -780,8 +784,8 @@ def html_to_latex_table_dynamic(models_2024):
     
     for models in all_model_progressions:
         for model in models:
-            coeff = f"{model.params['AI ROLE']:.3f}"
-            se = f"({model.bse['AI ROLE']:.3f})"
+            coeff = f"{model.params['AI ROLE']:.2f}"
+            se = f"({model.bse['AI ROLE']:.2f})"
             pval = model.pvalues['AI ROLE']
             
             if pval < 0.01:
@@ -889,9 +893,9 @@ def main():
     print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
     print("Generated outputs:")
-    print("1. Model coefficients plot: ../results/figures/model_coefficients_plot_industry_converged.png")
-    print("2. Individual regression tables: ../results/tables/job_level_model_2025/")
-    print("3. Wide table: ../results/tables/complete_wide_table_2024_corrected.html")
+    print("1. Model coefficients plot: results/figures/model_coefficients_plot_industry_converged.png")
+    print("2. Individual regression tables: results/tables/job_level_model_2025/")
+    print("3. Wide table: results/tables/complete_wide_table_2024_corrected.html")
     print("=" * 80)
 
 if __name__ == "__main__":
