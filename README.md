@@ -13,6 +13,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── regression_models.py                 # Job-level regression models
 │   ├── salary_analysis.py                   # Salary premium analysis
 │   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
+│   ├── industry_year_coefficient_analysis.py # Industry-year wage vs perk coefficient comparison
+│   ├── keyword_vs_structured_benefits.ipynb  # Keyword label validation against structured fields
 │   └── wage_info.ipynb                      # Wage distribution analysis notebook
 ├── scripts/            # Data preparation and processing scripts
 │   ├── export_samples.py                    # Export balanced samples for analysis
@@ -32,8 +34,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── ID_CNTRY_ALL_WHAM.csv                    # Remote work classification data (LLM)
 │   └── processed/                               # Pipeline outputs
 │       ├── data_v1.parquet                      # Cleaned data with AI roles and experience
-│       ├── labeled_v1.parquet                   # Data with benefit labels
-│       ├── labeled_v2.parquet                   # Data with remote work keyword labels
+│       ├── labeled_v1.parquet                   # Data with benefit labels (incl. REMOTE_KW)
 │       ├── occ_year_analysis_raw.parquet        # Occupation-year aggregated analysis data
 │       └── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
 ├── results/            # Generated outputs
@@ -105,7 +106,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ### Data Preparation (`scripts/`)
 - **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
 - **label_benefits.py**: Processes and labels workplace benefits from job posting text
-- **label_benefits_remote.py**: Labels remote work benefits using keyword matching
+- **label_benefits_remote.py**: Labels remote work benefits using keyword matching; merges `REMOTE_KW` directly into `labeled_v1.parquet`
 - **occ_year_analysis.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
 - **export_samples.py**: Creates balanced samples for regression analysis
 
@@ -124,6 +125,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
 - **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
+- **industry_year_coefficient_analysis.py**: Estimates AI wage (OLS) and perk (logit) premiums per industry-year cell, then scatterplots wage betas vs perk betas to test complementarity. Runs both controlled (education + experience) and unconditional (AI ROLE only) variants with outlier filtering.
+- **keyword_vs_structured_benefits.ipynb**: Validates keyword-based benefit labels against the structured `BENEFIT_NAME` / `BENEFIT_SUBCATEGORY_NAME` / `BENEFIT_CATEGORIES_NAME` fields. Reports precision, recall, and F1 per benefit, with disagreement inspection.
 - **new_data_exploration.ipynb**: Exploratory analysis notebook for the MAY26 subsample data
 - **wage_info.ipynb**: Wage distribution analysis
 
