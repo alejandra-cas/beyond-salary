@@ -37,13 +37,16 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │       ├── occ_year_analysis_raw.parquet        # Occupation-year aggregated analysis data
 │       └── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
 ├── results/            # Generated outputs
-│   ├── figures/
+│   ├── figures/                              # Original figures (prior runs)
+│   ├── figures_2026/                         # Updated figures (MAY26 dataset)
 │   │   ├── benefits_over_time/              # Time trend plots
 │   │   ├── pct_jobs_by_benefit_and_role_type/  # Benefit prevalence plots
 │   │   └── scatterplots/                    # Correlation analyses
 │   └── tables/         # Regression tables (HTML and LaTeX formats)
 │       ├── job_level_model_2025/            # Individual benefit regression tables
 │       └── occ_year_models/                 # Occupation-year tables
+├── config.example.yaml # Template for local data path config (tracked)
+├── config.yaml         # Local data path config (gitignored)
 └── pyproject.toml      # Project dependencies (uv)
 ```
 
@@ -54,13 +57,33 @@ This repository contains the reproducible code and analysis for the paper Beyond
    uv sync
    ```
 
-2. **Data Requirements**
-   - `OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv` - Job postings dataset
-   - `OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv` - Skills dataset (used for AI role classification)
-   - `OII_US_10M_BODY_MAY26_SUBSAMPLE.csv` - Job posting body text
+2. **Configure Data Paths**
+
+   Copy the example config and update it for your environment:
+   ```bash
+   cp config.example.yaml config.yaml
+   ```
+
+   Edit `config.yaml` to point to your data directory:
+   ```yaml
+   data:
+     raw_dir: "/path/to/your/data"       # absolute or relative to repo root
+     posts_csv: "OII_US_10M_POSTS.csv"   # your posts filename
+     skills_csv: "OII_US_10M_SKILLS.csv" # your skills filename
+     body_csv: "OII_US_10M_BODY.csv"     # your body text filename
+     wham_csv: "ID_CNTRY_ALL_WHAM.csv"
+     processed_dir: "data/processed"      # where pipeline outputs go
+   ```
+
+   `config.yaml` is gitignored, so each collaborator maintains their own paths without conflicts. If no `config.yaml` is found, the pipeline falls back to default paths under `data/`.
+
+3. **Data Requirements**
+   - Posts CSV - Job postings dataset
+   - Skills CSV - Skills dataset (used for AI role classification)
+   - Body CSV - Job posting body text
    - `ID_CNTRY_ALL_WHAM.csv` - Remote work classification data (LLM)
 
-3. **Run Pipeline**
+4. **Run Pipeline**
    ```bash
    # Data preparation
    python scripts/prepare_data.py
@@ -111,13 +134,13 @@ This repository contains the reproducible code and analysis for the paper Beyond
 - **Occupation-year differences**: `results/tables/occ_year_models/difference_regression_table_combined.html`
 
 ### Key Figures
-- **Model coefficients plot**: `results/figures/model_coefficients_plot_industry_converged.png`
-- **AI roles over time**: `results/figures/pct_ai_roles_overall_industry.png`
-- **Benefit differences**: `results/figures/benefits_over_time/benefit_diffs_time.png`
-- **Individual benefit trends**: `results/figures/benefits_over_time/over_time_color_{benefit}.png` (6 files)
-- **Occupation analysis**: `results/figures/percent_by_occupation_colors_2024_{benefit}.png` (6 files)
-- **Salary analysis**: `results/figures/salary_by_benefit_combined.png`
-- **Scatterplots**: `results/figures/scatterplots/` (multiple correlation analyses)
+- **Model coefficients plot**: `results/figures_2026/model_coefficients_plot_industry_converged.png`
+- **AI roles over time**: `results/figures_2026/pct_ai_roles_overall_industry.png`
+- **Benefit differences**: `results/figures_2026/benefits_over_time/benefit_diffs_time.png`
+- **Individual benefit trends**: `results/figures_2026/benefits_over_time/over_time_color_{benefit}.png` (6 files)
+- **Occupation analysis**: `results/figures_2026/percent_by_occupation_colors_2024_{benefit}.png` (6 files)
+- **Salary analysis**: `results/figures_2026/salary_by_benefit_combined.png`
+- **Scatterplots**: `results/figures_2026/scatterplots/` (multiple correlation analyses)
 
 
 ## Citation
