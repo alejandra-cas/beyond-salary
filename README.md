@@ -10,15 +10,15 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── descriptive_analysis.py              # Descriptive statistics and data exploration
 │   ├── new_data_exploration.ipynb           # Exploratory analysis notebook for MAY26 subsample
 │   ├── occupation_year_balanced_sample_analysis.py  # Occupation-year regression models
-│   ├── regression_models_2024.py            # Job-level regression models
+│   ├── regression_models.py                 # Job-level regression models
 │   ├── salary_analysis.py                   # Salary premium analysis
 │   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
 │   └── wage_info.ipynb                      # Wage distribution analysis notebook
 ├── scripts/            # Data preparation and processing scripts
-│   ├── export_samples_2024.py               # Export balanced samples for analysis
+│   ├── export_samples.py                    # Export balanced samples for analysis
 │   ├── label_benefits.py                    # Benefit labeling and classification
 │   ├── label_benefits_remote.py             # Remote work benefit labeling
-│   ├── occ_year_analysis_raw.py             # Occupation-year and industry-year aggregation
+│   ├── occ_year_analysis.py                 # Occupation-year and industry-year aggregation
 │   └── prepare_data.py                      # Data merging, cleaning, and AI role classification
 ├── src/                # Supporting Python modules
 │   └── package_files/  # Core utility functions and model definitions
@@ -42,8 +42,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   │   ├── benefits_over_time/              # Time trend plots
 │   │   ├── pct_jobs_by_benefit_and_role_type/  # Benefit prevalence plots
 │   │   └── scatterplots/                    # Correlation analyses
-│   └── tables/         # Regression tables (HTML and LaTeX formats)
-│       ├── job_level_model_2025/            # Individual benefit regression tables
+│   └── tables_2026/    # Updated regression tables (HTML and LaTeX formats)
+│       ├── job_level_model_2026/            # Individual benefit regression tables
 │       └── occ_year_models/                 # Occupation-year tables
 ├── config.example.yaml # Template for local data path config (tracked)
 ├── config.yaml         # Local data path config (gitignored)
@@ -89,12 +89,12 @@ This repository contains the reproducible code and analysis for the paper Beyond
    python scripts/prepare_data.py
    python scripts/label_benefits.py
    python scripts/label_benefits_remote.py
-   python scripts/occ_year_analysis_raw.py
-   python scripts/export_samples_2024.py
+   python scripts/occ_year_analysis.py
+   python scripts/export_samples.py
 
    # Core analyses
    python analysis/descriptive_analysis.py
-   python analysis/regression_models_2024.py
+   python analysis/regression_models.py
    python analysis/occupation_year_balanced_sample_analysis.py
    python analysis/salary_analysis.py
    python analysis/scatterplot_analysis.py
@@ -106,12 +106,12 @@ This repository contains the reproducible code and analysis for the paper Beyond
 - **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
 - **label_benefits.py**: Processes and labels workplace benefits from job posting text
 - **label_benefits_remote.py**: Labels remote work benefits using keyword matching
-- **occ_year_analysis_raw.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
-- **export_samples_2024.py**: Creates balanced samples for regression analysis
+- **occ_year_analysis.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
+- **export_samples.py**: Creates balanced samples for regression analysis
 
 ### Core Analysis (`analysis/`)
 - **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis
-- **regression_models_2024.py**: Runs logistic regression models for benefit analysis with three specifications:
+- **regression_models.py**: Runs logistic regression models for benefit analysis with multiple specifications and fixed-effect panels.
   1. Baseline (Year + Industry fixed effects)
   2. Individual Controls (+ Education + Experience)
   3. With Salary Control (+ Log Salary)
@@ -128,9 +128,9 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ## Generated Outputs
 
 ### Regression Tables
-- **Individual benefit tables**: `results/tables/job_level_model_2025/{benefit}_table.html`
-- **Combined wide table**: `results/tables/complete_wide_table_2024_corrected.html`
-- **LaTeX versions**: `results/tables/complete_wide_table_2024.tex`
+- **Individual benefit tables**: `results/tables_2026/job_level_model_2026/{benefit}_table.html`
+- **Combined wide table**: `results/tables_2026/complete_wide_table_2026_corrected.html`
+- **LaTeX versions**: `results/tables_2026/complete_wide_table_2026.tex`
 - **Occupation-year differences**: `results/tables/occ_year_models/difference_regression_table_combined.html`
 
 ### Key Figures

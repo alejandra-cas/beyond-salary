@@ -37,6 +37,7 @@ plt.rcParams.update({'font.size': 14})
 # Field mappings
 region = 'STATE_NAME'
 industry = 'NAICS_2022_2_NAME'
+firm = 'COMPANY'
 education = 'MIN_EDULEVELS_NAME'
 year = 'YEAR'
 occupation = 'SOC_MAJOR_GROUP'
@@ -47,7 +48,25 @@ benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE
 benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
 
 # Color scheme for plots
-colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7']
+colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
+
+
+def prepare_firm_fixed_effects(data, min_firm_obs=30):
+    """Reduce firm cardinality for FE model to avoid exploding dummy matrices."""
+    data_fe = data.copy()
+    data_fe[firm] = data_fe[firm].fillna('Unknown Firm').astype(str)
+    data_fe[region] = data_fe[region].fillna('Unknown State').astype(str)
+
+    firm_counts = data_fe[firm].value_counts()
+    rare_firms = firm_counts[firm_counts < min_firm_obs].index
+    data_fe[firm] = data_fe[firm].replace(rare_firms, 'Other Firm (<30 obs)')
+
+    print(
+        f"Firm FE prep: {len(firm_counts):,} firms -> "
+        f"{data_fe[firm].nunique():,} categories after grouping firms with <{min_firm_obs} obs"
+    )
+
+    return data_fe
 
 def load_and_prepare_data():
     """Load and prepare the 2024 dataset with all preprocessing."""
@@ -91,7 +110,7 @@ def load_and_prepare_data():
     return data
 
 def run_2024_models(data):
-    """Run all three model specifications for each benefit following original logic."""
+    """Run model specifications, including a second firm+state FE progression panel."""
     
     print("="*80)
     print("RUNNING 2024 REGRESSION MODELS")
@@ -139,14 +158,106 @@ def run_2024_models(data):
                               cont_controls=['LOG_SALARY'], 
                               ref_category={education: "No Education Listed", experience: 'None Listed'})
         benefit_models_industry_3.append(model)
+
+    # Model 4: Full model with firm + state FE
+    print("\n" + "="*50)
+    print("MODEL 4: FIRM + STATE FIXED EFFECTS")
+    print("="*50)
+
+    data_fe = prepare_firm_fixed_effects(data)
+    benefit_models_firm_state_4 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            data_fe,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, firm, region, education, experience],
+            cont_controls=['LOG_SALARY'],
+            ref_category={education: "No Education Listed", experience: 'None Listed'},
+            get_vif=False,
+        )
+        benefit_models_firm_state_4.append(model)
+
+    # Panel 2 starts here: baseline with firm+state FE, then incremental controls
+    print("\n" + "="*50)
+    print("MODEL 5: PANEL 2 BASELINE (YEAR + FIRM + STATE FE)")
+    print("="*50)
+
+    benefit_models_firm_state_5 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            data_fe,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, firm, region],
+            get_vif=False,
+        )
+        benefit_models_firm_state_5.append(model)
+
+    print("\n" + "="*50)
+    print("MODEL 6: PANEL 2 + INDIVIDUAL CONTROLS")
+    print("="*50)
+
+    benefit_models_firm_state_6 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            data_fe,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, firm, region, education, experience],
+            ref_category={education: "No Education Listed", experience: 'None Listed'},
+            get_vif=False,
+        )
+        benefit_models_firm_state_6.append(model)
+
+    print("\n" + "="*50)
+    print("MODEL 7: PANEL 2 + INDIVIDUAL CONTROLS + SALARY")
+    print("="*50)
+
+    benefit_models_firm_state_7 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            data_fe,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, firm, region, education, experience],
+            cont_controls=['LOG_SALARY'],
+            ref_category={education: "No Education Listed", experience: 'None Listed'},
+            get_vif=False,
+        )
+        benefit_models_firm_state_7.append(model)
     
-    return [benefit_models_industry, benefit_models_industry_2, benefit_models_industry_3]
+    return [
+        benefit_models_industry,
+        benefit_models_industry_2,
+        benefit_models_industry_3,
+        benefit_models_firm_state_4,
+        benefit_models_firm_state_5,
+        benefit_models_firm_state_6,
+        benefit_models_firm_state_7,
+    ]
 
 def extract_model_results(models_2024):
     """Extract coefficients, standard errors, p-values, and model statistics."""
     results_dfs = []
     
-    model_names = ['Baseline', 'Individual Controls', 'With Salary']
+    model_names = [
+        'P1 M1: Baseline',
+        'P1 M2: +Indiv Controls',
+        'P1 M3: +Salary',
+        'P1 M4: +Firm+State FE',
+        'P2 M1: Firm+State Baseline',
+        'P2 M2: +Indiv Controls',
+        'P2 M3: +Salary',
+    ]
     
     for model_idx, models in enumerate(models_2024):
         coefficients = []
@@ -200,7 +311,7 @@ def generate_coefficients_plot(results_df):
     fig, ax = plt.subplots(figsize=(12, 6))
     
     model_iterations = results_df['Model Iteration'].unique()
-    markers = ['o', 's', '^']  # Different markers for model iterations
+    markers = ['o', 's', '^', 'D', 'P', 'X', 'v']  # Different markers for model iterations
     positions = []
     current_pos = 0
     
@@ -219,7 +330,7 @@ def generate_coefficients_plot(results_df):
                     pos, model_data['Coefficient'].values, 
                     yerr=[model_data['Coefficient'].values - model_data['Lower_CI'].values, 
                           model_data['Upper_CI'].values - model_data['Coefficient'].values], 
-                    fmt=markers[i], color=colors[i], label=model if benefit == benefits4[0] else ""
+                    fmt=markers[i % len(markers)], color=colors[i % len(colors)], label=model if benefit == benefits4[0] else ""
                 )
                 benefit_positions.append(pos)
                 
@@ -701,7 +812,7 @@ def generate_individual_tables(models_2024):
     print("\nGenerating individual benefit tables...")
     
     # Create output directory
-    os.makedirs('results/tables/job_level_model_2025', exist_ok=True)
+    os.makedirs('results/tables_2026/job_level_model_2026', exist_ok=True)
     
     for i, benefit in enumerate(benefits4):
         benefit_label = benefits4_labels[i]
@@ -710,24 +821,95 @@ def generate_individual_tables(models_2024):
         html_table = create_clean_formatted_table_updated(model_progression, benefit_label)
         
         # Save individual table
-        filename = f"results/tables/job_level_model_2025/{benefit.lower()}_table.html"
+        filename = f"results/tables_2026/job_level_model_2026/{benefit.lower()}_table.html"
         with open(filename, 'w') as f:
             f.write(html_table)
         
         print(f"Saved table for {benefit_label}: {filename}")
+
+
+def generate_panel_summaries(models_2024):
+    """Save panel summaries in long and wide formats for easy reporting."""
+    print("\nGenerating panel summary tables...")
+    os.makedirs('results/tables_2026', exist_ok=True)
+
+    panel_map = {
+        'P1': [0, 1, 2, 3],
+        'P2': [4, 5, 6],
+    }
+
+    model_labels = {
+        0: 'M1 Baseline (Year+Industry)',
+        1: 'M2 + Individual Controls',
+        2: 'M3 + Salary',
+        3: 'M4 + Firm+State FE',
+        4: 'M1 Baseline (Year+Firm+State)',
+        5: 'M2 + Individual Controls',
+        6: 'M3 + Salary',
+    }
+
+    rows = []
+    for panel_name, model_idxs in panel_map.items():
+        for model_idx in model_idxs:
+            for benefit, benefit_label, model in zip(benefits4, benefits4_labels, models_2024[model_idx]):
+                if isinstance(model, str):
+                    rows.append({
+                        'panel': panel_name,
+                        'model_idx': model_idx,
+                        'model_label': model_labels[model_idx],
+                        'benefit': benefit,
+                        'benefit_label': benefit_label,
+                        'model_status': 'error',
+                        'ai_role_coef': np.nan,
+                        'ai_role_se': np.nan,
+                        'ai_role_pvalue': np.nan,
+                        'nobs': np.nan,
+                        'pseudo_r2': np.nan,
+                    })
+                    continue
+
+                rows.append({
+                    'panel': panel_name,
+                    'model_idx': model_idx,
+                    'model_label': model_labels[model_idx],
+                    'benefit': benefit,
+                    'benefit_label': benefit_label,
+                    'model_status': 'ok',
+                    'ai_role_coef': model.params.get('AI ROLE', np.nan),
+                    'ai_role_se': model.bse.get('AI ROLE', np.nan),
+                    'ai_role_pvalue': model.pvalues.get('AI ROLE', np.nan),
+                    'nobs': model.nobs,
+                    'pseudo_r2': model.prsquared,
+                })
+
+    long_df = pd.DataFrame(rows)
+    long_out = 'results/tables_2026/model_panels_ai_role_long.csv'
+    long_df.to_csv(long_out, index=False)
+
+    wide_df = long_df.pivot_table(
+        index=['panel', 'benefit', 'benefit_label'],
+        columns='model_label',
+        values='ai_role_coef',
+        aggfunc='first',
+    ).reset_index()
+    wide_out = 'results/tables_2026/model_panels_ai_role_coef_wide.csv'
+    wide_df.to_csv(wide_out, index=False)
+
+    print(f"Panel long summary saved: {long_out}")
+    print(f"Panel wide summary saved: {wide_out}")
 
 def generate_wide_table(models_2024):
     """Generate the wide table with all benefits."""
     print("\nGenerating wide table with all benefits...")
     
     # Create output directory
-    os.makedirs('results/tables', exist_ok=True)
+    os.makedirs('results/tables_2026', exist_ok=True)
     
     # Generate wide HTML table
     wide_table_html = create_wide_table_all_benefits_reordered(models_2024, benefits4)
     
     # Save HTML version
-    html_filename = 'results/tables/complete_wide_table_2024_corrected.html'
+    html_filename = 'results/tables_2026/complete_wide_table_2026_corrected.html'
     with open(html_filename, 'w') as f:
         f.write(f"""<!DOCTYPE html>
 <html>
@@ -748,7 +930,7 @@ def generate_wide_table(models_2024):
     
     # Generate and save LaTeX version
     latex_table = html_to_latex_table_dynamic(models_2024)
-    latex_filename = 'results/tables/complete_wide_table_2024.tex'
+    latex_filename = 'results/tables_2026/complete_wide_table_2026.tex'
     
     with open(latex_filename, 'w') as f:
         f.write(latex_table)
@@ -888,15 +1070,19 @@ def main():
     
     # Generate outputs
     generate_coefficients_plot(results_df)
-    generate_individual_tables(models_2024)
-    generate_wide_table(models_2024)
+    # Keep legacy tables as 3-model outputs for backward compatibility.
+    generate_individual_tables(models_2024[:3])
+    generate_wide_table(models_2024[:3])
+    generate_panel_summaries(models_2024)
     
     print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
     print("Generated outputs:")
     print("1. Model coefficients plot: results/figures_2026/model_coefficients_plot_industry_converged.png")
-    print("2. Individual regression tables: results/tables/job_level_model_2025/")
-    print("3. Wide table: results/tables/complete_wide_table_2024_corrected.html")
+    print("2. Individual regression tables: results/tables_2026/job_level_model_2026/")
+    print("3. Wide table: results/tables_2026/complete_wide_table_2026_corrected.html")
+    print("4. Panel summaries: results/tables_2026/model_panels_ai_role_long.csv")
+    print("5. Panel summaries (wide): results/tables_2026/model_panels_ai_role_coef_wide.csv")
     print("=" * 80)
 
 if __name__ == "__main__":
