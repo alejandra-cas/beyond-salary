@@ -8,16 +8,7 @@ _base = Path(__file__).parent.parent / "data" / "processed"
 input_path = _base / "data_v1.parquet"
 output_path = _base / "labeled_v1.parquet"
 
-# even_sample = pd.read_parquet('data/salary_sample_body.parquet.gzip')
-load_time = time.time()
-print("Loading the input parquet file...")
-even_sample = pd.read_parquet(input_path)
-print("Time taken to load the input parquet file: ", time.time() - load_time)
-
-empty_body_count = (
-    even_sample["BODY"].isna().sum() + even_sample["BODY"].str.strip().eq("").sum()
-)
-print("Number of empty body text: ", empty_body_count)
+# --- Keyword definitions ---
 
 edu_assistance = (
     "education assistance",
@@ -113,6 +104,8 @@ culture = (
     "equity, inclusion",
 )
 
+# --- Exclusion lists ---
+
 career_dev_to_exclude = [
     "youth leadership development",
     "provide mentorship",
@@ -129,10 +122,9 @@ career_dev_to_exclude = [
     "provide leadership and mentorship",
     "provide mentorship",
     "identify growth opportunities",
-    "manage the Symbotic Tuition Reimbursement",
+    "manage the Symbotic Tuition Reimbursement",
 ]
-tuition_to_exclude = ["manage the Symbotic Tuition Reimbursement"]
-tuition_to_exclude = ["manage the Symbotic Tuition Reimbursement"]
+tuition_to_exclude = ["manage the Symbotic Tuition Reimbursement"]
 wellbeing_to_exclude = [
     "health benefits companies",
     "wellness program coordinator",
@@ -151,98 +143,105 @@ family_to_exclude = [
 culture_to_exclude = ["maintaining a collaborative environment"]
 
 
-def check_benefits(even_sample, keywords, benefit, exclusions=None):
-    # Create inclusion and exclusion patterns
-    include_pattern = r"\b(" + "|".join(map(re.escape, keywords)) + r")\b"
-    exclude_pattern = (
-        r"\b(" + "|".join(map(re.escape, exclusions)) + r")\b" if exclusions else None
+def check_benefits(body_series, keywords, exclusions=None):
+    """Vectorized benefit labeling using compiled regex.
+
+    Uses pandas str.contains() for the bulk of rows, then falls back to
+    row-level overlap checking only for the small subset that matched
+    both inclusion and exclusion patterns.
+
+    Returns a boolean numpy array.
+    """
+    include_re = re.compile(
+        r"\b(?:" + "|".join(map(re.escape, keywords)) + r")\b", re.IGNORECASE
     )
 
-    def match_benefit(text):
-        # Check if the text contains any inclusion keywords
-        if not isinstance(text, str) or pd.isna(text) or text.strip() == "":
-            return False  # Return False if no text is present to search in
+    # Vectorized inclusion check
+    body_filled = body_series.fillna("")
+    included = body_filled.str.contains(include_re.pattern, regex=True, case=False, na=False)
 
-        includes = bool(re.search(include_pattern, text, re.IGNORECASE))
-        if not includes:
-            return False
+    if exclusions is None:
+        return included.to_numpy(dtype=bool)
 
-        if exclusions:
-            # Then, check if the text contains any exclusion keywords
-            excludes = bool(re.search(exclude_pattern, text, re.IGNORECASE))
+    # Only check exclusions on the subset that matched inclusion
+    exclude_re = re.compile(
+        r"\b(?:" + "|".join(map(re.escape, exclusions)) + r")\b", re.IGNORECASE
+    )
+    excluded = body_filled.str.contains(exclude_re.pattern, regex=True, case=False, na=False)
 
-            # If inclusion is found but exclusion also exists, check carefully
-            if includes and excludes:
-                # Allow "True" if the exclusion is found but inclusion still exists in a separate context
-                # (i.e., don't automatically set False just because exclusion exists)
-                include_matches = list(
-                    re.finditer(include_pattern, text, re.IGNORECASE)
-                )
-                exclude_matches = list(
-                    re.finditer(exclude_pattern, text, re.IGNORECASE)
-                )
+    # Rows with inclusion but no exclusion are True
+    # Rows with both need overlap check
+    needs_overlap_check = included & excluded
 
-                # Ensure inclusion and exclusion aren't in the same region of text
-                for exc in exclude_matches:
-                    for inc in include_matches:
-                        # If the exclusion keyword exactly matches or overlaps with the inclusion keyword, skip it
-                        if (
-                            inc.start() <= exc.start() < inc.end()
-                            or inc.start() <= exc.end() <= inc.end()
-                        ):
-                            return False
-                return True
+    if not needs_overlap_check.any():
+        return included.to_numpy(dtype=bool)
 
-        return includes
+    # Row-level overlap check only for the small subset with both matches
+    result = included.to_numpy(dtype=bool, copy=True)
+    check_idx = needs_overlap_check[needs_overlap_check].index
 
-    # Apply the match_benefit function to each row
-    even_sample[benefit] = even_sample["BODY"].apply(match_benefit)
+    for idx in check_idx:
+        text = body_filled.iloc[idx]
+        include_matches = list(include_re.finditer(text))
+        exclude_matches = list(exclude_re.finditer(text))
 
-    return even_sample
+        # Check if any exclusion overlaps with an inclusion match
+        has_overlap = False
+        for exc in exclude_matches:
+            for inc in include_matches:
+                if inc.start() <= exc.start() < inc.end() or inc.start() <= exc.end() <= inc.end():
+                    has_overlap = True
+                    break
+            if has_overlap:
+                break
+
+        if has_overlap:
+            result[idx] = False
+
+    return result
 
 
-print("Checking benefits...")
-# print time taken to check benefits
-start = time.time()
+def main():
+    load_time = time.time()
+    print("Loading the input parquet file...")
+    data = pd.read_parquet(input_path)
+    print(f"Loaded {len(data):,} rows in {time.time() - load_time:.1f}s")
 
-# print start time
-print("Start time: ", start)
+    empty_body_count = data["BODY"].isna().sum() + data["BODY"].str.strip().eq("").sum()
+    print(f"Empty body text: {empty_body_count:,}")
 
-# check_benefits(even_sample, career_dev, 'CAREER_DEV', exclusions=career_dev_to_exclude)
-check_benefits(
-    even_sample, edu_assistance, "EDU_ASSISTANCE", exclusions=tuition_to_exclude
-)
+    # Extract BODY series once for all benefit checks
+    body = data["BODY"]
 
-# print time
-print("Time taken for edu assistance: ", time.time() - start)
+    print("Labeling benefits...")
+    start = time.time()
 
-print("Checking leave...")
-check_benefits(even_sample, leave, "PAID LEAVE")
+    # check_benefits(body, career_dev, exclusions=career_dev_to_exclude)
+    data["EDU_ASSISTANCE"] = check_benefits(body, edu_assistance, exclusions=tuition_to_exclude)
+    print(f"  EDU_ASSISTANCE: {time.time() - start:.1f}s")
 
-print("checking wellbeing...")
-check_benefits(even_sample, wellbeing, "WELLBEING", wellbeing_to_exclude)
+    data["PAID LEAVE"] = check_benefits(body, leave)
+    print(f"  PAID LEAVE: {time.time() - start:.1f}s")
 
-print("Checking health & wellbeing...")
-check_benefits(even_sample, health_wellbeing, "HEALTH_WELLBEING", wellbeing_to_exclude)
+    data["WELLBEING"] = check_benefits(body, wellbeing, wellbeing_to_exclude)
+    print(f"  WELLBEING: {time.time() - start:.1f}s")
 
-print("Checking parental leave...")
-check_benefits(even_sample, parental_leave, "PARENTAL_LEAVE")
+    data["HEALTH_WELLBEING"] = check_benefits(body, health_wellbeing, wellbeing_to_exclude)
+    print(f"  HEALTH_WELLBEING: {time.time() - start:.1f}s")
 
-print("Checking culture...")
-check_benefits(even_sample, culture, "CULTURE")
+    data["PARENTAL_LEAVE"] = check_benefits(body, parental_leave)
+    print(f"  PARENTAL_LEAVE: {time.time() - start:.1f}s")
 
-print("time taken to check benefits: ", time.time() - start)
+    data["CULTURE"] = check_benefits(body, culture)
+    print(f"  CULTURE: {time.time() - start:.1f}s")
 
-print(even_sample.head())
-save_time = time.time()
-print("Saving to parquet...")
+    print(f"Total labeling time: {time.time() - start:.1f}s")
 
-# drop body column and export
-# even_sample.drop(columns=["BODY"]).to_parquet(
-#     "../data/us_10m_nointernship_2018_2024_benefits.parquet.gzip", compression="gzip"
-# )
+    save_time = time.time()
+    print("Saving to parquet...")
+    data.to_parquet(output_path, compression='gzip')
+    print(f"Saved in {time.time() - save_time:.1f}s")
 
-# "saving with body"
-even_sample.to_parquet(output_path, compression='gzip')
 
-print("Time taken to save to parquet: ", time.time() - save_time)
+if __name__ == "__main__":
+    main()

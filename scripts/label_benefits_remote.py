@@ -6,144 +6,125 @@ from pathlib import Path
 _base = Path(__file__).parent.parent / "data" / "processed"
 input_path = _base / "labeled_v1.parquet"
 output_path = _base / "labeled_v2.parquet"
-# even_sample = pd.read_parquet('data/salary_sample_body.parquet.gzip')
-load_time = time.time()
-print("Loading the input parquet file...")
-# if input_path[-3:] == 'csv:':
-#     even_sample = pd.read_csv(input_path)
-# elif input_path[-3:] == 'zip':
-even_sample = pd.read_parquet(input_path)
-
-print("Time taken to load the input parquet file: ", time.time()-load_time)
-print(even_sample.columns)
-even_sample = even_sample[['ID','BODY']]
-empty_body_count = even_sample['BODY'].isna().sum() + even_sample['BODY'].str.strip().eq("").sum()
-print("Number of empty body text: ", empty_body_count)
-
-def clean_text(text):
-    if isinstance(text, str):  # Ensure the value is a string
-        text = text.strip()  # Remove leading and trailing spaces
-        text = ' '.join(text.split())  # Replace multiple spaces with a single space
-        text = text.replace('\n', ' ')  # Remove newline characters
-        text = text.lower()
-    return text
-
-print("cleaning body")
-clean_time = time.time()
-# Apply the cleaning function to the Remote_KW column
-even_sample['BODY'] = even_sample['BODY'].apply(clean_text)
-print("Time taken to clean body: ", time.time()-clean_time)
 
 remote_keywords = [
-    "fully remote", "100% remote", "work from home", "remote role", "work remotely", 
-    "remote eligible", "open to remote", "remote work environment", "remote work policy", 
-    "remote and onsite", "virtual role", "remote first", "home office", "telecommute", 
-    "distributed team", "remote-first", "remote-friendly", "remote options", "virtual work", "work from home", 
-    "remote position", "wfh", "Remote - us", "telework", "home office", "(remote)", "remote work flexibility", "remote work: hybrid", 
-    "remote: yes", "location: remote", "remote usa", "remote flexibility", "(remote", "- remote", "remote-flexibility", 
-    "remote,", "\nremote\n", "\n remote \n", "remotely", "us-remote", "remote work eligible", "remote - united states", 
-    "remote - work at home", "can be remote", "remote within the us", "remote in north america", "remote available" ", remote", 
+    "fully remote", "100% remote", "work from home", "remote role", "work remotely",
+    "remote eligible", "open to remote", "remote work environment", "remote work policy",
+    "remote and onsite", "virtual role", "remote first", "home office", "telecommute",
+    "distributed team", "remote-first", "remote-friendly", "remote options", "virtual work", "work from home",
+    "remote position", "wfh", "Remote - us", "telework", "home office", "(remote)", "remote work flexibility", "remote work: hybrid",
+    "remote: yes", "location: remote", "remote usa", "remote flexibility", "(remote", "- remote", "remote-flexibility",
+    "remote,", "\nremote\n", "\n remote \n", "remotely", "us-remote", "remote work eligible", "remote - united states",
+    "remote - work at home", "can be remote", "remote within the us", "remote in north america", "remote available" ", remote",
     "remote full-time", "us remote", "#li-remote", "open to remote",
-    "hybrid work", "split time between office and remote", "office and remote options", 
-    "partially remote", "hybrid position", "3 days remote", "hybrid workplace", 
+    "hybrid work", "split time between office and remote", "office and remote options",
+    "partially remote", "hybrid position", "3 days remote", "hybrid workplace",
     "some remote days", "in-office and remote", "hybrid onsite", "remote or in-office", "work-from-home days", "mix of working in the office and from home", "#li-hybrid", "hybrid remote"
 ]
 
 remote_to_exclude = [
-    "not considering remote", "in-office only", 
-    "remote monitoring", "remote sensing", "remote access systems", "remote control", 
-    "remote diagnostics", "remote delivery", "#li-onsite", "onsite job", "work from home not available", "telework:no", 
+    "not considering remote", "in-office only",
+    "remote monitoring", "remote sensing", "remote access systems", "remote control",
+    "remote diagnostics", "remote delivery", "#li-onsite", "onsite job", "work from home not available", "telework:no",
     "remote: no", "100% on-site", "work at home option: No",
     "remotely: no", "remote: n", "remotely: n", "telework: no", "remote: * no", "remotely: * no",
-    "remotely piloted", "data remotely", "remote type on-site", "interviewed remotely", "work remotely: * no", 
+    "remotely piloted", "data remotely", "remote type on-site", "interviewed remotely", "work remotely: * no",
     "remote desktop", "must be able to work on-site", "not applicable for 100% remote", "remote testing", "remotely upgrading", "remote usability",
-    "remote site", "remote machine", "remote iot", "no remote", "work remotely no", "remotely:no", "remotely? n", "remotely no", "remote areas", 
+    "remote site", "remote machine", "remote iot", "no remote", "work remotely no", "remotely:no", "remotely? n", "remotely no", "remote areas",
     "remote access", "remote position? no", "remotely tucked away", "supporting remote", "remotely sensed"
 ]
 
 
-def check_benefits(even_sample, keywords, benefit, exclusions=None):
-    # Create inclusion and exclusion patterns
-    include_pattern = r'\b(' + '|'.join(map(re.escape, keywords)) + r')\b'
-    exclude_pattern = r'\b(' + '|'.join(map(re.escape, exclusions)) + r')\b' if exclusions else None
-    
-    def match_benefit(text):
-        # Check if the text contains any inclusion keywords
-        if not isinstance(text, str) or pd.isna(text) or text.strip() == "":
-            return False  # Return False if no text is present to search in  
-             
-        includes = bool(re.search(include_pattern, text, re.IGNORECASE))
-        if not includes:
-            return False
-        
-        if exclusions:
-            # Then, check if the text contains any exclusion keywords
-            excludes = bool(re.search(exclude_pattern, text, re.IGNORECASE))
-            
-            # If inclusion is found but exclusion also exists, check carefully
-            if includes and excludes:
-                # Allow "True" if the exclusion is found but inclusion still exists in a separate context
-                # (i.e., don't automatically set False just because exclusion exists)
-                include_matches = list(re.finditer(include_pattern, text, re.IGNORECASE))
-                exclude_matches = list(re.finditer(exclude_pattern, text, re.IGNORECASE))
-                
-                # Ensure inclusion and exclusion aren't in the same region of text
-                for exc in exclude_matches:
-                    for inc in include_matches:
-                        # If the exclusion keyword exactly matches or overlaps with the inclusion keyword, skip it
-                        if inc.start() <= exc.start() < inc.end() or inc.start() <= exc.end() <= inc.end():
-                            return False
-                return True
-        
-        return includes
+def check_benefits(body_series, keywords, exclusions=None):
+    """Vectorized benefit labeling using compiled regex.
 
-    # Apply the match_benefit function to each row
-    even_sample[benefit] = even_sample['BODY'].apply(match_benefit)
-    
-    return even_sample
+    Uses pandas str.contains() for the bulk of rows, then falls back to
+    row-level overlap checking only for the small subset that matched
+    both inclusion and exclusion patterns.
 
-    
-def label_remote_hybrid(row):
-    body = row['BODY']
-    if not isinstance(body, str) or pd.isna(body) or body.strip() == "":
-        return 0  # Return False if no text is present to search in  
-    if any(kw in body for kw in remote_to_exclude):
-        return 0 
-    elif any(kw in body for kw in remote_keywords):
-        return 1    
-    return 0
+    Returns a boolean numpy array.
+    """
+    include_re = re.compile(
+        r"\b(?:" + "|".join(map(re.escape, keywords)) + r")\b", re.IGNORECASE
+    )
 
-# # Apply the labeling function
-# print("Checking benefits...")    
-# start = time.time()
-# even_sample["REMOTE_KW"] = even_sample.apply(label_remote_hybrid, axis=1)
-# print("time taken to check benefits: ", time.time()-start)
-# print("exporting")
-# export = even_sample.drop(columns=['BODY'])
-# export.to_parquet(output_path, compression='gzip')
-    
+    # Vectorized inclusion check
+    body_filled = body_series.fillna("")
+    included = body_filled.str.contains(include_re.pattern, regex=True, case=False, na=False)
+
+    if exclusions is None:
+        return included.to_numpy(dtype=bool)
+
+    # Only check exclusions on the subset that matched inclusion
+    exclude_re = re.compile(
+        r"\b(?:" + "|".join(map(re.escape, exclusions)) + r")\b", re.IGNORECASE
+    )
+    excluded = body_filled.str.contains(exclude_re.pattern, regex=True, case=False, na=False)
+
+    # Rows with inclusion but no exclusion are True
+    # Rows with both need overlap check
+    needs_overlap_check = included & excluded
+
+    if not needs_overlap_check.any():
+        return included.to_numpy(dtype=bool)
+
+    # Row-level overlap check only for the small subset with both matches
+    result = included.to_numpy(dtype=bool, copy=True)
+    check_idx = needs_overlap_check[needs_overlap_check].index
+
+    for idx in check_idx:
+        text = body_filled.iloc[idx]
+        include_matches = list(include_re.finditer(text))
+        exclude_matches = list(exclude_re.finditer(text))
+
+        # Check if any exclusion overlaps with an inclusion match
+        has_overlap = False
+        for exc in exclude_matches:
+            for inc in include_matches:
+                if inc.start() <= exc.start() < inc.end() or inc.start() <= exc.end() <= inc.end():
+                    has_overlap = True
+                    break
+            if has_overlap:
+                break
+
+        if has_overlap:
+            result[idx] = False
+
+    return result
 
 
-print("Checking benefits method 2...")    
-# print time taken to check benefits
-import time
-start = time.time()
-# print start time
-print("Start time: ", start)
-print("Checking remote work...")
-check_benefits(even_sample, remote_keywords, 'REMOTE_KW', remote_to_exclude)
-print("time taken to check benefits: ", time.time()-start)
+def main():
+    load_time = time.time()
+    print("Loading the input parquet file...")
+    # Only read ID and BODY columns — no need to load entire labeled dataset
+    data = pd.read_parquet(input_path, columns=['ID', 'BODY'])
+    print(f"Loaded {len(data):,} rows in {time.time() - load_time:.1f}s")
 
-print(even_sample.head())
+    empty_body_count = data['BODY'].isna().sum() + data['BODY'].str.strip().eq("").sum()
+    print(f"Empty body text: {empty_body_count:,}")
 
-print("Saving to parquet...")
-# drop body column and export
-save_time = time.time()
-even_sample.drop(columns=['BODY']).to_parquet(output_path, compression='gzip')
-# print("saving with body")
+    # Clean body text
+    print("Cleaning body text...")
+    clean_time = time.time()
+    data['BODY'] = (
+        data['BODY']
+        .fillna("")
+        .str.strip()
+        .str.replace(r'\s+', ' ', regex=True)
+        .str.lower()
+    )
+    print(f"Cleaned in {time.time() - clean_time:.1f}s")
 
-# even_sample.to_parquet(output_path, compression='gzip')
-print("Time taken to save to parquet: ", time.time()-save_time)
+    print("Labeling remote work...")
+    start = time.time()
+    data['REMOTE_KW'] = check_benefits(data['BODY'], remote_keywords, remote_to_exclude)
+    print(f"Labeled in {time.time() - start:.1f}s")
+
+    print("Saving to parquet...")
+    save_time = time.time()
+    data.drop(columns=['BODY']).to_parquet(output_path, compression='gzip')
+    print(f"Saved in {time.time() - save_time:.1f}s")
 
 
-
+if __name__ == "__main__":
+    main()
