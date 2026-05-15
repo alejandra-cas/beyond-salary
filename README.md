@@ -111,10 +111,16 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
 ### Core Analysis (`analysis/`)
 - **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis
-- **regression_models.py**: Runs logistic regression models for benefit analysis with multiple specifications and fixed-effect panels.
-  1. Baseline (Year + Industry fixed effects)
-  2. Individual Controls (+ Education + Experience)
-  3. With Salary Control (+ Log Salary)
+- **regression_models.py**: Runs job-level logit models for each benefit with `AI ROLE` as the key predictor using two model panels.
+   - **Panel 1 (Industry-based progression)**
+      1. **P1 M1 (Baseline):** Year FE + Industry FE
+      2. **P1 M2 (+ Individual Controls):** Year FE + Industry FE + Education FE + Experience FE
+      3. **P1 M3 (+ Salary):** P1 M2 + Log Salary
+      4. **P1 M4 (+ Firm/State FE):** Year FE + Firm FE + State FE + Education FE + Experience FE + Log Salary
+   - **Panel 2 (Firm/State baseline progression)**
+      1. **P2 M1 (Baseline):** Year FE + Firm FE + State FE
+      2. **P2 M2 (+ Individual Controls):** Year FE + Firm FE + State FE + Education FE + Experience FE
+      3. **P2 M3 (+ Salary):** P2 M2 + Log Salary
 - **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
