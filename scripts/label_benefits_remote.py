@@ -5,7 +5,6 @@ from pathlib import Path
 
 _base = Path(__file__).parent.parent / "data" / "processed"
 input_path = _base / "labeled_v1.parquet"
-output_path = _base / "labeled_v2.parquet"
 
 remote_keywords = [
     "fully remote", "100% remote", "work from home", "remote role", "work remotely",
@@ -96,18 +95,18 @@ def check_benefits(body_series, keywords, exclusions=None):
 def main():
     load_time = time.time()
     print("Loading the input parquet file...")
-    # Only read ID and BODY columns — no need to load entire labeled dataset
-    data = pd.read_parquet(input_path, columns=['ID', 'BODY'])
-    print(f"Loaded {len(data):,} rows in {time.time() - load_time:.1f}s")
+    # Only read ID and BODY columns for keyword labeling
+    body_df = pd.read_parquet(input_path, columns=['ID', 'BODY'])
+    print(f"Loaded {len(body_df):,} rows in {time.time() - load_time:.1f}s")
 
-    empty_body_count = data['BODY'].isna().sum() + data['BODY'].str.strip().eq("").sum()
+    empty_body_count = body_df['BODY'].isna().sum() + body_df['BODY'].str.strip().eq("").sum()
     print(f"Empty body text: {empty_body_count:,}")
 
     # Clean body text
     print("Cleaning body text...")
     clean_time = time.time()
-    data['BODY'] = (
-        data['BODY']
+    body_df['BODY'] = (
+        body_df['BODY']
         .fillna("")
         .str.strip()
         .str.replace(r'\s+', ' ', regex=True)
@@ -117,13 +116,19 @@ def main():
 
     print("Labeling remote work...")
     start = time.time()
-    data['REMOTE_KW'] = check_benefits(data['BODY'], remote_keywords, remote_to_exclude)
+    body_df['REMOTE_KW'] = check_benefits(body_df['BODY'], remote_keywords, remote_to_exclude)
     print(f"Labeled in {time.time() - start:.1f}s")
 
-    print("Saving to parquet...")
+    # Merge REMOTE_KW into the full labeled dataset and overwrite labeled_v1
+    print("Merging REMOTE_KW into labeled_v1.parquet...")
+    data = pd.read_parquet(input_path)
+    if 'REMOTE_KW' in data.columns:
+        data = data.drop(columns=['REMOTE_KW'])
+    data = data.merge(body_df[['ID', 'REMOTE_KW']], on='ID', how='left')
+
     save_time = time.time()
-    data.drop(columns=['BODY']).to_parquet(output_path, compression='gzip')
-    print(f"Saved in {time.time() - save_time:.1f}s")
+    data.to_parquet(input_path, compression='gzip')
+    print(f"Saved labeled_v1.parquet with REMOTE_KW in {time.time() - save_time:.1f}s")
 
 
 if __name__ == "__main__":

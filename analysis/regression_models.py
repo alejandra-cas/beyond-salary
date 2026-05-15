@@ -82,21 +82,6 @@ def load_and_prepare_data():
     # Using full dataset (not balanced/even sample)
     data = pd.read_parquet(data_path)
 
-    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
-    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
-
-    # Create experience buckets
-    print("Creating experience buckets...")
-    bins = [-2, -1, 0, 2, 5, 10, 20, 100]
-    labels = ['Missing', '0 years', '1-2 years', '3-5 years', '6-10 years', '11-20 years', '21+ years']
-    data['EXPERIENCE_BUCKET'] = pd.cut(data['MIN_YEARS_EXPERIENCE'], bins=bins, labels=labels, right=True)
-    data['EXPERIENCE_BUCKET'] = data['EXPERIENCE_BUCKET'].astype(str)
-    data['EXPERIENCE_BUCKET'] = data['EXPERIENCE_BUCKET'].replace('nan', 'None Listed') # why not use this as continuous?
-    
-    # Create log salary
-    print("Creating log salary...")
-    data['LOG_SALARY'] = np.log(data['SALARY'])
-    
     # Replace small industries with "Other" (this is also done in run_logit_model but we do it here for consistency)
     print("Processing industry categories...")
     industry_counts = data['NAICS_2022_2_NAME'].value_counts()

@@ -79,11 +79,8 @@ def median_ci(data, confidence=0.95):
 def load_and_prepare_data():
     """Load and prepare the salary data."""
     print("Loading salary data...")
-    # labeled_v1 has SALARY + benefit columns; labeled_v2 only has ID + REMOTE_KW
     _base = Path(__file__).parent.parent / "data" / "processed"
     usdf_salary = pd.read_parquet(_base / 'labeled_v1.parquet')
-    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
-    usdf_salary = usdf_salary.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     
     # Filter out rows with null salaries
     print(f"Initial data shape: {usdf_salary.shape}")

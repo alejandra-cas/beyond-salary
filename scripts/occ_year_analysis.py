@@ -13,9 +13,6 @@ _base = Path(__file__).parent.parent / "data" / "processed"
 path = _base / "labeled_v1.parquet"
 print("reading data")
 data = pd.read_parquet(path)
-remote_kw = _base / "labeled_v2.parquet"
-remote_df = pd.read_parquet(remote_kw)
-data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
 print("data read")
 
 COUNTY_COL = 'COUNTY'  # adjust if your county column has a different name

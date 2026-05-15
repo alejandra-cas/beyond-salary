@@ -301,9 +301,6 @@ def create_balanced_sample(data_path):
     """
     print("Reading data...")
     data = pd.read_parquet(data_path)
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
-    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     
     # Select specific occupations (from notebook)
     occupations_select = [
@@ -532,7 +529,7 @@ def run_group_analysis(data, group_col, analysis_parquet, output_dir):
 
     Parameters
     ----------
-    data : DataFrame - full dataset (labeled_v1 merged with labeled_v2)
+    data : DataFrame - full labeled dataset (labeled_v1.parquet)
     group_col : str - column to group by (e.g. 'SOC_MAJOR_GROUP', 'NAICS_2022_2_NAME')
     analysis_parquet : Path - path to the group-year analysis parquet
     output_dir : str - directory for HTML/LaTeX table output
@@ -592,8 +589,6 @@ def main():
     # Load data once
     print("Loading data...")
     data = pd.read_parquet(_base / 'labeled_v1.parquet')
-    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
-    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
 
     # Occupation-year analysis
     occ_results = run_group_analysis(

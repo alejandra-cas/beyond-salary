@@ -76,8 +76,6 @@ def load_data():
     """Load the main dataset."""
     _base = Path(__file__).parent.parent / "data" / "processed"
     usdf = pd.read_parquet(_base / 'labeled_v1.parquet')
-    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
-    usdf = usdf.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     print("Data loaded")
     usdf["POSTED"] = pd.to_datetime(usdf["POSTED"])
     usdf["QUARTER"] = usdf["POSTED"].dt.to_period("Q")
