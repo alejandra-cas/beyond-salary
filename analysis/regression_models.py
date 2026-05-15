@@ -216,25 +216,6 @@ def run_2024_models(data):
         )
         benefit_models_firm_state_6.append(model)
 
-    print("\n" + "="*50)
-    print("MODEL 7: PANEL 2 + INDIVIDUAL CONTROLS + SALARY")
-    print("="*50)
-
-    benefit_models_firm_state_7 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_logit_model(
-            data_fe,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, firm, region, education, experience],
-            cont_controls=['LOG_SALARY'],
-            ref_category={education: "No Education Listed", experience: 'None Listed'},
-            get_vif=False,
-        )
-        benefit_models_firm_state_7.append(model)
-    
     return [
         benefit_models_industry,
         benefit_models_industry_2,
@@ -242,7 +223,6 @@ def run_2024_models(data):
         benefit_models_firm_state_4,
         benefit_models_firm_state_5,
         benefit_models_firm_state_6,
-        benefit_models_firm_state_7,
     ]
 
 def extract_model_results(models_2024):
@@ -256,7 +236,6 @@ def extract_model_results(models_2024):
         'P1 M4: +Firm+State FE',
         'P2 M1: Firm+State Baseline',
         'P2 M2: +Indiv Controls',
-        'P2 M3: +Salary',
     ]
     
     for model_idx, models in enumerate(models_2024):
@@ -835,7 +814,7 @@ def generate_panel_summaries(models_2024):
 
     panel_map = {
         'P1': [0, 1, 2, 3],
-        'P2': [4, 5, 6],
+        'P2': [4, 5],
     }
 
     model_labels = {
@@ -845,7 +824,6 @@ def generate_panel_summaries(models_2024):
         3: 'M4 + Firm+State FE',
         4: 'M1 Baseline (Year+Firm+State)',
         5: 'M2 + Individual Controls',
-        6: 'M3 + Salary',
     }
 
     rows = []

@@ -120,7 +120,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
    - **Panel 2 (Firm/State baseline progression)**
       1. **P2 M1 (Baseline):** Year FE + Firm FE + State FE
       2. **P2 M2 (+ Individual Controls):** Year FE + Firm FE + State FE + Education FE + Experience FE
-      3. **P2 M3 (+ Salary):** P2 M2 + Log Salary
+      3. **P2 M3 (+ Salary):** intentionally omitted to avoid repeating the full specification already fit in Panel 1
 - **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
