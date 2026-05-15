@@ -1,0 +1,15 @@
+# Copy this file to config.yaml and update the paths for your environment.
+# config.yaml is gitignored — each collaborator maintains their own.
+
+data:
+  # Directory containing raw CSV input files
+  raw_dir: "data"
+
+  # Raw input filenames
+  posts_csv: "OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv"
+  skills_csv: "OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv"
+  body_csv: "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv"
+  wham_csv: "ID_CNTRY_ALL_WHAM.csv"
+
+  # Directory for processed parquet outputs (relative to repo root)
+  processed_dir: "data/processed"

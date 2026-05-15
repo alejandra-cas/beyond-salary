@@ -7,3 +7,4 @@ notebooks_no_output/
 Resources/
 exports/
 .env
+config.yaml

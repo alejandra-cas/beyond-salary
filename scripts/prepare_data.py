@@ -5,19 +5,46 @@ Merges job posting data with AI skills labels and remote work classification.
 
 import pandas as pd
 import numpy as np
+import yaml
 from pathlib import Path
 
 
 def load_data_paths():
-    """Define input and output data paths."""
-    base = Path(__file__).parent.parent / "data"
-    return {
-        "posts_csv": base / "OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv",
-        "skills_csv": base / "OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv",
-        "body_csv": base / "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv",
-        "wham_data": base / "ID_CNTRY_ALL_WHAM.csv",
-        "output_parquet": base / "processed" / "data_v1.parquet"
-    }
+    """Load input/output data paths from config.yaml.
+
+    Falls back to defaults if config.yaml is not found.
+    See config.example.yaml for the expected format.
+    """
+    repo_root = Path(__file__).parent.parent
+    config_path = repo_root / "config.yaml"
+
+    if config_path.exists():
+        with open(config_path) as f:
+            cfg = yaml.safe_load(f)["data"]
+        raw_dir = Path(cfg["raw_dir"])
+        if not raw_dir.is_absolute():
+            raw_dir = repo_root / raw_dir
+        processed_dir = Path(cfg["processed_dir"])
+        if not processed_dir.is_absolute():
+            processed_dir = repo_root / processed_dir
+        return {
+            "posts_csv": raw_dir / cfg["posts_csv"],
+            "skills_csv": raw_dir / cfg["skills_csv"],
+            "body_csv": raw_dir / cfg["body_csv"],
+            "wham_data": raw_dir / cfg["wham_csv"],
+            "output_parquet": processed_dir / "data_v1.parquet",
+        }
+    else:
+        print("Warning: config.yaml not found, using default paths. "
+              "Copy config.example.yaml to config.yaml to configure.")
+        base = repo_root / "data"
+        return {
+            "posts_csv": base / "OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv",
+            "skills_csv": base / "OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv",
+            "body_csv": base / "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv",
+            "wham_data": base / "ID_CNTRY_ALL_WHAM.csv",
+            "output_parquet": base / "processed" / "data_v1.parquet",
+        }
 
 
 def classify_ai_roles(jobs_df, skills_df):
