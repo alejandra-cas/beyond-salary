@@ -1,5 +1,8 @@
 import pandas as pd
-all_data = pd.read_parquet('../../../VData/scro4406/data_v1.parquet')
+from pathlib import Path
+
+_base = Path(__file__).parent.parent / "data" / "processed"
+all_data = pd.read_parquet(_base / 'data_v1.parquet')
 # all_data = all_data[all_data['QUARTER'] != '2024Q3']
 # all_data_body = pd.read_parquet('../data/us_10m_nointernship_ai_skills_body.parquet.gzip')
 # Exports

@@ -79,30 +79,11 @@ def median_ci(data, confidence=0.95):
 def load_and_prepare_data():
     """Load and prepare the salary data."""
     print("Loading salary data...")
-    
-    # Try different possible data paths
-    possible_paths = [
-        '../../../VData/scro4406/labeled_v1.parquet',
-        # '../data/2024_salary_sample.parquet.gzip',
-        # '../../../VData/scro4406/merged_data_v1.parquet'
-    ]
-    
-    usdf_salary = None
-    for path in possible_paths:
-        try:
-            if os.path.exists(path):
-                usdf_salary = pd.read_parquet(path)
-                print(f"Loaded data from: {path}")
-                remote_kw = '../../../VData/scro4406/data_v2.parquet'
-                remote_df = pd.read_parquet(remote_kw)
-                usdf_salary = usdf_salary.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
-                break
-        except Exception as e:
-            print(f"Failed to load {path}: {e}")
-            continue
-    
-    if usdf_salary is None:
-        raise FileNotFoundError("Could not find salary data file in any of the expected locations")
+    # labeled_v1 has SALARY + benefit columns; labeled_v2 only has ID + REMOTE_KW
+    _base = Path(__file__).parent.parent / "data" / "processed"
+    usdf_salary = pd.read_parquet(_base / 'labeled_v1.parquet')
+    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
+    usdf_salary = usdf_salary.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     
     # Filter out rows with null salaries
     print(f"Initial data shape: {usdf_salary.shape}")
@@ -243,7 +224,7 @@ def generate_combined_figure(salary_stats):
     plt.tight_layout()
     
     # Save figure
-    output_path = 'results/figures/salary_by_benefit_combined.png'
+    output_path = 'results/figures_2026/salary_by_benefit_combined.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     print(f"Saving figure to: {output_path}")

@@ -1,11 +1,12 @@
 import pandas as pd
 import re
-import matplotlib.pyplot as plt
-import numpy as np
 import time
 
-input_path = "../../../VData/scro4406/data_v1.parquet"
-output_path = '../../../VData/scro4406/labeled_v1.parquet'
+from pathlib import Path
+
+_base = Path(__file__).parent.parent / "data" / "processed"
+input_path = _base / "data_v1.parquet"
+output_path = _base / "labeled_v1.parquet"
 
 # even_sample = pd.read_parquet('data/salary_sample_body.parquet.gzip')
 load_time = time.time()

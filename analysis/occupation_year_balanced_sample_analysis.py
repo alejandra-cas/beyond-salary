@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Occupation-Year Balanced Sample Differences Analysis
+Occupation-Year Benefit Prevalence Analysis
 
-This script reproduces the balanced sample differences analysis from the notebooks:
-1. occ_year_even_sample.ipynb - for data preparation and balanced sampling
-2. occ_year_model_new.ipynb - for the difference regression models
+This script computes AI benefit prevalence by group-year and runs OLS regression
+models on those outcomes. Originally used balanced samples; now uses the full dataset.
 
-It generates both HTML and LaTeX table outputs for the balanced sample differences analysis.
+It generates both HTML and LaTeX table outputs for the regression results.
 """
 
 import pandas as pd
 import numpy as np
 import sys
 import os
+from pathlib import Path
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
@@ -27,7 +27,7 @@ benefits_labels_map = {
     'REMOTE_KW': 'Remote Work'
 }
 benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
-occupation = 'COUNTY_NAME'
+occupation = 'COUNTY_NAME'  # updated per-run in run_group_analysis()
 
 def create_regression_table_html(models, model_names, output_path):
     """
@@ -49,7 +49,7 @@ def create_regression_table_html(models, model_names, output_path):
         </style>
     </head>
     <body>
-        <h2>Balanced Sample Differences Regression Results</h2>
+        <h2>AI Benefit Prevalence Regression Results</h2>
         <table>
     """
     
@@ -162,7 +162,7 @@ def create_regression_table_latex(models, model_names, output_path):
     """
     latex_content = """\\begin{table}[htbp]
 \\centering
-\\caption{Balanced Sample Differences Regression Results}
+\\caption{AI Benefit Prevalence Regression Results}
 \\begin{tabular}{l"""
     
     # Add column specifications
@@ -301,8 +301,8 @@ def create_balanced_sample(data_path):
     """
     print("Reading data...")
     data = pd.read_parquet(data_path)
-    remote_kw = '../../../VData/scro4406/data_v2.parquet'
-    remote_df = pd.read_parquet(remote_kw)
+    _base = Path(__file__).parent.parent / "data" / "processed"
+    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
     data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
     
     # Select specific occupations (from notebook)
@@ -354,33 +354,24 @@ def create_balanced_sample(data_path):
     
     return final_balanced_sample
 
-def calculate_benefit_differences(balanced_sample):
+def calculate_ai_benefit_prevalence(data):
     """
-    Calculate benefit differences between AI and non-AI jobs.
-    Reproduces the logic from occ_year_even_sample.ipynb
+    Calculate mean benefit prevalence for AI jobs by group-year.
+    Previously computed differences (AI - non-AI); now returns AI prevalence only.
     """
-    print("Calculating benefit differences...")
-    
-    ai_jobs = balanced_sample[balanced_sample['AI ROLE'] == 1]
-    non_ai_jobs = balanced_sample[balanced_sample['AI ROLE'] == 0]
-    
-    # Group by occupation and YEAR and sum benefits for AI and non-AI jobs
-    ai_counts = ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
-    non_ai_counts = non_ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
-    
-    # Merge the counts for AI and non-AI jobs
-    merged_counts = ai_counts.merge(non_ai_counts, on=[occupation, 'YEAR'], suffixes=('_ai', '_non_ai'))
-    
-    # Calculate the difference between AI and non-AI jobs for each benefit
+    print("Calculating AI benefit prevalence...")
+
+    ai_jobs = data[data['AI ROLE'] == 1]
+
+    # Mean prevalence of each benefit for AI roles per group-year
+    ai_prevalence = ai_jobs.groupby([occupation, 'YEAR'])[benefits4].mean().reset_index()
+
+    # Rename to standard column names used by downstream models
     for benefit in benefits4:
-        merged_counts[f'{benefit}_difference'] = merged_counts[f'{benefit}_ai']
-        
-    print(merged_counts)
-    
-    # Select only the columns with differences and occupation-year identifiers
-    difference_summary = merged_counts[[occupation, 'YEAR'] + [f'{benefit}_difference' for benefit in benefits4]]
-    
-    return difference_summary
+        ai_prevalence.rename(columns={benefit: f'{benefit}_ai_prevalence'}, inplace=True)
+
+    print(ai_prevalence)
+    return ai_prevalence
 
 def load_occupation_year_data(occ_year_data_path):
     """
@@ -395,12 +386,11 @@ def load_occupation_year_data(occ_year_data_path):
     
     return df
 
-def run_balanced_sample_difference_models(df):
+def run_prevalence_models(df):
     """
-    Run the balanced sample difference regression models.
-    Reproduces the models from occ_year_model_new.ipynb (Balanced Sample Differences section)
+    Run OLS regression models with AI benefit prevalence as the dependent variable.
     """
-    print("Running balanced sample difference regression models...")
+    print("Running AI benefit prevalence regression models...")
     
     diff_models = []
     
@@ -425,25 +415,25 @@ def run_balanced_sample_difference_models(df):
             benefit_df[f'Log {col}'] = benefit_df[col].apply(lambda x: np.sign(x) * np.log(abs(x) + 1))
         
         X_cols = [f'Log {col}' for col in log_cols] + ['Median Log Salary AI', 'Log Job Count'] 
-        y_col = f'{benefit}_difference'
-        
+        y_col = f'{benefit}_ai_prevalence'
+
         benefit_df = benefit_df.dropna(subset=X_cols + [y_col])
         X = benefit_df[X_cols]
         y = benefit_df[y_col]
-        
+
         # Add year dummies (excluding 2019 as reference)
         year_dummies = pd.get_dummies(benefit_df['YEAR'], prefix='Year').drop(columns=['Year_2019'], errors='ignore')
         # Convert boolean dummies to integers for statsmodels compatibility
         year_dummies = year_dummies.astype(int)
         X = pd.concat([X, year_dummies], axis=1)
         X = sm.add_constant(X)
-        
+
         # Fit the OLS model
         model = sm.OLS(y, X).fit()
         print(f"\n{benefit} Model Summary:")
         print(f"R-squared: {model.rsquared:.4f}")
         print(f"Adj. R-squared: {model.rsquared_adj:.4f}")
-        
+
         # Calculate VIF (Variance Inflation Factor)
         print("VIF Results:")
         vif_data = []
@@ -454,17 +444,17 @@ def run_balanced_sample_difference_models(df):
         vif_df["features"] = X.columns
         vif_df["VIF"] = vif_data
         print(vif_df)
-        
+
         diff_models.append(model)
-    
+
     return diff_models
 
-def run_balanced_sample_difference_models_extended(df):
+def run_prevalence_models_extended(df):
     """
-    Run the extended balanced sample difference regression models (Model 2).
+    Run extended OLS regression models (Model 2).
     Includes AI Job Count as an additional variable.
     """
-    print("Running extended balanced sample difference regression models...")
+    print("Running extended AI benefit prevalence regression models...")
     
     diff_models_2 = []
     
@@ -489,25 +479,25 @@ def run_balanced_sample_difference_models_extended(df):
             benefit_df[f'Log {col}'] = benefit_df[col].apply(lambda x: np.sign(x) * np.log(abs(x) + 1))
         
         X_cols = [f'Log {col}' for col in log_cols] + ['Median Log Salary AI', 'Log Job Count'] 
-        y_col = f'{benefit}_difference'
-        
+        y_col = f'{benefit}_ai_prevalence'
+
         benefit_df = benefit_df.dropna(subset=X_cols + [y_col])
         X = benefit_df[X_cols]
         y = benefit_df[y_col]
-        
+
         # Add year dummies (excluding 2019 as reference)
         year_dummies = pd.get_dummies(benefit_df['YEAR'], prefix='Year').drop(columns=['Year_2019'], errors='ignore')
         # Convert boolean dummies to integers for statsmodels compatibility
         year_dummies = year_dummies.astype(int)
         X = pd.concat([X, year_dummies], axis=1)
         X = sm.add_constant(X)
-        
+
         # Fit the OLS model
         model = sm.OLS(y, X).fit()
         print(f"\n{benefit} Extended Model Summary:")
         print(f"R-squared: {model.rsquared:.4f}")
         print(f"Adj. R-squared: {model.rsquared_adj:.4f}")
-        
+
         diff_models_2.append(model)
     
     return diff_models_2
@@ -536,73 +526,56 @@ def generate_combined_tables(diff_models, diff_models_2, output_dir):
     
     return html_table, latex_table
 
-def main():
+def run_group_analysis(data, group_col, analysis_parquet, output_dir):
     """
-    Main function to run the complete balanced sample differences analysis.
+    Run the full prevalence analysis for a given grouping column.
+
+    Parameters
+    ----------
+    data : DataFrame - full dataset (labeled_v1 merged with labeled_v2)
+    group_col : str - column to group by (e.g. 'SOC_MAJOR_GROUP', 'NAICS_2022_2_NAME')
+    analysis_parquet : Path - path to the group-year analysis parquet
+    output_dir : str - directory for HTML/LaTeX table output
     """
-    print("Starting Occupation-Year Balanced Sample Differences Analysis")
-    print("=" * 60)
-    
-    # File paths (adjust as needed)
-    data_path = '../../../VData/scro4406/labeled_v1.parquet'
-    occ_year_data_path = '../../../VData/scro4406/occ_year_analysis_2024_raw.parquet'
-    balanced_diffs_path = '../../../VData/scro4406/balanced_sample_diffs.csv'
-    output_dir = './results/tables/occ_year_models'
-    
-    # Ensure output directory exists
+    global occupation
+    occupation = group_col
+
+    print(f"\n{'=' * 60}")
+    print(f"Running analysis by {group_col}")
+    print(f"{'=' * 60}")
+
     os.makedirs(output_dir, exist_ok=True)
-    
-    # Step 1: Create balanced sample (if needed)
-    # if os.path.exists(balanced_diffs_path):
-    #     print("Loading existing balanced sample differences...")
-    #     balanced_diffs = pd.read_csv(balanced_diffs_path)
-    # else:
-    print("Creating balanced sample from scratch...")
-    
-    # MBB don't use balanced sample
-    # balanced_sample = create_balanced_sample(data_path)
-    data = pd.read_parquet(data_path)
-    remote_kw = '../../../VData/scro4406/data_v2.parquet'
-    remote_df = pd.read_parquet(remote_kw)
-    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
-    
-    balanced_diffs = calculate_benefit_differences(data)
 
-    # Save the balanced sample differences
-    balanced_diffs.to_csv(balanced_diffs_path, index=False)
-    print(f"Balanced sample differences saved to: {balanced_diffs_path}")
-    
-    # Step 2: Load occupation-year data
-    occ_year_df = load_occupation_year_data(occ_year_data_path)
-    
-    # Remove existing difference columns to avoid conflicts
-    diff_cols = [f"{benefit}_difference" for benefit in benefits4]
-    existing_diff_cols = [col for col in occ_year_df.columns if col in diff_cols]
-    if existing_diff_cols:
-        print(f"Removing existing difference columns: {existing_diff_cols}")
-        occ_year_df = occ_year_df.drop(columns=existing_diff_cols)
+    # Step 1: Calculate AI benefit prevalence from full dataset
+    ai_prevalence = calculate_ai_benefit_prevalence(data)
 
-    # Step 3: Merge with balanced sample differences
-    print("Merging occupation-year data with balanced sample differences...")
-    df = occ_year_df.merge(balanced_diffs, on=[occupation, 'YEAR'])
-    
+    # Step 2: Load group-year data
+    group_year_df = load_occupation_year_data(analysis_parquet)
+
+    # Remove existing prevalence columns to avoid conflicts
+    prev_cols = [f"{benefit}_ai_prevalence" for benefit in benefits4]
+    existing_prev_cols = [col for col in group_year_df.columns if col in prev_cols]
+    if existing_prev_cols:
+        print(f"Removing existing prevalence columns: {existing_prev_cols}")
+        group_year_df = group_year_df.drop(columns=existing_prev_cols)
+
+    # Step 3: Merge with AI benefit prevalence
+    print("Merging group-year data with AI benefit prevalence...")
+    df = group_year_df.merge(ai_prevalence, on=[occupation, 'YEAR'])
+
     print(f"Final dataset shape: {df.shape}")
-    print(f"Occupation-years: {len(df)}")
+    print(f"Group-years: {len(df)}")
     print(f"Years covered: {sorted(df['YEAR'].unique())}")
-    print(f"Occupations: {len(df[occupation].unique())}")
-    
+    print(f"Groups: {len(df[occupation].unique())}")
+
     # Step 4: Run regression models
-    diff_models = run_balanced_sample_difference_models(df)
-    diff_models_2 = run_balanced_sample_difference_models_extended(df)
-    
+    diff_models = run_prevalence_models(df)
+    diff_models_2 = run_prevalence_models_extended(df)
+
     # Step 5: Generate combined tables
     html_table, latex_table = generate_combined_tables(diff_models, diff_models_2, output_dir)
-    
-    print("\n" + "=" * 60)
-    print("Analysis completed successfully!")
-    print("=" * 60)
-    
-    # Return results for further use if needed
+
+    print(f"\nAnalysis by {group_col} completed!")
     return {
         'data': df,
         'models_basic': diff_models,
@@ -610,6 +583,40 @@ def main():
         'html_table': html_table,
         'latex_table': latex_table
     }
+
+
+def main():
+    """Run the prevalence analysis for both occupation-year and industry-year."""
+    _base = Path(__file__).parent.parent / "data" / "processed"
+
+    # Load data once
+    print("Loading data...")
+    data = pd.read_parquet(_base / 'labeled_v1.parquet')
+    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
+    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
+
+    # Occupation-year analysis
+    occ_results = run_group_analysis(
+        data,
+        group_col='SOC_MAJOR_GROUP',
+        analysis_parquet=_base / 'occ_year_analysis_raw.parquet',
+        output_dir='./results/tables/occ_year_models',
+    )
+
+    # Industry-year analysis
+    ind_results = run_group_analysis(
+        data,
+        group_col='NAICS_2022_2_NAME',
+        analysis_parquet=_base / 'ind_year_analysis_raw.parquet',
+        output_dir='./results/tables/ind_year_models',
+    )
+
+    print("\n" + "=" * 60)
+    print("All analyses completed successfully!")
+    print("=" * 60)
+
+    return {'occupation': occ_results, 'industry': ind_results}
+
 
 if __name__ == "__main__":
     results = main()

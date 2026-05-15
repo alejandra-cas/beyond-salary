@@ -39,7 +39,7 @@ region = 'STATE_NAME'
 industry = 'NAICS_2022_2_NAME'
 education = 'MIN_EDULEVELS_NAME'
 year = 'YEAR'
-occupation = 'SOC_2021_2_NAME'
+occupation = 'SOC_MAJOR_GROUP'
 experience = 'EXPERIENCE_BUCKET'
 
 # Benefits to analyze (2024 models)
@@ -53,43 +53,44 @@ def load_and_prepare_data():
     """Load and prepare the 2024 dataset with all preprocessing."""
     print("Loading 2024 dataset...")
     
-    # Load the data (adjust path as needed)
-    data_path = '../../../VData/scro4406/labeled_v1.parquet'
-    if not os.path.exists(data_path):
+    # Load the data
+    _base = Path(__file__).parent.parent / "data" / "processed"
+    data_path = _base / 'labeled_v1.parquet'
+    if not data_path.exists():
         print(f"Warning: {data_path} not found. Please update the path.")
         return None
-    
-    even_sample = pd.read_parquet(data_path)
-    
-    remote_kw = '../../../VData/scro4406/data_v2.parquet'
-    remote_df = pd.read_parquet(remote_kw)
-    even_sample = even_sample.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
+
+    # Using full dataset (not balanced/even sample)
+    data = pd.read_parquet(data_path)
+
+    remote_df = pd.read_parquet(_base / 'labeled_v2.parquet')
+    data = data.merge(remote_df[['ID', 'REMOTE_KW']], on='ID', how='left')
 
     # Create experience buckets
     print("Creating experience buckets...")
     bins = [-2, -1, 0, 2, 5, 10, 20, 100]
     labels = ['Missing', '0 years', '1-2 years', '3-5 years', '6-10 years', '11-20 years', '21+ years']
-    even_sample['EXPERIENCE_BUCKET'] = pd.cut(even_sample['MIN_YEARS_EXPERIENCE'], bins=bins, labels=labels, right=True)
-    even_sample['EXPERIENCE_BUCKET'] = even_sample['EXPERIENCE_BUCKET'].astype(str)
-    even_sample['EXPERIENCE_BUCKET'] = even_sample['EXPERIENCE_BUCKET'].replace('nan', 'None Listed') # why not use this as continuous?
+    data['EXPERIENCE_BUCKET'] = pd.cut(data['MIN_YEARS_EXPERIENCE'], bins=bins, labels=labels, right=True)
+    data['EXPERIENCE_BUCKET'] = data['EXPERIENCE_BUCKET'].astype(str)
+    data['EXPERIENCE_BUCKET'] = data['EXPERIENCE_BUCKET'].replace('nan', 'None Listed') # why not use this as continuous?
     
     # Create log salary
     print("Creating log salary...")
-    even_sample['LOG_SALARY'] = np.log(even_sample['SALARY'])
+    data['LOG_SALARY'] = np.log(data['SALARY'])
     
     # Replace small industries with "Other" (this is also done in run_logit_model but we do it here for consistency)
     print("Processing industry categories...")
-    industry_counts = even_sample['NAICS_2022_2_NAME'].value_counts()
+    industry_counts = data['NAICS_2022_2_NAME'].value_counts()
     small_industries = industry_counts[industry_counts < 30].index  
-    even_sample['NAICS_2022_2_NAME'] = even_sample['NAICS_2022_2_NAME'].replace(small_industries, 'Other')
+    data['NAICS_2022_2_NAME'] = data['NAICS_2022_2_NAME'].replace(small_industries, 'Other')
     
-    print(f"Final dataset shape: {even_sample.shape}")
+    print(f"Final dataset shape: {data.shape}")
     print(f"Year distribution:")
-    print(even_sample.groupby('YEAR').size())
+    print(data.groupby('YEAR').size())
     
-    return even_sample
+    return data
 
-def run_2024_models(even_sample):
+def run_2024_models(data):
     """Run all three model specifications for each benefit following original logic."""
     
     print("="*80)
@@ -105,7 +106,7 @@ def run_2024_models(even_sample):
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(even_sample, dependent=benefit, predictor='AI ROLE', 
+        model = run_logit_model(data, dependent=benefit, predictor='AI ROLE', 
                               cat_controls=[year, industry], get_vif=False)
         benefit_models_industry.append(model)
     
@@ -118,7 +119,7 @@ def run_2024_models(even_sample):
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(even_sample, dependent=benefit, predictor='AI ROLE', 
+        model = run_logit_model(data, dependent=benefit, predictor='AI ROLE', 
                               cat_controls=[year, industry, education, experience],  
                               ref_category={education: "No Education Listed", experience: 'None Listed'}, 
                               get_vif=False)
@@ -133,7 +134,7 @@ def run_2024_models(even_sample):
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(even_sample, dependent=benefit, predictor='AI ROLE', 
+        model = run_logit_model(data, dependent=benefit, predictor='AI ROLE', 
                               cat_controls=[year, industry, education, experience], 
                               cont_controls=['LOG_SALARY'], 
                               ref_category={education: "No Education Listed", experience: 'None Listed'})
@@ -248,11 +249,11 @@ def generate_coefficients_plot(results_df):
     plt.tight_layout()
     
     # Save plot
-    os.makedirs('results/figures', exist_ok=True)
-    plt.savefig('results/figures/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
+    os.makedirs('results/figures_2026', exist_ok=True)
+    plt.savefig('results/figures_2026/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
     # plt.show()
     
-    print("Model coefficients plot saved to results/figures/model_coefficients_plot_industry_converged.png")
+    print("Model coefficients plot saved to results/figures_2026/model_coefficients_plot_industry_converged.png")
 
 # Update the function to use the requested labels
 def create_clean_formatted_table_updated(models, benefit_name):
@@ -872,13 +873,13 @@ def main():
     print("=" * 80)
     
     # Load and prepare data
-    even_sample = load_and_prepare_data()
-    if even_sample is None:
+    data = load_and_prepare_data()
+    if data is None:
         print("Error: Could not load data. Please check the data path.")
         return
     
     # Run all models
-    models_2024 = run_2024_models(even_sample)
+    models_2024 = run_2024_models(data)
     
     # Extract results
     results_df = extract_model_results(models_2024)
@@ -893,7 +894,7 @@ def main():
     print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
     print("Generated outputs:")
-    print("1. Model coefficients plot: results/figures/model_coefficients_plot_industry_converged.png")
+    print("1. Model coefficients plot: results/figures_2026/model_coefficients_plot_industry_converged.png")
     print("2. Individual regression tables: results/tables/job_level_model_2025/")
     print("3. Wide table: results/tables/complete_wide_table_2024_corrected.html")
     print("=" * 80)

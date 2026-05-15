@@ -8,66 +8,67 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ```
 ├── analysis/           # Main analysis scripts
 │   ├── descriptive_analysis.py              # Descriptive statistics and data exploration
-│   ├── join_remote_kw.ipynb                 # Jupyter notebook for remote work keyword analysis
-│   ├── occupation_year_balanced_sample_analysis.py  # Occupation-year models
+│   ├── new_data_exploration.ipynb           # Exploratory analysis notebook for MAY26 subsample
+│   ├── occupation_year_balanced_sample_analysis.py  # Occupation-year regression models
 │   ├── regression_models_2024.py            # Job-level regression models
 │   ├── salary_analysis.py                   # Salary premium analysis
-│   └── scatterplot_analysis.py              # Correlation and scatterplot analysis
+│   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
+│   └── wage_info.ipynb                      # Wage distribution analysis notebook
 ├── scripts/            # Data preparation and processing scripts
 │   ├── export_samples_2024.py               # Export balanced samples for analysis
 │   ├── label_benefits.py                    # Benefit labeling and classification
 │   ├── label_benefits_remote.py             # Remote work benefit labeling
-│   ├── prepare_data.py                      # Initial data merging and cleaning
-│   └── prepare_data_2.py                    # Secondary processing and AI classification
+│   ├── occ_year_analysis_raw.py             # Occupation-year and industry-year aggregation
+│   └── prepare_data.py                      # Data merging, cleaning, and AI role classification
 ├── src/                # Supporting Python modules
 │   └── package_files/  # Core utility functions and model definitions
 │       ├── __init__.py                      # Package initialization
 │       ├── benefits_defns.py                # Benefit category definitions and mappings
 │       └── logit_model.py                   # Logistic regression utilities
 ├── data/               # Input data files and processed datasets (not included in repo)
-│   ├── ai_skill_ids.pkl                     # AI skill identifiers (included)
-│   ├── balanced_sample_diffs.csv            # Pre-calculated balanced sample differences
-│   ├── occ_year_analysis_2024_raw.csv       # Occupation-year level analysis data
-│   ├── us_10m_nointernship_2018_2024_benefits.parquet.gzip  # Main processed dataset
-│   ├── small_samples/                       # Balanced samples for regression analysis
-│   │   ├── 2024_salary_sample.parquet.gzip
-│   │   └── 2024_nosalary_sample.parquet.gzip
-│   └── [additional processed data files]
+│   ├── OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv     # Job postings data
+│   ├── OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv    # Skills data (for AI role classification)
+│   ├── OII_US_10M_BODY_MAY26_SUBSAMPLE.csv      # Job posting body text
+│   ├── ID_CNTRY_ALL_WHAM.csv                    # Remote work classification data (LLM)
+│   └── processed/                               # Pipeline outputs
+│       ├── data_v1.parquet                      # Cleaned data with AI roles and experience
+│       ├── labeled_v1.parquet                   # Data with benefit labels
+│       ├── labeled_v2.parquet                   # Data with remote work keyword labels
+│       ├── occ_year_analysis_raw.parquet        # Occupation-year aggregated analysis data
+│       └── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
 ├── results/            # Generated outputs
-│   ├── figures/        
+│   ├── figures/
 │   │   ├── benefits_over_time/              # Time trend plots
 │   │   ├── pct_jobs_by_benefit_and_role_type/  # Benefit prevalence plots
 │   │   └── scatterplots/                    # Correlation analyses
 │   └── tables/         # Regression tables (HTML and LaTeX formats)
 │       ├── job_level_model_2025/            # Individual benefit regression tables
-│       └── occ_year_models/                  # Occupation-year tables
-└── requirements/       # Dependencies and setup
-    └── requirements.txt
+│       └── occ_year_models/                 # Occupation-year tables
+└── pyproject.toml      # Project dependencies (uv)
 ```
 
 ## Setup Instructions
 
 1. **Install Dependencies**
    ```bash
-   pip install -r requirements/requirements.txt
+   uv sync
    ```
 
 2. **Data Requirements**
-   - `US_10M_SAMP_2018_2024.csv` - Original job postings dataset
-   - `us_10m_nointernship_2018_2024_benefits.parquet.gzip` - Processed data with benefits
-   - `ai_skill_ids.pkl` - AI skill identifiers
+   - `OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv` - Job postings dataset
+   - `OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv` - Skills dataset (used for AI role classification)
+   - `OII_US_10M_BODY_MAY26_SUBSAMPLE.csv` - Job posting body text
    - `ID_CNTRY_ALL_WHAM.csv` - Remote work classification data (LLM)
-   - `SALARIES.csv` - Salary data for sample
 
-3. **Run Analysis**
+3. **Run Pipeline**
    ```bash
    # Data preparation
    python scripts/prepare_data.py
-   python scripts/prepare_data_2.py
    python scripts/label_benefits.py
    python scripts/label_benefits_remote.py
+   python scripts/occ_year_analysis_raw.py
    python scripts/export_samples_2024.py
-   
+
    # Core analyses
    python analysis/descriptive_analysis.py
    python analysis/regression_models_2024.py
@@ -79,11 +80,10 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ## Key Analysis Components
 
 ### Data Preparation (`scripts/`)
-- **prepare_data.py**: Merges job posting data with AI skills labels and remote work classification
-- **prepare_data_2.py**: Adds experience buckets, completes AI skills classification, and processes salary data
-- **label_benefits.py**: Processes and labels workplace benefits from job postings
-- **label_benefits_remote.py**: Specialized remote work benefit labeling and processing
-- **join_remote_kw.ipynb**: Join remote keyword labels to data
+- **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
+- **label_benefits.py**: Processes and labels workplace benefits from job posting text
+- **label_benefits_remote.py**: Labels remote work benefits using keyword matching
+- **occ_year_analysis_raw.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
 - **export_samples_2024.py**: Creates balanced samples for regression analysis
 
 ### Core Analysis (`analysis/`)
@@ -92,13 +92,14 @@ This repository contains the reproducible code and analysis for the paper Beyond
   1. Baseline (Year + Industry fixed effects)
   2. Individual Controls (+ Education + Experience)
   3. With Salary Control (+ Log Salary)
-- **occupation_year_balanced_sample_analysis.py**: Benefit differences analysis at occupation-year level
+- **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
-- **join_remote_kw.ipynb**: Jupyter notebook for remote work keyword processing and evaluation
+- **new_data_exploration.ipynb**: Exploratory analysis notebook for the MAY26 subsample data
+- **wage_info.ipynb**: Wage distribution analysis
 
 ### Supporting Modules (`src/package_files/`)
-- **benefits_defns.py**: Benefit category definitions, labels, and mappings
+- **benefits_defns.py**: Benefit category definitions, labels, color mappings, and standard variable names
 - **logit_model.py**: Logistic regression utilities for model fitting
 
 ## Generated Outputs

@@ -66,8 +66,10 @@ region = "STATE_NAME"
 industry = "NAICS_2022_2_NAME"
 education = "MIN_EDULEVELS_NAME"
 year = "YEAR"
-occupation = "SOC_2021_2_NAME"
+occupation = "SOC_MAJOR_GROUP"
 experience = "EXPERIENCE_BUCKET"
+firm = "COMPANY"
+firm_name = "COMPANY_NAME"
 
 benefit_colors = {
     "EDU_ASSISTANCE": "#41afaa",

@@ -21,15 +21,23 @@ def load_data_paths():
 
 
 def classify_ai_roles(jobs_df, skills_df):
-    """Flag jobs that require AI/ML skills using SKILL_SUBCATEGORY_NAME."""
-    ai_job_ids = skills_df[
+    """Flag jobs that require AI/ML skills and count AI skills per posting."""
+    ai_skills = skills_df[
         skills_df["SKILL_SUBCATEGORY_NAME"] == "Artificial Intelligence and Machine Learning (AI/ML)"
-    ]["ID"].unique()
+    ]
 
-    jobs_df["AI ROLE"] = jobs_df["ID"].isin(ai_job_ids)
+    # Count AI/ML skills per posting
+    ai_skill_counts = ai_skills.groupby("ID").size().rename("AI_SKILL_COUNT")
+    jobs_df = jobs_df.merge(ai_skill_counts, on="ID", how="left")
+    jobs_df["AI_SKILL_COUNT"] = jobs_df["AI_SKILL_COUNT"].fillna(0).astype(int)
+
+    # Binary flag (1+ AI skills)
+    jobs_df["AI ROLE"] = jobs_df["AI_SKILL_COUNT"] > 0
 
     print("AI Role distribution:")
     print(jobs_df["AI ROLE"].value_counts(dropna=False))
+    print("\nAI skill count distribution (among AI roles):")
+    print(jobs_df.loc[jobs_df["AI ROLE"], "AI_SKILL_COUNT"].describe())
 
     return jobs_df
 
@@ -134,6 +142,59 @@ def main():
         all_data = merge_wham_data(all_data, wham_data)
     else:
         print("Warning: WHAM data not found, continuing without merge")
+
+    # Derive 2-digit NAICS industry name
+    NAICS_2_DIGIT = {
+        '11': 'Agriculture, Forestry, Fishing and Hunting',
+        '21': 'Mining, Quarrying, and Oil and Gas Extraction',
+        '22': 'Utilities',
+        '23': 'Construction',
+        '31': 'Manufacturing', '32': 'Manufacturing', '33': 'Manufacturing',
+        '42': 'Wholesale Trade',
+        '44': 'Retail Trade', '45': 'Retail Trade',
+        '48': 'Transportation and Warehousing', '49': 'Transportation and Warehousing',
+        '51': 'Information',
+        '52': 'Finance and Insurance',
+        '53': 'Real Estate and Rental and Leasing',
+        '54': 'Professional, Scientific, and Technical Services',
+        '55': 'Management of Companies and Enterprises',
+        '56': 'Administrative and Support and Waste Management and Remediation Services',
+        '61': 'Educational Services',
+        '62': 'Health Care and Social Assistance',
+        '71': 'Arts, Entertainment, and Recreation',
+        '72': 'Accommodation and Food Services',
+        '81': 'Other Services (except Public Administration)',
+        '92': 'Public Administration',
+    }
+    all_data['NAICS_2022_2_DIGIT'] = all_data['NAICS_2022_6'].astype(str).str[:2]
+    all_data['NAICS_2022_2_NAME'] = all_data['NAICS_2022_2_DIGIT'].map(NAICS_2_DIGIT)
+
+    # Derive SOC major group from ONET code
+    SOC_MAJOR_GROUPS = {
+        '11': 'Management Occupations',
+        '13': 'Business and Financial Operations Occupations',
+        '15': 'Computer and Mathematical Occupations',
+        '17': 'Architecture and Engineering Occupations',
+        '19': 'Life, Physical, and Social Science Occupations',
+        '21': 'Community and Social Service Occupations',
+        '23': 'Legal Occupations',
+        '25': 'Educational Instruction and Library Occupations',
+        '27': 'Arts, Design, Entertainment, Sports, and Media Occupations',
+        '29': 'Healthcare Practitioners and Technical Occupations',
+        '31': 'Healthcare Support Occupations',
+        '33': 'Protective Service Occupations',
+        '35': 'Food Preparation and Serving Related Occupations',
+        '37': 'Building and Grounds Cleaning and Maintenance Occupations',
+        '39': 'Personal Care and Service Occupations',
+        '41': 'Sales and Related Occupations',
+        '43': 'Office and Administrative Support Occupations',
+        '45': 'Farming, Fishing, and Forestry Occupations',
+        '47': 'Construction and Extraction Occupations',
+        '49': 'Installation, Maintenance, and Repair Occupations',
+        '51': 'Production Occupations',
+        '53': 'Transportation and Material Moving Occupations',
+    }
+    all_data['SOC_MAJOR_GROUP'] = all_data['ONET'].str[:2].map(SOC_MAJOR_GROUPS)
 
     # Save processed data
     output_path = Path(paths["output_parquet"])

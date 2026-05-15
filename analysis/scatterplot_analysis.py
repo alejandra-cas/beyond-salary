@@ -64,19 +64,8 @@ def remove_outliers(df, columns):
 def load_occupation_year_data():
     """Load occupation-year analysis data."""
     print("Loading occupation-year data...")
-    
-    # Try different possible data paths
-    possible_paths = [
-        '../data/occ_year_analysis_2024_raw.csv',
-        'exports/occ_year_data/occ_year_analysis_2024_raw.csv'
-    ]
-    
-    for path in possible_paths:
-        if os.path.exists(path):
-            print(f"✅ Found data at: {path}")
-            return pd.read_csv(path)
-    
-    raise FileNotFoundError(f"Could not find occupation-year data file in any of: {possible_paths}")
+    _base = Path(__file__).parent.parent / "data" / "processed"
+    return pd.read_parquet(_base / 'occ_year_analysis_raw.parquet')
 
 def generate_percentage_scatterplots(coeff_df, output_dir):
     """Generate percentage-based scatterplots (from original remotekw analysis)."""
@@ -236,7 +225,7 @@ def main():
     print("=" * 50)
     
     # Setup output directory
-    output_dir = '../results/figures/scatterplots'
+    output_dir = '../results/figures_2026/scatterplots'
     os.makedirs(output_dir, exist_ok=True)
     
     try:
