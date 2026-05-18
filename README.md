@@ -15,6 +15,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
 │   ├── industry_year_coefficient_analysis.py # Industry-year wage vs perk coefficient comparison
 │   ├── high_ai_firm_analysis.py             # Within-firm perk premium by firm AI-share tier
+│   ├── ai_threshold_robustness.py           # Robustness check: 1+/2+/3+ AI skills thresholds
 │   ├── keyword_vs_structured_benefits.ipynb  # Keyword label validation against structured fields
 │   └── wage_info.ipynb                      # Wage distribution analysis notebook
 ├── scripts/            # Data preparation and processing scripts
@@ -49,7 +50,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │       ├── job_level_model_2026/            # Individual benefit regression tables
 │       ├── occ_year_models/                 # Occupation-year tables
 │       ├── within_firm_perk_diff.csv        # Within-firm AI−Non-AI perk gap by firm tier
-│       └── high_ai_firm_summary.csv         # Firm counts and median AI share per tier
+│       ├── high_ai_firm_summary.csv         # Firm counts and median AI share per tier
+│       └── ai_threshold_robustness.csv      # AI ROLE coefficients across 1+/2+/3+ thresholds
 ├── config.example.yaml # Template for local data path config (tracked)
 ├── config.yaml         # Local data path config (gitignored)
 └── pyproject.toml      # Project dependencies (uv)
@@ -131,6 +133,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
 - **industry_year_coefficient_analysis.py**: Estimates AI wage (OLS) and perk (logit) premiums per industry-year cell, then scatterplots wage betas vs perk betas to test complementarity. Runs both controlled (education + experience) and unconditional (AI ROLE only) variants with outlier filtering.
 - **high_ai_firm_analysis.py**: Robustness check addressing the concern that large tech firms drive results by offering perks to everyone. Assigns firms to AI-share tiers and computes within-firm perk gaps between AI and non-AI postings. Tuition assistance, paid leave, and parental leave show genuine within-firm AI premiums; remote work and culture appear more firm-wide.
+- **ai_threshold_robustness.py**: Robustness check on AI role classification threshold. Re-runs the main P1 M2 spec with 1+, 2+, and 3+ AI skill requirements. Workplace culture strengthens with stricter thresholds; parental leave and remote work are robust at 1+ and 2+ but lose significance at 3+ (power issue — only 226 postings).
 - **keyword_vs_structured_benefits.ipynb**: Validates keyword-based benefit labels against the structured `BENEFIT_NAME` / `BENEFIT_SUBCATEGORY_NAME` / `BENEFIT_CATEGORIES_NAME` fields. Reports precision, recall, and F1 per benefit, with disagreement inspection.
 - **new_data_exploration.ipynb**: Exploratory analysis notebook for the MAY26 subsample data
 - **wage_info.ipynb**: Wage distribution analysis
