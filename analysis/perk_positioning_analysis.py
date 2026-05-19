@@ -31,9 +31,7 @@ from package_files.benefits_defns import (
     benefits4_labels,
     benefit_colors,
     industry,
-    education,
     year,
-    experience,
 )
 
 plt.rcParams.update({"font.size": 13})
@@ -65,7 +63,7 @@ def load_data():
 
 
 def run_ols(df, position_col, predictor="AI ROLE"):
-    """OLS: position ~ AI_ROLE + Year + Industry + Education + Experience FE.
+    """OLS: position ~ AI_ROLE + Year + Industry FE.
     Only rows where the benefit was mentioned (position is not NaN).
     """
     sub = df[df[position_col].notna()].copy()
@@ -73,8 +71,8 @@ def run_ols(df, position_col, predictor="AI ROLE"):
     # Drop 2018 for consistency with regression_models.py
     sub = sub[sub[year] != 2018]
 
-    controls = [year, industry, education, experience]
-    ref = {education: "No Education Listed", experience: "None Listed"}
+    controls = [year, industry]
+    ref = {}
 
     X = sub[[predictor]].astype(float)
 
