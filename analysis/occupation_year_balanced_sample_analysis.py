@@ -16,6 +16,10 @@ from pathlib import Path
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+
+from package_files.config_utils import get_processed_dir, get_repo_root
+
 # Configuration and definitions (from benefits_defns.py)
 benefits4 = ['EDU_ASSISTANCE','PAID LEAVE','HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
 benefits_labels_map = {
@@ -28,6 +32,9 @@ benefits_labels_map = {
 }
 benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
 occupation = 'COUNTY_NAME'  # updated per-run in run_group_analysis()
+
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
 
 def create_regression_table_html(models, model_names, output_path):
     """
@@ -529,7 +536,7 @@ def run_group_analysis(data, group_col, analysis_parquet, output_dir):
 
     Parameters
     ----------
-    data : DataFrame - full labeled dataset (labeled_v1.parquet)
+    data : DataFrame - full labeled dataset (labeled_v2.parquet)
     group_col : str - column to group by (e.g. 'SOC_MAJOR_GROUP', 'NAICS_2022_2_NAME')
     analysis_parquet : Path - path to the group-year analysis parquet
     output_dir : str - directory for HTML/LaTeX table output
@@ -584,26 +591,24 @@ def run_group_analysis(data, group_col, analysis_parquet, output_dir):
 
 def main():
     """Run the prevalence analysis for both occupation-year and industry-year."""
-    _base = Path(__file__).parent.parent / "data" / "processed"
-
     # Load data once
     print("Loading data...")
-    data = pd.read_parquet(_base / 'labeled_v1.parquet')
+    data = pd.read_parquet(PROCESSED_DIR / "labeled_v2.parquet")
 
     # Occupation-year analysis
     occ_results = run_group_analysis(
         data,
         group_col='SOC_MAJOR_GROUP',
-        analysis_parquet=_base / 'occ_year_analysis_raw.parquet',
-        output_dir='./results/tables/occ_year_models',
+        analysis_parquet=PROCESSED_DIR / "occ_year_analysis_raw.parquet",
+        output_dir=REPO_ROOT / "results" / "tables" / "occ_year_models",
     )
 
     # Industry-year analysis
     ind_results = run_group_analysis(
         data,
         group_col='NAICS_2022_2_NAME',
-        analysis_parquet=_base / 'ind_year_analysis_raw.parquet',
-        output_dir='./results/tables/ind_year_models',
+        analysis_parquet=PROCESSED_DIR / "ind_year_analysis_raw.parquet",
+        output_dir=REPO_ROOT / "results" / "tables" / "ind_year_models",
     )
 
     print("\n" + "=" * 60)

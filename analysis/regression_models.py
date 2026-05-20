@@ -27,12 +27,18 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
 from package_files.logit_model import run_logit_model
 from package_files.benefits_defns import *
+from package_files.config_utils import get_processed_dir, get_repo_root
 import statsmodels.api as sm
 from collections import defaultdict
 from stargazer.stargazer import Stargazer
 
 # Configuration
 plt.rcParams.update({'font.size': 14})
+
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+RESULTS_DIR = REPO_ROOT / "results"
+TABLES_DIR = RESULTS_DIR / "tables_2026"
 
 # Field mappings
 region = 'STATE_NAME'
@@ -51,30 +57,25 @@ benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
 
 
-def prepare_firm_fixed_effects(data, min_firm_obs=30):
-    """Reduce firm cardinality for FE model to avoid exploding dummy matrices."""
-    data_fe = data.copy()
-    data_fe[firm] = data_fe[firm].fillna('Unknown Firm').astype(str)
-    data_fe[region] = data_fe[region].fillna('Unknown State').astype(str)
+def add_firm_size(data):
+    """Add per-observation firm size based on total observations per firm."""
+    data = data.copy()
+    data[firm] = data[firm].fillna('Unknown Firm').astype(str)
+    data[region] = data[region].fillna('Unknown State').astype(str)
+    firm_counts = data[firm].value_counts()
+    data['firm_size'] = data[firm].map(firm_counts).astype(int)
 
-    firm_counts = data_fe[firm].value_counts()
-    rare_firms = firm_counts[firm_counts < min_firm_obs].index
-    data_fe[firm] = data_fe[firm].replace(rare_firms, 'Other Firm (<30 obs)')
+    print("Firm size summary:")
+    print(data['firm_size'].describe())
 
-    print(
-        f"Firm FE prep: {len(firm_counts):,} firms -> "
-        f"{data_fe[firm].nunique():,} categories after grouping firms with <{min_firm_obs} obs"
-    )
-
-    return data_fe
+    return data
 
 def load_and_prepare_data():
     """Load and prepare the 2024 dataset with all preprocessing."""
     print("Loading 2024 dataset...")
     
     # Load the data
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    data_path = _base / 'labeled_v1.parquet'
+    data_path = PROCESSED_DIR / "labeled_v2.parquet"
     if not data_path.exists():
         print(f"Warning: {data_path} not found. Please update the path.")
         return None
@@ -87,6 +88,10 @@ def load_and_prepare_data():
     industry_counts = data['NAICS_2022_2_NAME'].value_counts()
     small_industries = industry_counts[industry_counts < 30].index  
     data['NAICS_2022_2_NAME'] = data['NAICS_2022_2_NAME'].replace(small_industries, 'Other')
+
+    if 'firm_size' not in data.columns:
+        print("Adding firm_size column...")
+        data = add_firm_size(data)
     
     print(f"Final dataset shape: {data.shape}")
     print(f"Year distribution:")
@@ -95,7 +100,7 @@ def load_and_prepare_data():
     return data
 
 def run_2024_models(data):
-    """Run model specifications, including a second firm+state FE progression panel."""
+    """Run model specifications, including state fixed effects and firm-size controls."""
     
     print("="*80)
     print("RUNNING 2024 REGRESSION MODELS")
@@ -144,70 +149,71 @@ def run_2024_models(data):
                               ref_category={education: "No Education Listed", experience: 'None Listed'})
         benefit_models_industry_3.append(model)
 
-    # Model 4: Full model with firm + state FE
+    # Model 4: Full model with state FE + firm size control
     print("\n" + "="*50)
-    print("MODEL 4: FIRM + STATE FIXED EFFECTS")
+    print("MODEL 4: STATE FIXED EFFECTS + FIRM SIZE")
     print("="*50)
 
-    data_fe = prepare_firm_fixed_effects(data)
-    benefit_models_firm_state_4 = []
+    benefit_models_firm_size_state_4 = []
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
         model = run_logit_model(
-            data_fe,
+            data,
             dependent=benefit,
             predictor='AI ROLE',
-            cat_controls=[year, firm, region, education, experience],
-            cont_controls=['LOG_SALARY'],
+            cat_controls=[year, region, education, experience],
+            cont_controls=['LOG_SALARY', 'firm_size'],
             ref_category={education: "No Education Listed", experience: 'None Listed'},
             get_vif=False,
         )
-        benefit_models_firm_state_4.append(model)
+        benefit_models_firm_size_state_4.append(model)
 
-    # Panel 2 starts here: baseline with firm+state FE, then incremental controls
+    # Panel 2 starts here: baseline with state FE + firm size, then incremental controls
     print("\n" + "="*50)
-    print("MODEL 5: PANEL 2 BASELINE (YEAR + FIRM + STATE FE)")
+    print("MODEL 5: PANEL 2 BASELINE (YEAR + STATE FE + FIRM SIZE)")
     print("="*50)
 
-    benefit_models_firm_state_5 = []
+    benefit_models_firm_size_state_5 = []
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
         model = run_logit_model(
-            data_fe,
+            data,
             dependent=benefit,
             predictor='AI ROLE',
-            cat_controls=[year, firm, region],
+            cat_controls=[year, region],
+            cont_controls=['firm_size'],
             get_vif=False,
         )
-        benefit_models_firm_state_5.append(model)
+        benefit_models_firm_size_state_5.append(model)
 
     print("\n" + "="*50)
-    print("MODEL 6: PANEL 2 + INDIVIDUAL CONTROLS")
+    print("MODEL 6: PANEL 2 + INDIVIDUAL CONTROLS + FIRM SIZE")
     print("="*50)
 
-    benefit_models_firm_state_6 = []
+    benefit_models_firm_size_state_6 = []
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
         model = run_logit_model(
-            data_fe,
+            data,
             dependent=benefit,
             predictor='AI ROLE',
-            cat_controls=[year, firm, region, education, experience],
+            cat_controls=[year, region, education, experience],
+            cont_controls=['firm_size'],
             ref_category={education: "No Education Listed", experience: 'None Listed'},
             get_vif=False,
         )
-        benefit_models_firm_state_6.append(model)
+        benefit_models_firm_size_state_6.append(model)
 
     return [
         benefit_models_industry,
         benefit_models_industry_2,
         benefit_models_industry_3,
-        benefit_models_firm_state_4,
-        benefit_models_firm_state_5,
-        benefit_models_firm_state_6,
+        benefit_models_firm_size_state_4,
+        benefit_models_firm_size_state_5,
+        benefit_models_firm_size_state_6,
     ]
 
 def extract_model_results(models_2024):
@@ -218,9 +224,9 @@ def extract_model_results(models_2024):
         'P1 M1: Baseline',
         'P1 M2: +Indiv Controls',
         'P1 M3: +Salary',
-        'P1 M4: +Firm+State FE',
-        'P2 M1: Firm+State Baseline',
-        'P2 M2: +Indiv Controls',
+        'P1 M4: +State FE+Firm Size',
+        'P2 M1: State FE+Firm Size',
+        'P2 M2: +Indiv Controls+Firm Size',
     ]
     
     for model_idx, models in enumerate(models_2024):
@@ -324,11 +330,11 @@ def generate_coefficients_plot(results_df):
     plt.tight_layout()
     
     # Save plot
-    os.makedirs('results/figures_2026', exist_ok=True)
-    plt.savefig('results/figures_2026/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
+    os.makedirs(RESULTS_DIR / "figures_2026", exist_ok=True)
+    plt.savefig(RESULTS_DIR / "figures_2026" / "model_coefficients_plot_industry_converged.png", dpi=300, bbox_inches='tight')
     # plt.show()
     
-    print("Model coefficients plot saved to results/figures_2026/model_coefficients_plot_industry_converged.png")
+    print(f"Model coefficients plot saved to {RESULTS_DIR / 'figures_2026' / 'model_coefficients_plot_industry_converged.png'}")
 
 # Update the function to use the requested labels
 def create_clean_formatted_table_updated(models, benefit_name):
@@ -776,7 +782,8 @@ def generate_individual_tables(models_2024):
     print("\nGenerating individual benefit tables...")
     
     # Create output directory
-    os.makedirs('results/tables_2026/job_level_model_2026', exist_ok=True)
+    output_dir = TABLES_DIR / "job_level_model_2026"
+    os.makedirs(output_dir, exist_ok=True)
     
     for i, benefit in enumerate(benefits4):
         benefit_label = benefits4_labels[i]
@@ -785,7 +792,7 @@ def generate_individual_tables(models_2024):
         html_table = create_clean_formatted_table_updated(model_progression, benefit_label)
         
         # Save individual table
-        filename = f"results/tables_2026/job_level_model_2026/{benefit.lower()}_table.html"
+        filename = output_dir / f"{benefit.lower()}_table.html"
         with open(filename, 'w') as f:
             f.write(html_table)
         
@@ -795,7 +802,7 @@ def generate_individual_tables(models_2024):
 def generate_panel_summaries(models_2024):
     """Save panel summaries in long and wide formats for easy reporting."""
     print("\nGenerating panel summary tables...")
-    os.makedirs('results/tables_2026', exist_ok=True)
+    os.makedirs(TABLES_DIR, exist_ok=True)
 
     panel_map = {
         'P1': [0, 1, 2, 3],
@@ -806,9 +813,9 @@ def generate_panel_summaries(models_2024):
         0: 'M1 Baseline (Year+Industry)',
         1: 'M2 + Individual Controls',
         2: 'M3 + Salary',
-        3: 'M4 + Firm+State FE',
-        4: 'M1 Baseline (Year+Firm+State)',
-        5: 'M2 + Individual Controls',
+        3: 'M4 + State FE + Firm Size',
+        4: 'M1 Baseline (Year+State+Firm Size)',
+        5: 'M2 + Individual Controls + Firm Size',
     }
 
     rows = []
@@ -846,7 +853,7 @@ def generate_panel_summaries(models_2024):
                 })
 
     long_df = pd.DataFrame(rows)
-    long_out = 'results/tables_2026/model_panels_ai_role_long.csv'
+    long_out = TABLES_DIR / "model_panels_ai_role_long.csv"
     long_df.to_csv(long_out, index=False)
 
     wide_df = long_df.pivot_table(
@@ -855,7 +862,7 @@ def generate_panel_summaries(models_2024):
         values='ai_role_coef',
         aggfunc='first',
     ).reset_index()
-    wide_out = 'results/tables_2026/model_panels_ai_role_coef_wide.csv'
+    wide_out = TABLES_DIR / "model_panels_ai_role_coef_wide.csv"
     wide_df.to_csv(wide_out, index=False)
 
     print(f"Panel long summary saved: {long_out}")
@@ -866,13 +873,13 @@ def generate_wide_table(models_2024):
     print("\nGenerating wide table with all benefits...")
     
     # Create output directory
-    os.makedirs('results/tables_2026', exist_ok=True)
+    os.makedirs(TABLES_DIR, exist_ok=True)
     
     # Generate wide HTML table
     wide_table_html = create_wide_table_all_benefits_reordered(models_2024, benefits4)
     
     # Save HTML version
-    html_filename = 'results/tables_2026/complete_wide_table_2026_corrected.html'
+    html_filename = TABLES_DIR / "complete_wide_table_2026_corrected.html"
     with open(html_filename, 'w') as f:
         f.write(f"""<!DOCTYPE html>
 <html>
@@ -893,7 +900,7 @@ def generate_wide_table(models_2024):
     
     # Generate and save LaTeX version
     latex_table = html_to_latex_table_dynamic(models_2024)
-    latex_filename = 'results/tables_2026/complete_wide_table_2026.tex'
+    latex_filename = TABLES_DIR / "complete_wide_table_2026.tex"
     
     with open(latex_filename, 'w') as f:
         f.write(latex_table)

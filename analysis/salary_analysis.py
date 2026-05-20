@@ -23,6 +23,7 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
 try:
     from package_files.benefits_defns import *
+    from package_files.config_utils import get_processed_dir, get_repo_root
 except ImportError:
     # Fallback benefit definitions if import fails
     benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
@@ -44,6 +45,16 @@ except ImportError:
         'CULTURE': '#d7642c',
         'REMOTE_KW': '#c765a6'
     }
+
+    def get_processed_dir():
+        return Path(__file__).parent.parent / "data" / "processed"
+
+    def get_repo_root():
+        return Path(__file__).parent.parent
+
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+RESULTS_DIR = REPO_ROOT / "results" / "figures_2026"
 
 def median_ci(data, confidence=0.95):
     """Calculate median with confidence interval."""
@@ -79,8 +90,7 @@ def median_ci(data, confidence=0.95):
 def load_and_prepare_data():
     """Load and prepare the salary data."""
     print("Loading salary data...")
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    usdf_salary = pd.read_parquet(_base / 'labeled_v1.parquet')
+    usdf_salary = pd.read_parquet(PROCESSED_DIR / "labeled_v2.parquet")
     
     # Filter out rows with null salaries
     print(f"Initial data shape: {usdf_salary.shape}")
@@ -221,8 +231,8 @@ def generate_combined_figure(salary_stats):
     plt.tight_layout()
     
     # Save figure
-    output_path = 'results/figures_2026/salary_by_benefit_combined.png'
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output_path = RESULTS_DIR / "salary_by_benefit_combined.png"
+    os.makedirs(output_path.parent, exist_ok=True)
     
     print(f"Saving figure to: {output_path}")
     plt.savefig(output_path, dpi=300, bbox_inches='tight')

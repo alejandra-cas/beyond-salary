@@ -1,10 +1,40 @@
 import pandas as pd
 import re
 import time
+import yaml
 from pathlib import Path
 
-_base = Path(__file__).parent.parent / "data" / "processed"
-input_path = _base / "labeled_v1.parquet"
+
+def load_processed_paths():
+    """Load processed parquet paths from config.yaml.
+
+    Falls back to repo-local defaults if config.yaml is not found.
+    """
+    repo_root = Path(__file__).parent.parent
+    config_path = repo_root / "config.yaml"
+
+    if config_path.exists():
+        with open(config_path) as f:
+            cfg = yaml.safe_load(f)["data"]
+        processed_dir = Path(cfg["processed_dir"])
+        if not processed_dir.is_absolute():
+            processed_dir = repo_root / processed_dir
+    else:
+        print(
+            "Warning: config.yaml not found, using default processed paths. "
+            "Copy config.example.yaml to config.yaml to configure."
+        )
+        processed_dir = repo_root / "data" / "processed"
+
+    return {
+        "input_path": processed_dir / "labeled_v1.parquet",
+        "output_path": processed_dir / "labeled_v2.parquet",
+    }
+
+
+paths = load_processed_paths()
+input_path = paths["input_path"]
+output_path = paths["output_path"]
 
 remote_keywords = [
     "fully remote", "100% remote", "work from home", "remote role", "work remotely",
@@ -127,7 +157,7 @@ def main():
     data = data.merge(body_df[['ID', 'REMOTE_KW']], on='ID', how='left')
 
     save_time = time.time()
-    data.to_parquet(input_path, compression='gzip')
+    data.to_parquet(output_path, compression='gzip')
     print(f"Saved labeled_v1.parquet with REMOTE_KW in {time.time() - save_time:.1f}s")
 
 
