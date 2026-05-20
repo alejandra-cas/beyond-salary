@@ -36,14 +36,18 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── ID_CNTRY_ALL_WHAM.csv                    # Remote work classification data (LLM)
 │   └── processed/                               # Pipeline outputs
 │       ├── data_v1.parquet                      # Cleaned data with AI roles and experience
-│       ├── labeled_v1.parquet                   # Data with benefit labels (incl. REMOTE_KW)
+│       ├── labeled_v1.parquet                   # Data with keyword + structured benefit labels
 │       ├── occ_year_analysis_raw.parquet        # Occupation-year aggregated analysis data
 │       └── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
 ├── results/            # Generated outputs
 │   ├── figures/                              # Original figures (prior runs)
 │   ├── figures_2026/                         # Updated figures (MAY26 dataset)
-│   │   ├── benefits_over_time/              # Time trend plots
-│   │   ├── pct_jobs_by_benefit_and_role_type/  # Benefit prevalence plots
+│   │   ├── descriptive/                     # Descriptive figures
+│   │   ├── regression/                      # Regression coefficient plots
+│   │   ├── salary/                          # Salary analysis figures
+│   │   ├── industry_year/                   # Industry-year wage vs perk coefficient figures
+│   │   ├── robustness/                      # Robustness check figures
+│   │   ├── perk_positioning/                # Perk prominence-position figures
 │   │   ├── high_ai_firms/                   # Within-firm perk premium plots
 │   │   └── scatterplots/                    # Correlation analyses
 │   └── tables_2026/    # Updated regression tables and robustness outputs
@@ -52,7 +56,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │       ├── within_firm_perk_diff.csv        # Within-firm AI−Non-AI perk gap by firm tier
 │       ├── high_ai_firm_summary.csv         # Firm counts and median AI share per tier
 │       ├── ai_threshold_robustness.csv      # AI ROLE coefficients across 1+/2+/3+ thresholds
-│       └── perk_positioning_results.csv     # OLS coefficients: AI ROLE on perk prominence score
+│       ├── perk_positioning_results.csv     # OLS coefficients: AI ROLE on perk prominence score
+│       └── structured_benefits_regression.csv  # Structured benefit logit results (P1 M2)
 ├── config.example.yaml # Template for local data path config (tracked)
 ├── config.yaml         # Local data path config (gitignored)
 └── pyproject.toml      # Project dependencies (uv)
@@ -102,6 +107,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
    # Core analyses
    python analysis/descriptive_analysis.py
+   python analysis/descriptive_analysis.py --include-structured
    python analysis/regression_models.py
    python analysis/occupation_year_balanced_sample_analysis.py
    python analysis/salary_analysis.py
@@ -119,6 +125,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
 ### Core Analysis (`analysis/`)
 - **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis
+  - Default run outputs keyword-benefit figures.
+  - Add `--include-structured` to also output combined keyword+structured figures.
 - **regression_models.py**: Runs job-level logit models for each benefit with `AI ROLE` as the key predictor using two model panels.
    - **Panel 1 (Industry-based progression)**
       1. **P1 M1 (Baseline):** Year FE + Industry FE
@@ -137,6 +145,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 - **ai_threshold_robustness.py**: Robustness check on AI role classification threshold. Re-runs the main P1 M2 spec with 1+, 2+, and 3+ AI skill requirements. Workplace culture strengthens with stricter thresholds; parental leave and remote work are robust at 1+ and 2+ but lose significance at 3+ (power issue — only 226 postings).
 - **perk_positioning_analysis.py**: OLS regression of perk prominence score on AI ROLE, conditional on the benefit being mentioned. Health & Wellbeing and Paid Leave appear significantly *lower* in AI postings, suggesting perks are part of compensation packages rather than recruiting bait.
 - **keyword_vs_structured_benefits.ipynb**: Validates keyword-based benefit labels against the structured `BENEFIT_NAME` / `BENEFIT_SUBCATEGORY_NAME` / `BENEFIT_CATEGORIES_NAME` fields. Reports precision, recall, and F1 per benefit, with disagreement inspection.
+- **structured_benefits_regression.py**: Runs P1 M2 logit models for structured categories (`S_FLEX_WORK`, `S_PROF_DEV`, `S_HEALTH_WELLNESS`, `S_REMOTE`) and outputs a coefficient table + plot. Current takeaway: no notable positive structured-benefit premium for AI postings; coefficients are lower/near-zero for most structured benefits, except remote work which is positive.
 - **new_data_exploration.ipynb**: Exploratory analysis notebook for the MAY26 subsample data
 - **wage_info.ipynb**: Wage distribution analysis
 
@@ -153,12 +162,17 @@ This repository contains the reproducible code and analysis for the paper Beyond
 - **Occupation-year differences**: `results/tables/occ_year_models/difference_regression_table_combined.html`
 
 ### Key Figures
-- **Model coefficients plot**: `results/figures_2026/model_coefficients_plot_industry_converged.png`
-- **AI roles over time**: `results/figures_2026/pct_ai_roles_overall_industry.png`
-- **Benefit differences**: `results/figures_2026/benefits_over_time/benefit_diffs_time.png`
-- **Individual benefit trends**: `results/figures_2026/benefits_over_time/over_time_color_{benefit}.png` (6 files)
-- **Occupation analysis**: `results/figures_2026/percent_by_occupation_colors_2024_{benefit}.png` (6 files)
-- **Salary analysis**: `results/figures_2026/salary_by_benefit_combined.png`
+- **Model coefficients plot**: `results/figures_2026/regression/model_coefficients_plot_industry_converged.png`
+- **Structured-benefit coefficients plot**: `results/figures_2026/regression/structured_benefits_ai_role_coef.png`
+- **AI roles over time**: `results/figures_2026/descriptive/pct_ai_roles_overall_industry.png`
+- **Keyword benefit differences**: `results/figures_2026/descriptive/benefits_over_time/benefit_diffs_time_keyword.png`
+- **Combined keyword + structured differences**: `results/figures_2026/descriptive/benefits_over_time/benefit_diffs_time_all.png`
+- **Individual keyword benefit trends**: `results/figures_2026/descriptive/benefits_over_time/benefit_over_time_{benefit}.png` (6 files)
+- **Occupation analysis**: `results/figures_2026/descriptive/by_occupation/percent_by_occupation_{benefit}.png` (6 files)
+- **Salary analysis**: `results/figures_2026/salary/salary_by_benefit_combined.png`
+- **Industry-year wage vs perk figures**: `results/figures_2026/industry_year/`
+- **Threshold robustness figure**: `results/figures_2026/robustness/ai_threshold_robustness.png`
+- **Perk positioning figure**: `results/figures_2026/perk_positioning/perk_positioning_ai_coef.png`
 - **Scatterplots**: `results/figures_2026/scatterplots/` (multiple correlation analyses)
 
 
@@ -169,4 +183,3 @@ This repository contains the reproducible code and analysis for the paper Beyond
   Castaneda, Bone & Stephany. "Beyond pay: AI skills reward more job benefits." Working Paper, 2025.
 
 ## License
-
