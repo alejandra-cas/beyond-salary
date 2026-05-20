@@ -36,7 +36,7 @@ MIN_CELL_OBS = 50       # Minimum observations per industry-year cell
 MIN_POSITIVE = 10       # Minimum positive outcomes for logit to be estimable
 OUTLIER_BETA_CAP = 5    # Drop perk betas with |beta| > this (quasi-separation artifacts)
 
-RESULTS_DIR = Path(__file__).parent.parent / "results" / "figures_2026"
+RESULTS_DIR = Path(__file__).parent.parent / "results" / "figures_2026" / "industry_year"
 TABLES_DIR = Path(__file__).parent.parent / "results" / "tables_2026"
 
 

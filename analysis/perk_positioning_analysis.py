@@ -13,7 +13,7 @@ Model: OLS — POSITION ~ AI_ROLE + Year FE + Industry FE + Education FE + Exper
 
 Outputs:
 - results/tables_2026/perk_positioning_results.csv
-- results/figures_2026/perk_positioning_ai_coef.png
+- results/figures_2026/perk_positioning/perk_positioning_ai_coef.png
 """
 
 import os
@@ -36,7 +36,7 @@ from package_files.benefits_defns import (
 
 plt.rcParams.update({"font.size": 13})
 
-OUTPUT_FIGS = Path("results/figures_2026")
+OUTPUT_FIGS = Path("results/figures_2026/perk_positioning")
 OUTPUT_TABLES = Path("results/tables_2026")
 
 POSITION_COLS = {

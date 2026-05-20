@@ -3,9 +3,9 @@
 This script generates 5 visualizations from the descriptive statistics analysis:
 1. % AI roles over time plot (overall and industry average)
 2. Difference in percent jobs with benefit, AI-non-AI
-3. Percent of jobs with each of 6 benefits for ai and non-ai roles
-4. Benefits over time (over_time_color_{benefit}.png)
-5. Percent by occupation (percent_by_occupation_colors_2024_{benefit}.png)
+3. Percent of jobs with each keyword benefit for AI and non-AI roles
+4. Benefits over time (benefit_over_time_{benefit}.png)
+5. Percent by occupation (percent_by_occupation_{benefit}.png)
 """
 
 import pandas as pd
@@ -71,6 +71,23 @@ occupation = "SOC_MAJOR_GROUP"
 # Set plot font size
 plt.rcParams.update({"font.size": 14})
 
+FIG_ROOT = Path("results/figures_2026/descriptive")
+BENEFITS_OVER_TIME_DIR = FIG_ROOT / "benefits_over_time"
+BENEFITS_BY_ROLE_DIR = FIG_ROOT / "pct_jobs_by_benefit_and_role_type"
+BY_OCCUPATION_DIR = FIG_ROOT / "by_occupation"
+
+
+def format_benefit_label(benefit_key, label):
+    """Add benefit-source tag to labels used in figures."""
+    if benefit_key.startswith("S_"):
+        return f"{label} (Structured)"
+    return label
+
+
+def benefit_slug(benefit_key):
+    """Filename-safe benefit key."""
+    return benefit_key.lower().replace(" ", "_")
+
 
 def load_data():
     """Load the main dataset."""
@@ -85,11 +102,7 @@ def load_data():
 
 def create_figures_directory():
     """Create directories for saving figures if they don't exist."""
-    directories = [
-        "results/figures_2026",
-        "results/figures_2026/benefits_over_time",
-        "results/figures_2026/pct_jobs_by_benefit_and_role_type",
-    ]
+    directories = [FIG_ROOT, BENEFITS_OVER_TIME_DIR, BENEFITS_BY_ROLE_DIR, BY_OCCUPATION_DIR]
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
 
@@ -149,9 +162,7 @@ def generate_ai_roles_over_time_plot(usdf):
     )
     plt.xlabel(None)
     plt.ylabel("% AI Roles", fontsize=18)
-    plt.savefig(
-        "results/figures_2026/pct_ai_roles_overall_industry.png", bbox_inches="tight"
-    )
+    plt.savefig(FIG_ROOT / "pct_ai_roles_overall_industry.png", bbox_inches="tight")
     # plt.show()
 
 
@@ -225,10 +236,12 @@ def generate_benefit_differences_plot(usdf):
 
     ax.set_xlabel(None)
     ax.set_ylabel("Difference in Percent Jobs with Benefit, AI - Non-AI")
-    ax.legend(benefits4_labels)
+    ax.legend(
+        [format_benefit_label(benefit, benefits_labels_map[benefit]) for benefit in benefits4]
+    )
 
     plt.tight_layout()
-    plt.savefig("results/figures_2026/benefits_over_time/benefit_diffs_time.png")
+    plt.savefig(BENEFITS_OVER_TIME_DIR / "benefit_diffs_time_keyword.png")
     # plt.show()    
 
 
@@ -260,7 +273,12 @@ def generate_benefits_by_role_plot(usdf):
         )
 
     ax.set_ylabel("Percent of Jobs")
-    ax.set_xticks(x + width, benefits4_labels, rotation=45, ha="right")
+    ax.set_xticks(
+        x + width,
+        [format_benefit_label(benefit, benefits_labels_map[benefit]) for benefit in benefits4],
+        rotation=45,
+        ha="right",
+    )
     ax.set_ylim(0, 40)
 
     # Custom legend
@@ -272,10 +290,7 @@ def generate_benefits_by_role_plot(usdf):
     ]
     ax.legend(handles=legend_elements, title=None)
 
-    plt.savefig(
-        "results/figures_2026/pct_jobs_by_benefit_and_role_type/benefits_ai_role_colors_10m_2024.png",
-        bbox_inches="tight",
-    )
+    plt.savefig(BENEFITS_BY_ROLE_DIR / "benefits_ai_role_keyword.png", bbox_inches="tight")
     # plt.show()
 
 
@@ -299,15 +314,15 @@ def plot_benefits_over_time(merged_data, benefit, period, colors_dict=None, labe
     ax.set_xlabel(None)
     ax.set_ylabel("Percent Jobs with Benefit")
     ax.legend(title="AI Role", labels=["Yes", "No"])
-    ax.set_title(labels_dict[benefit])
+    ax.set_title(format_benefit_label(benefit, labels_dict[benefit]))
     ax.set_ylim(0, 50)
-    plt.savefig(f"results/figures_2026/benefits_over_time/over_time_color_{benefit}.png")
+    plt.savefig(BENEFITS_OVER_TIME_DIR / f"benefit_over_time_{benefit_slug(benefit)}.png")
     plt.close()
 
 
 def generate_benefits_over_time_plots(usdf):
     """
-    Generate Figure 4: Benefits over time (over_time_color_{benefit}.png)
+    Generate Figure 4: Benefits over time (benefit_over_time_{benefit}.png)
     """
     print("Generating Figure 4: Benefits over time plots...")
 
@@ -372,7 +387,10 @@ def plot_benefit_occ_percents(df, benefit):
         order=sorted_data["Occupation"],
     )
 
-    ax.set_xlabel(f"Percent Jobs with {benefits_labels_map[benefit]}", fontsize=14)
+    ax.set_xlabel(
+        f"Percent Jobs with {format_benefit_label(benefit, benefits_labels_map[benefit])}",
+        fontsize=14,
+    )
     ax.set_ylabel("Occupation", fontsize=14)
     ax.set_title(None)
 
@@ -380,13 +398,13 @@ def plot_benefit_occ_percents(df, benefit):
     plt.legend(title="AI ROLE", bbox_to_anchor=(1.02, 1), loc="upper left")
     plt.subplots_adjust(bottom=0.2, left=0.1, right=0.9, top=0.9)
     plt.tight_layout()
-    plt.savefig(f"results/figures_2026/percent_by_occupation_colors_2024_{benefit}.png")
+    plt.savefig(BY_OCCUPATION_DIR / f"percent_by_occupation_{benefit_slug(benefit)}.png")
     # plt.show()
 
 
 def generate_benefits_by_occupation_plots(usdf):
     """
-    Generate Figure 5: Percent by occupation (percent_by_occupation_colors_2024_{benefit}.png)
+    Generate Figure 5: Percent by occupation (percent_by_occupation_{benefit}.png)
     """
     print("Generating Figure 5: Benefits by occupation plots...")
 
@@ -456,7 +474,12 @@ def generate_combined_benefits_by_role_plot(usdf):
 
     ax.set_ylabel("Percent of Jobs", fontsize=14)
     ax.set_xticks(x + width / 2)
-    ax.set_xticklabels(benefits6_labels, rotation=45, ha="right", fontsize=11)
+    ax.set_xticklabels(
+        [format_benefit_label(benefit, label) for benefit, label in zip(benefits6, benefits6_labels)],
+        rotation=45,
+        ha="right",
+        fontsize=11,
+    )
     ax.set_ylim(0, 40)
 
     from matplotlib.patches import Patch
@@ -466,11 +489,7 @@ def generate_combined_benefits_by_role_plot(usdf):
     ]
     ax.legend(handles=legend_elements, title=None, fontsize=12)
 
-    plt.savefig(
-        "results/figures_2026/pct_jobs_by_benefit_and_role_type/benefits_all_ai_role.png",
-        bbox_inches="tight",
-        dpi=150,
-    )
+    plt.savefig(BENEFITS_BY_ROLE_DIR / "benefits_all_ai_role.png", bbox_inches="tight", dpi=150)
     plt.close()
     print("Saved: benefits_all_ai_role.png")
 
@@ -500,14 +519,14 @@ def generate_combined_benefit_differences_plot(usdf):
 
     ax.set_xlabel(None)
     ax.set_ylabel("Difference in Percent Jobs with Benefit, AI - Non-AI", fontsize=12)
-    ax.legend(benefits6_labels, fontsize=9, loc="upper left")
+    ax.legend(
+        [format_benefit_label(benefit, label) for benefit, label in zip(benefits6, benefits6_labels)],
+        fontsize=9,
+        loc="upper left",
+    )
 
     plt.tight_layout()
-    plt.savefig(
-        "results/figures_2026/benefits_over_time/benefit_diffs_time_all.png",
-        bbox_inches="tight",
-        dpi=150,
-    )
+    plt.savefig(BENEFITS_OVER_TIME_DIR / "benefit_diffs_time_all.png", bbox_inches="tight", dpi=150)
     plt.close()
     print("Saved: benefit_diffs_time_all.png")
 

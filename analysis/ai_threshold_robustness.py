@@ -12,7 +12,7 @@ For each threshold, reruns the main model spec (P1 M2: Year + Industry + Educati
 
 Outputs:
 - results/tables_2026/ai_threshold_robustness.csv   — coefficients table
-- results/figures_2026/ai_threshold_robustness.png  — coefficient plot
+- results/figures_2026/robustness/ai_threshold_robustness.png  — coefficient plot
 """
 
 import os
@@ -37,7 +37,7 @@ from package_files.benefits_defns import (
 
 plt.rcParams.update({"font.size": 13})
 
-OUTPUT_FIGS = Path("results/figures_2026")
+OUTPUT_FIGS = Path("results/figures_2026/robustness")
 OUTPUT_TABLES = Path("results/tables_2026")
 
 THRESHOLDS = {

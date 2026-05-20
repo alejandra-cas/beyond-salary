@@ -324,11 +324,11 @@ def generate_coefficients_plot(results_df):
     plt.tight_layout()
     
     # Save plot
-    os.makedirs('results/figures_2026', exist_ok=True)
-    plt.savefig('results/figures_2026/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
+    os.makedirs('results/figures_2026/regression', exist_ok=True)
+    plt.savefig('results/figures_2026/regression/model_coefficients_plot_industry_converged.png', dpi=300, bbox_inches='tight')
     # plt.show()
     
-    print("Model coefficients plot saved to results/figures_2026/model_coefficients_plot_industry_converged.png")
+    print("Model coefficients plot saved to results/figures_2026/regression/model_coefficients_plot_industry_converged.png")
 
 # Update the function to use the requested labels
 def create_clean_formatted_table_updated(models, benefit_name):
@@ -1041,7 +1041,7 @@ def main():
     print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
     print("Generated outputs:")
-    print("1. Model coefficients plot: results/figures_2026/model_coefficients_plot_industry_converged.png")
+    print("1. Model coefficients plot: results/figures_2026/regression/model_coefficients_plot_industry_converged.png")
     print("2. Individual regression tables: results/tables_2026/job_level_model_2026/")
     print("3. Wide table: results/tables_2026/complete_wide_table_2026_corrected.html")
     print("4. Panel summaries: results/tables_2026/model_panels_ai_role_long.csv")

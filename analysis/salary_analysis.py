@@ -221,7 +221,7 @@ def generate_combined_figure(salary_stats):
     plt.tight_layout()
     
     # Save figure
-    output_path = 'results/figures_2026/salary_by_benefit_combined.png'
+    output_path = 'results/figures_2026/salary/salary_by_benefit_combined.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     print(f"Saving figure to: {output_path}")

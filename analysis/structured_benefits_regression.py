@@ -8,12 +8,14 @@ S_HEALTH_WELLNESS, S_REMOTE.
 
 Outputs:
 - results/tables_2026/structured_benefits_regression.csv
+- results/figures_2026/regression/structured_benefits_ai_role_coef.png
 """
 
 import sys
 import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent / "src"))
@@ -26,6 +28,7 @@ from package_files.benefits_defns import (
 )
 
 OUTPUT_TABLES = Path("results/tables_2026")
+OUTPUT_FIGS = Path("results/figures_2026/regression")
 
 STRUCTURED_BENEFITS = {
     "S_FLEX_WORK": "Flexible Work Schedules",
@@ -120,6 +123,43 @@ def save_results(results_df):
     print(results_df[["benefit_label", "coef_str", "se", "pvalue", "nobs", "pseudo_r2"]].to_string(index=False))
 
 
+def plot_results(results_df):
+    os.makedirs(OUTPUT_FIGS, exist_ok=True)
+
+    plot_df = results_df.copy()
+    plot_df = plot_df.dropna(subset=["coef", "se"])
+
+    if plot_df.empty:
+        print("No converged coefficients to plot.")
+        return
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = np.arange(len(plot_df))
+
+    ax.errorbar(
+        x,
+        plot_df["coef"].values,
+        yerr=1.96 * plot_df["se"].values,
+        fmt="o",
+        color="#466eb4",
+        ecolor="#466eb4",
+        capsize=4,
+        markersize=8,
+    )
+    ax.axhline(0, color="grey", linewidth=0.8)
+    ax.set_xticks(x, labels=plot_df["benefit_label"].tolist())
+    ax.set_xticklabels(plot_df["benefit_label"].tolist(), rotation=45, fontsize=14, ha="right")
+    ax.tick_params(axis="y", labelsize=14)
+    ax.set_xlabel(None)
+    ax.set_ylabel("Log-Odds Coefficient (with 95% CI)", fontsize=16)
+    plt.tight_layout()
+
+    out = OUTPUT_FIGS / "structured_benefits_ai_role_coef.png"
+    plt.savefig(out, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Saved: {out}")
+
+
 def main():
     print("Loading data...")
     df = load_data()
@@ -129,6 +169,7 @@ def main():
 
     print("\nSaving results...")
     save_results(results_df)
+    plot_results(results_df)
 
     print("\nDone.")
 
