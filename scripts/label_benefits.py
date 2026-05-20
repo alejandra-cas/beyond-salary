@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import json
 import time
 
 from pathlib import Path
@@ -282,6 +283,39 @@ def main():
     print(f"  CULTURE: {time.time() - start:.1f}s")
 
     print(f"Total labeling time: {time.time() - start:.1f}s")
+
+    # --- Structured-field benefit labels ---
+    print("Labeling benefits from structured BENEFIT_SUBCATEGORY_NAME field...")
+    struct_start = time.time()
+
+    def parse_benefit_list(val):
+        if isinstance(val, str) and val.startswith("["):
+            try:
+                return json.loads(val)
+            except (json.JSONDecodeError, ValueError):
+                return []
+        return []
+
+    parsed = data["BENEFIT_SUBCATEGORY_NAME"].apply(parse_benefit_list)
+
+    def has_any(series, terms):
+        terms_lower = {t.lower() for t in terms}
+        return series.apply(lambda lst: any(v.lower() in terms_lower for v in lst if isinstance(v, str)))
+
+    data["S_FLEX_WORK"] = has_any(parsed, ["Flexible Work Schedules"])
+    print(f"  S_FLEX_WORK: {data['S_FLEX_WORK'].sum():,} rows ({time.time() - struct_start:.1f}s)")
+
+    data["S_PROF_DEV"] = has_any(parsed, ["Professional Development", "Leadership Development", "Mentorships"])
+    print(f"  S_PROF_DEV: {data['S_PROF_DEV'].sum():,} rows ({time.time() - struct_start:.1f}s)")
+
+    data["S_HEALTH_WELLNESS"] = has_any(parsed, [
+        "Health and Wellness Programs", "Mental Health", "Bereavement/Mental Health Leave",
+        "Health and Wellness Stipends", "Health and Wellness Applications",
+    ])
+    print(f"  S_HEALTH_WELLNESS: {data['S_HEALTH_WELLNESS'].sum():,} rows ({time.time() - struct_start:.1f}s)")
+
+    data["S_REMOTE"] = data["REMOTE_TYPE_NAME"].isin(["Remote", "Hybrid Remote"])
+    print(f"  S_REMOTE: {data['S_REMOTE'].sum():,} rows ({time.time() - struct_start:.1f}s)")
 
     # --- Perk positioning (prominence scores) ---
     print("Computing perk prominence positions...")
