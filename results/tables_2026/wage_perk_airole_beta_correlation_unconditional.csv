@@ -1,0 +1,7 @@
+benefit,n_cells,correlation,mean_wage_airole_beta,mean_perk_airole_beta
+Tuition Assistance,44,-0.386,0.4465,0.5599
+Paid Leave,65,-0.231,0.431,0.1054
+Health and Wellbeing,36,-0.547,0.4316,0.6614
+Parental Leave,40,-0.105,0.5428,1.0574
+Workplace Culture,57,0.077,0.4474,0.8933
+Remote Work,53,0.027,0.5355,1.1352
