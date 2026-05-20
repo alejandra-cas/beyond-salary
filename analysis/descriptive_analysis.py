@@ -279,8 +279,13 @@ def generate_benefits_by_role_plot(usdf):
     # plt.show()
 
 
-def plot_benefits_over_time(merged_data, benefit, period):
+def plot_benefits_over_time(merged_data, benefit, period, colors_dict=None, labels_dict=None):
     """Helper function to plot benefits over time."""
+    if colors_dict is None:
+        colors_dict = benefit_colors_2
+    if labels_dict is None:
+        labels_dict = benefits_labels_map
+
     pivot_data = merged_data.pivot(
         index=period, columns="AI ROLE", values="percentage"
     ).fillna(0)
@@ -290,14 +295,14 @@ def plot_benefits_over_time(merged_data, benefit, period):
     ]
 
     fig, ax = plt.subplots(figsize=(10, 6))
-    pivot_data.plot(ax=ax, color=benefit_colors_2[benefit])
+    pivot_data.plot(ax=ax, color=colors_dict[benefit])
     ax.set_xlabel(None)
     ax.set_ylabel("Percent Jobs with Benefit")
     ax.legend(title="AI Role", labels=["Yes", "No"])
-    ax.set_title(benefits_labels_map[benefit])
+    ax.set_title(labels_dict[benefit])
     ax.set_ylim(0, 50)
     plt.savefig(f"results/figures_2026/benefits_over_time/over_time_color_{benefit}.png")
-    # plt.show()
+    plt.close()
 
 
 def generate_benefits_over_time_plots(usdf):
@@ -414,7 +419,113 @@ def generate_benefits_by_occupation_plots(usdf):
         plot_benefit_occ_percents(occ_ai_benefit_percent, benefit)
 
 
-def main():
+# --- Combined figures: all benefits (keyword + structured) ---
+
+# Import full benefit set from definitions
+import sys
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+from package_files.benefits_defns import (
+    benefits6,
+    benefits6_labels,
+    benefit_colors as all_colors,
+    benefit_colors_2 as all_colors_2,
+)
+
+
+def generate_combined_benefits_by_role_plot(usdf):
+    """Percent of jobs with each benefit for AI and non-AI roles — all benefits."""
+    print("Generating combined benefits by role plot...")
+
+    percentages = usdf.groupby("AI ROLE")[benefits6].mean() * 100
+    percentages = percentages.reindex([True, False])
+
+    x = np.arange(len(benefits6))
+    width = 0.3
+
+    fig, ax = plt.subplots(figsize=(14, 6), layout="constrained")
+    for i, (role, row) in enumerate(percentages.iterrows()):
+        color = [all_colors[b] for b in benefits6]
+        alpha = 0.5 if role == False else 1.0
+        ax.bar(
+            x + i * width,
+            row[benefits6],
+            width,
+            color=color,
+            alpha=alpha,
+        )
+
+    ax.set_ylabel("Percent of Jobs", fontsize=14)
+    ax.set_xticks(x + width / 2)
+    ax.set_xticklabels(benefits6_labels, rotation=45, ha="right", fontsize=11)
+    ax.set_ylim(0, 40)
+
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor="gray", alpha=1.0, label="AI Role"),
+        Patch(facecolor="gray", alpha=0.5, label="Non-AI Role"),
+    ]
+    ax.legend(handles=legend_elements, title=None, fontsize=12)
+
+    plt.savefig(
+        "results/figures_2026/pct_jobs_by_benefit_and_role_type/benefits_all_ai_role.png",
+        bbox_inches="tight",
+        dpi=150,
+    )
+    plt.close()
+    print("Saved: benefits_all_ai_role.png")
+
+
+def generate_combined_benefit_differences_plot(usdf):
+    """Difference in percent jobs with benefit (AI − non-AI) over time — all benefits."""
+    print("Generating combined benefit differences over time plot...")
+
+    all_quarters = usdf["QUARTER"].unique()
+    pct_diff_df = pd.DataFrame(all_quarters).set_index(0)
+
+    for benefit in benefits6:
+        merged_data = count_benefits(usdf, benefit, "QUARTER")
+        pivot_data = merged_data.pivot(
+            index="QUARTER", columns="AI ROLE", values="percentage"
+        ).fillna(0)
+        pivot_data.columns = ["Other", "AI Role"]
+        pivot_data["pct_diff"] = pivot_data["AI Role"] - pivot_data["Other"]
+        pivot_data = pivot_data.reindex(pct_diff_df.index).fillna(0)
+        pct_diff_df[benefit] = pivot_data["pct_diff"]
+
+    pct_diff_df.sort_index(inplace=True)
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+    color_list = [all_colors[b] for b in benefits6]
+    pct_diff_df.plot(ax=ax, color=color_list)
+
+    ax.set_xlabel(None)
+    ax.set_ylabel("Difference in Percent Jobs with Benefit, AI - Non-AI", fontsize=12)
+    ax.legend(benefits6_labels, fontsize=9, loc="upper left")
+
+    plt.tight_layout()
+    plt.savefig(
+        "results/figures_2026/benefits_over_time/benefit_diffs_time_all.png",
+        bbox_inches="tight",
+        dpi=150,
+    )
+    plt.close()
+    print("Saved: benefit_diffs_time_all.png")
+
+
+def generate_combined_benefits_over_time_plots(usdf):
+    """Benefits over time — individual plots for structured benefits."""
+    print("Generating over-time plots for structured benefits...")
+
+    from package_files.benefits_defns import benefits_labels_map as all_labels_map
+    struct_benefits = ["S_FLEX_WORK", "S_PROF_DEV", "S_HEALTH_WELLNESS", "S_REMOTE"]
+    for benefit in struct_benefits:
+        print(f"  Generating {benefit} over time plot...")
+        merged_data = count_benefits(usdf, benefit, "QUARTER")
+        plot_benefits_over_time(merged_data, benefit, "QUARTER",
+                                colors_dict=all_colors_2, labels_dict=all_labels_map)
+
+
+def main(include_structured=False):
     """Main function to generate all figures."""
     print("Loading data...")
     usdf = load_data()
@@ -439,8 +550,23 @@ def main():
     # Figure 5: Benefits by occupation
     generate_benefits_by_occupation_plots(usdf)
 
+    if include_structured:
+        print("\nGenerating combined figures (keyword + structured benefits)...")
+        generate_combined_benefits_by_role_plot(usdf)
+        generate_combined_benefit_differences_plot(usdf)
+        generate_combined_benefits_over_time_plots(usdf)
+
     print("All figures generated successfully!")
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description="Descriptive analysis figures")
+    parser.add_argument(
+        "--include-structured",
+        action="store_true",
+        default=False,
+        help="Also generate combined figures with structured-field benefits",
+    )
+    args = parser.parse_args()
+    main(include_structured=args.include_structured)
