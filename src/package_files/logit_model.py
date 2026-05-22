@@ -327,7 +327,6 @@ def run_logit_model(
     if fixed_effect_group is not None:
         groups = (
             model_data[fixed_effect_group]
-            .fillna("Unknown Group")
             .astype(str)
             .to_numpy()
         )

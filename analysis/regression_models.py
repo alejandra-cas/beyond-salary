@@ -54,6 +54,21 @@ benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
+FIRM_FE_SAMPLE_SIZE = 1_000_000
+FIRM_FE_SAMPLE_SEED = 42
+
+
+def print_firm_fe_sample_diagnostics(data):
+    """Print quick diagnostics for the sampled firm-FE dataset."""
+    firm_counts = data[firm].dropna().astype(str).value_counts()
+
+    print("\nFirm FE sample diagnostics:")
+    print(f"Observations: {len(data):,}")
+    print(f"Firms with non-missing IDs: {len(firm_counts):,}")
+    if not firm_counts.empty:
+        print(f"Max firm size: {int(firm_counts.max()):,}")
+        print("Top 10 firm sizes:")
+        print(firm_counts.head(10).to_string())
 
 def load_and_prepare_data():
     """Load and prepare the analysis dataset with all preprocessing."""
@@ -88,6 +103,51 @@ def run_2024_models(data):
     print("="*80)
     print("RUNNING REGRESSION MODELS")
     print("="*80)
+
+    # Model 5 first: replace industry FE with firm FE, keeping state FE, salary, and individual controls
+    print("\n" + "="*50)
+    print("MODEL 5: STATE + FIRM FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
+    print("="*50)
+
+    firm_fe_pool = data.copy()
+    zero_company_mask = firm_fe_pool[firm].astype(str).str.strip() == '0'
+    if zero_company_mask.any():
+        print(f"Dropping {int(zero_company_mask.sum()):,} observations with COMPANY == 0 before firm FE sampling")
+        firm_fe_pool = firm_fe_pool.loc[~zero_company_mask].copy()
+
+    firm_fe_n = min(FIRM_FE_SAMPLE_SIZE, len(firm_fe_pool))
+    if firm_fe_n < len(firm_fe_pool):
+        print(
+            f"Sampling {firm_fe_n:,} observations (random_state={FIRM_FE_SAMPLE_SEED}) "
+            "for the firm FE model"
+        )
+        firm_fe_data = firm_fe_pool.sample(n=firm_fe_n, random_state=FIRM_FE_SAMPLE_SEED).copy()
+    else:
+        print("Dataset has <= 100,000 eligible observations; using the full firm FE sample")
+        firm_fe_data = firm_fe_pool.copy()
+
+    print_firm_fe_sample_diagnostics(firm_fe_data)
+
+    benefit_models_firm_state_5 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            firm_fe_data,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, region, education, experience],
+            cont_controls=['LOG_SALARY'],
+            ref_category={education: "No Education Listed", experience: 'None Listed'},
+            get_vif=False,
+            fixed_effect_group=firm,
+        )
+        if model != "Error" and hasattr(model, 'dropped_groups'):
+            print(
+                f"Conditional logit kept {model.used_groups:,} firms and dropped "
+                f"{model.dropped_groups:,} firms with no within-firm outcome variation"
+            )
+        benefit_models_firm_state_5.append(model)
     
     # Model 1: Baseline (Year + Industry fixed effects)
     print("\n" + "="*50)
@@ -151,27 +211,6 @@ def run_2024_models(data):
             get_vif=False,
         )
         benefit_models_state_industry_4.append(model)
-
-    # Model 5: Replace industry FE with firm FE, keeping state FE, salary, and individual controls
-    print("\n" + "="*50)
-    print("MODEL 5: STATE + FIRM FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
-    print("="*50)
-
-    benefit_models_firm_state_5 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_logit_model(
-            data,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, region, education, experience],
-            cont_controls=['LOG_SALARY'],
-            ref_category={education: "No Education Listed", experience: 'None Listed'},
-            get_vif=False,
-            fixed_effect_group=firm,
-        )
-        benefit_models_firm_state_5.append(model)
 
     return [
         benefit_models_industry,
