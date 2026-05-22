@@ -99,19 +99,19 @@ This repository contains the reproducible code and analysis for the paper Beyond
 4. **Run Pipeline**
    ```bash
    # Data preparation
-   python scripts/prepare_data.py
-   python scripts/label_benefits.py
-   python scripts/label_benefits_remote.py
-   python scripts/occ_year_analysis.py
-   python scripts/export_samples.py
+   uv run python scripts/prepare_data.py
+   uv run python scripts/label_benefits.py
+   uv run python scripts/label_benefits_remote.py
+   uv run python scripts/occ_year_analysis.py
+   uv run python scripts/export_samples.py
 
    # Core analyses
-   python analysis/descriptive_analysis.py
-   python analysis/descriptive_analysis.py --include-structured
-   python analysis/regression_models.py
-   python analysis/occupation_year_balanced_sample_analysis.py
-   python analysis/salary_analysis.py
-   python analysis/scatterplot_analysis.py
+   uv run python analysis/descriptive_analysis.py
+   uv run python analysis/descriptive_analysis.py --include-structured
+   uv run python analysis/regression_models.py
+   uv run python analysis/occupation_year_balanced_sample_analysis.py
+   uv run python analysis/salary_analysis.py
+   uv run python analysis/scatterplot_analysis.py
    ```
 
 ## Key Analysis Components
