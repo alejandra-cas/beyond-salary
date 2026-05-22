@@ -100,28 +100,6 @@ def add_log_salary(df):
     return df
 
 
-def add_firm_size(df):
-    """Add per-observation firm size based on total observations per firm."""
-    firm_counts = (
-        df["COMPANY"]
-        .fillna("Unknown Firm")
-        .astype(str)
-        .value_counts()
-    )
-    df["firm_size"] = (
-        df["COMPANY"]
-        .fillna("Unknown Firm")
-        .astype(str)
-        .map(firm_counts)
-        .astype(int)
-    )
-
-    print("Firm size distribution:")
-    print(df["firm_size"].describe())
-
-    return df
-
-
 def add_year_column(df):
     """Extract year from POSTED date column."""
     df["YEAR"] = pd.to_datetime(df["POSTED"]).dt.year
@@ -178,9 +156,6 @@ def main():
 
     # Add experience buckets
     all_data = create_experience_buckets(all_data)
-
-    # Add firm size based on total observations per firm
-    all_data = add_firm_size(all_data)
 
     # Add log salary
     if "SALARY" in all_data.columns:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Regression Models for 2024 Analysis (Including Data up to 2024)
+Regression Models Analysis
 
 This script runs the job-level logistic regression models.  
 Notes:
@@ -28,7 +28,6 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 from package_files.logit_model import run_logit_model
 from package_files.benefits_defns import *
 from package_files.config_utils import get_processed_dir, get_repo_root
-import statsmodels.api as sm
 from collections import defaultdict
 from stargazer.stargazer import Stargazer
 
@@ -49,30 +48,16 @@ year = 'YEAR'
 occupation = 'SOC_MAJOR_GROUP'
 experience = 'EXPERIENCE_BUCKET'
 
-# Benefits to analyze (2024 models)
+# Benefits to analyze
 benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
 benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
 
-
-def add_firm_size(data):
-    """Add per-observation firm size based on total observations per firm."""
-    data = data.copy()
-    data[firm] = data[firm].fillna('Unknown Firm').astype(str)
-    data[region] = data[region].fillna('Unknown State').astype(str)
-    firm_counts = data[firm].value_counts()
-    data['firm_size'] = data[firm].map(firm_counts).astype(int)
-
-    print("Firm size summary:")
-    print(data['firm_size'].describe())
-
-    return data
-
 def load_and_prepare_data():
-    """Load and prepare the 2024 dataset with all preprocessing."""
-    print("Loading 2024 dataset...")
+    """Load and prepare the analysis dataset with all preprocessing."""
+    print("Loading analysis dataset...")
     
     # Load the data
     data_path = PROCESSED_DIR / "labeled_v2.parquet"
@@ -83,15 +68,13 @@ def load_and_prepare_data():
     # Using full dataset (not balanced/even sample)
     data = pd.read_parquet(data_path)
 
+    data[region] = data[region].fillna('Unknown State').astype(str)
+
     # Replace small industries with "Other" (this is also done in run_logit_model but we do it here for consistency)
     print("Processing industry categories...")
     industry_counts = data['NAICS_2022_2_NAME'].value_counts()
     small_industries = industry_counts[industry_counts < 30].index  
     data['NAICS_2022_2_NAME'] = data['NAICS_2022_2_NAME'].replace(small_industries, 'Other')
-
-    if 'firm_size' not in data.columns:
-        print("Adding firm_size column...")
-        data = add_firm_size(data)
     
     print(f"Final dataset shape: {data.shape}")
     print(f"Year distribution:")
@@ -100,10 +83,10 @@ def load_and_prepare_data():
     return data
 
 def run_2024_models(data):
-    """Run model specifications, including state fixed effects and firm-size controls."""
+    """Run the five regression specifications used in the analysis."""
     
     print("="*80)
-    print("RUNNING 2024 REGRESSION MODELS")
+    print("RUNNING REGRESSION MODELS")
     print("="*80)
     
     # Model 1: Baseline (Year + Industry fixed effects)
@@ -149,12 +132,32 @@ def run_2024_models(data):
                               ref_category={education: "No Education Listed", experience: 'None Listed'})
         benefit_models_industry_3.append(model)
 
-    # Model 4: Full model with state FE + firm size control
+    # Model 4: State + Industry FE with salary and individual controls
     print("\n" + "="*50)
-    print("MODEL 4: STATE FIXED EFFECTS + FIRM SIZE")
+    print("MODEL 4: STATE + INDUSTRY FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
     print("="*50)
 
-    benefit_models_firm_size_state_4 = []
+    benefit_models_state_industry_4 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            data,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, industry, region, education, experience],
+            cont_controls=['LOG_SALARY'],
+            ref_category={education: "No Education Listed", experience: 'None Listed'},
+            get_vif=False,
+        )
+        benefit_models_state_industry_4.append(model)
+
+    # Model 5: Replace industry FE with firm FE, keeping state FE, salary, and individual controls
+    print("\n" + "="*50)
+    print("MODEL 5: STATE + FIRM FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
+    print("="*50)
+
+    benefit_models_firm_state_5 = []
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
@@ -163,57 +166,19 @@ def run_2024_models(data):
             dependent=benefit,
             predictor='AI ROLE',
             cat_controls=[year, region, education, experience],
-            cont_controls=['LOG_SALARY', 'firm_size'],
+            cont_controls=['LOG_SALARY'],
             ref_category={education: "No Education Listed", experience: 'None Listed'},
             get_vif=False,
+            fixed_effect_group=firm,
         )
-        benefit_models_firm_size_state_4.append(model)
-
-    # Panel 2 starts here: baseline with state FE + firm size, then incremental controls
-    print("\n" + "="*50)
-    print("MODEL 5: PANEL 2 BASELINE (YEAR + STATE FE + FIRM SIZE)")
-    print("="*50)
-
-    benefit_models_firm_size_state_5 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_logit_model(
-            data,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, region],
-            cont_controls=['firm_size'],
-            get_vif=False,
-        )
-        benefit_models_firm_size_state_5.append(model)
-
-    print("\n" + "="*50)
-    print("MODEL 6: PANEL 2 + INDIVIDUAL CONTROLS + FIRM SIZE")
-    print("="*50)
-
-    benefit_models_firm_size_state_6 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_logit_model(
-            data,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, region, education, experience],
-            cont_controls=['firm_size'],
-            ref_category={education: "No Education Listed", experience: 'None Listed'},
-            get_vif=False,
-        )
-        benefit_models_firm_size_state_6.append(model)
+        benefit_models_firm_state_5.append(model)
 
     return [
         benefit_models_industry,
         benefit_models_industry_2,
         benefit_models_industry_3,
-        benefit_models_firm_size_state_4,
-        benefit_models_firm_size_state_5,
-        benefit_models_firm_size_state_6,
+        benefit_models_state_industry_4,
+        benefit_models_firm_state_5,
     ]
 
 def extract_model_results(models_2024):
@@ -221,12 +186,11 @@ def extract_model_results(models_2024):
     results_dfs = []
     
     model_names = [
-        'P1 M1: Baseline',
-        'P1 M2: +Indiv Controls',
-        'P1 M3: +Salary',
-        'P1 M4: +State FE+Firm Size',
-        'P2 M1: State FE+Firm Size',
-        'P2 M2: +Indiv Controls+Firm Size',
+        'M1: Baseline',
+        'M2: +Indiv Controls',
+        'M3: +Salary',
+        'M4: +State+Industry FE',
+        'M5: Industry FE -> Firm FE',
     ]
     
     for model_idx, models in enumerate(models_2024):
@@ -782,7 +746,7 @@ def generate_individual_tables(models_2024):
     print("\nGenerating individual benefit tables...")
     
     # Create output directory
-    output_dir = TABLES_DIR / "job_level_model_2026"
+    output_dir = TABLES_DIR / "job_level_model"
     os.makedirs(output_dir, exist_ok=True)
     
     for i, benefit in enumerate(benefits4):
@@ -805,17 +769,15 @@ def generate_panel_summaries(models_2024):
     os.makedirs(TABLES_DIR, exist_ok=True)
 
     panel_map = {
-        'P1': [0, 1, 2, 3],
-        'P2': [4, 5],
+        'Main': [0, 1, 2, 3, 4],
     }
 
     model_labels = {
         0: 'M1 Baseline (Year+Industry)',
         1: 'M2 + Individual Controls',
         2: 'M3 + Salary',
-        3: 'M4 + State FE + Firm Size',
-        4: 'M1 Baseline (Year+State+Firm Size)',
-        5: 'M2 + Individual Controls + Firm Size',
+        3: 'M4 + State+Industry FE + Salary + Indiv Controls',
+        4: 'M5 Replace Industry FE with State+Firm FE + Salary + Indiv Controls',
     }
 
     rows = []
@@ -879,12 +841,12 @@ def generate_wide_table(models_2024):
     wide_table_html = create_wide_table_all_benefits_reordered(models_2024, benefits4)
     
     # Save HTML version
-    html_filename = TABLES_DIR / "complete_wide_table_2026_corrected.html"
+    html_filename = TABLES_DIR / "complete_wide_table.html"
     with open(html_filename, 'w') as f:
         f.write(f"""<!DOCTYPE html>
 <html>
 <head>
-    <title>2024 Regression Results - All Benefits</title>
+    <title>Regression Results - All Benefits</title>
     <style>
         body {{ font-family: Arial, sans-serif; margin: 20px; }}
         table {{ border-collapse: collapse; margin: 20px auto; }}
@@ -893,14 +855,14 @@ def generate_wide_table(models_2024):
     </style>
 </head>
 <body>
-    <h1>2024 Regression Results - All Benefits</h1>
+    <h1>Regression Results - All Benefits</h1>
     {wide_table_html}
 </body>
 </html>""")
     
     # Generate and save LaTeX version
     latex_table = html_to_latex_table_dynamic(models_2024)
-    latex_filename = TABLES_DIR / "complete_wide_table_2026.tex"
+    latex_filename = TABLES_DIR / "complete_wide_table.tex"
     
     with open(latex_filename, 'w') as f:
         f.write(latex_table)
@@ -1008,8 +970,8 @@ def html_to_latex_table_dynamic(models_2024):
     
     latex_lines.append("\\bottomrule")
     latex_lines.append("\\end{tabular}")
-    latex_lines.append("\\caption{2024 Regression Results - All Benefits}")
-    latex_lines.append("\\label{tab:results_2024}")
+    latex_lines.append("\\caption{Regression Results - All Benefits}")
+    latex_lines.append("\\label{tab:results_all_benefits}")
     latex_lines.append("\\begin{tablenotes}")
     latex_lines.append("\\small")
     latex_lines.append("\\item Note: *p$<$0.1; **p$<$0.05; ***p$<$0.01")
@@ -1021,7 +983,7 @@ def html_to_latex_table_dynamic(models_2024):
 
 def main():
     """Main execution function."""
-    print("BEYOND SALARY: 2024 REGRESSION MODELS ANALYSIS")
+    print("BEYOND SALARY: REGRESSION MODELS ANALYSIS")
     print("=" * 80)
     
     # Load and prepare data
@@ -1049,8 +1011,8 @@ def main():
     print("ANALYSIS COMPLETE")
     print("Generated outputs:")
     print("1. Model coefficients plot: results/figures_2026/model_coefficients_plot_industry_converged.png")
-    print("2. Individual regression tables: results/tables_2026/job_level_model_2026/")
-    print("3. Wide table: results/tables_2026/complete_wide_table_2026_corrected.html")
+    print("2. Individual regression tables: results/tables_2026/job_level_model/")
+    print("3. Wide table: results/tables_2026/complete_wide_table.html")
     print("4. Panel summaries: results/tables_2026/model_panels_ai_role_long.csv")
     print("5. Panel summaries (wide): results/tables_2026/model_panels_ai_role_coef_wide.csv")
     print("=" * 80)
