@@ -212,6 +212,27 @@ def run_2024_models(data):
         )
         benefit_models_state_industry_4.append(model)
 
+    # Model 5: Replace industry FE with firm FE, keeping state FE, salary, and individual controls
+    print("\n" + "="*50)
+    print("MODEL 5: STATE + FIRM FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
+    print("="*50)
+
+    benefit_models_firm_state_5 = []
+    for benefit in benefits4:
+        print(f"\n{benefit}")
+        print('-'*100)
+        model = run_logit_model(
+            data,
+            dependent=benefit,
+            predictor='AI ROLE',
+            cat_controls=[year, industry, region, education, experience],
+            cont_controls=['LOG_SALARY'],
+            ref_category={education: "No Education Listed", experience: 'None Listed'},
+            get_vif=False,
+            fixed_effect_group=firm,
+        )
+        benefit_models_state_industry_4.append(model)
+
     return [
         benefit_models_industry,
         benefit_models_industry_2,
