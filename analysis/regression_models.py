@@ -20,7 +20,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import sys
 import os
+import argparse
+import pickle
 from pathlib import Path
+from scipy.stats import norm
 
 # Add src directory to path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
@@ -29,7 +32,6 @@ from package_files.logit_model import run_logit_model
 from package_files.benefits_defns import *
 from package_files.config_utils import get_processed_dir, get_repo_root
 from collections import defaultdict
-from stargazer.stargazer import Stargazer
 
 # Configuration
 plt.rcParams.update({'font.size': 14})
@@ -38,6 +40,9 @@ REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 RESULTS_DIR = REPO_ROOT / "results"
 TABLES_DIR = RESULTS_DIR / "tables_2026"
+MODEL_CACHE_DIR = TABLES_DIR / "model_cache"
+CACHE_VERSION = "v3_m5_30x100k_mcse_compact"
+CACHE_FORMAT = "compact_results_only"
 
 # Field mappings
 region = 'STATE_NAME'
@@ -54,8 +59,301 @@ benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
-FIRM_FE_SAMPLE_SIZE = 1_000_000
+FIRM_FE_SUBSAMPLE_SIZE = 100_000
+FIRM_FE_SUBSAMPLE_REPEATS = 30
 FIRM_FE_SAMPLE_SEED = 42
+MODEL_5_AVERAGING_NOTE = (
+    "Model 5 coefficients are means from 30 random 100,000-row firm-FE subsample fits; "
+    "standard errors are Monte Carlo SEs of the mean across subsample estimates."
+)
+
+
+def parse_args():
+    """Parse command-line options for cache behavior."""
+    parser = argparse.ArgumentParser(description="Run job-level regression models.")
+    parser.add_argument(
+        "--refresh-cache",
+        action="store_true",
+        help="Refit all models and overwrite cached model results.",
+    )
+    parser.add_argument(
+        "--cache-path",
+        type=Path,
+        default=None,
+        help="Optional path for the model-results cache file.",
+    )
+    return parser.parse_args()
+
+
+def get_model_cache_path(data_path):
+    """Build a cache path tied to the current model spec and input data file."""
+    try:
+        data_mtime_ns = data_path.stat().st_mtime_ns
+    except FileNotFoundError:
+        data_mtime_ns = "missing"
+
+    filename = (
+        f"job_level_models_{CACHE_VERSION}_"
+        f"seed{FIRM_FE_SAMPLE_SEED}_"
+        f"repeats{FIRM_FE_SUBSAMPLE_REPEATS}_"
+        f"n{FIRM_FE_SUBSAMPLE_SIZE}_"
+        f"data{data_mtime_ns}.pkl"
+    )
+    return MODEL_CACHE_DIR / filename
+
+
+def load_cached_models(cache_path):
+    """Load cached fitted models when available."""
+    if not cache_path.exists():
+        return None
+
+    print(f"Loading cached model results from {cache_path}")
+    with open(cache_path, "rb") as f:
+        payload = pickle.load(f)
+
+    if (
+        payload.get("cache_version") != CACHE_VERSION
+        or payload.get("cache_format") != CACHE_FORMAT
+    ):
+        print("Cached model results use an old cache format/version; refitting models.")
+        return None
+
+    return deserialize_compact_model_results(payload["models_2024"])
+
+
+def save_cached_models(cache_path, models_2024):
+    """Persist compact model summaries so cache files omit fit data and samples."""
+    os.makedirs(cache_path.parent, exist_ok=True)
+    payload = {
+        "cache_version": CACHE_VERSION,
+        "cache_format": CACHE_FORMAT,
+        "firm_fe_subsample_size": FIRM_FE_SUBSAMPLE_SIZE,
+        "firm_fe_subsample_repeats": FIRM_FE_SUBSAMPLE_REPEATS,
+        "firm_fe_sample_seed": FIRM_FE_SAMPLE_SEED,
+        "model_5_note": MODEL_5_AVERAGING_NOTE,
+        "models_2024": serialize_compact_model_results(models_2024),
+    }
+    with open(cache_path, "wb") as f:
+        pickle.dump(payload, f)
+    print(f"Cached model results saved to {cache_path}")
+
+
+class AveragedLogitResults:
+    """Statsmodels-like result wrapper for averaged subsample estimates."""
+
+    def __init__(
+        self,
+        models,
+        model_name,
+        sample_size,
+        requested_repeats,
+        seeds,
+    ):
+        if not models:
+            raise ValueError("Cannot average Model 5 results without any successful fits.")
+
+        params_df = pd.concat([model.params for model in models], axis=1)
+        bse_df = pd.concat([model.bse for model in models], axis=1)
+
+        self.params = params_df.mean(axis=1)
+        self.average_model_bse = bse_df.mean(axis=1)
+        self.subsample_coef_sd = params_df.std(axis=1, ddof=1)
+        self.bse = self.subsample_coef_sd / np.sqrt(len(models))
+        if len(models) == 1:
+            self.bse = self.average_model_bse.copy()
+
+        z_scores = self.params.divide(self.bse).replace([np.inf, -np.inf], np.nan)
+        self.pvalues = pd.Series(
+            2 * (1 - norm.cdf(np.abs(z_scores))),
+            index=self.params.index,
+        )
+        self.converged = all(getattr(model, "converged", False) for model in models)
+        self.nobs = float(np.mean([model.nobs for model in models]))
+        self.prsquared = float(np.nanmean([model.prsquared for model in models]))
+        self.model_name = model_name
+        self.successful_fit_count = len(models)
+        self.requested_repeats = requested_repeats
+        self.sample_size = sample_size
+        self.seed_start = min(seeds)
+        self.seed_end = max(seeds)
+        self.model_note = MODEL_5_AVERAGING_NOTE
+
+        self.dropped_groups = int(
+            round(np.mean([getattr(model, "dropped_groups", np.nan) for model in models]))
+        )
+        self.used_groups = int(
+            round(np.mean([getattr(model, "used_groups", np.nan) for model in models]))
+        )
+
+    def summary(self):
+        summary_df = pd.DataFrame(
+            {
+                "coef": self.params,
+                "monte carlo std err": self.bse,
+                "subsample coef sd": self.subsample_coef_sd,
+                "avg model std err": self.average_model_bse,
+                "p>|z|": self.pvalues,
+            }
+        )
+        lines = [
+            self.model_name,
+            f"Converged in all averaged fits: {self.converged}",
+            f"Successful fits: {self.successful_fit_count}/{self.requested_repeats}",
+            f"Subsample size per fit: {self.sample_size:,}",
+            f"Seed range: {self.seed_start}-{self.seed_end}",
+            f"Average observations used: {self.nobs:,.0f}",
+            f"Average groups used: {self.used_groups:,}",
+            f"Average groups dropped: {self.dropped_groups:,}",
+            f"Average pseudo R-squared: {self.prsquared:.4f}",
+            "",
+            summary_df.to_string(float_format=lambda x: f"{x:0.4f}"),
+        ]
+        return "\n".join(lines)
+
+    def conf_int(self, alpha=0.05):
+        critical_value = norm.ppf(1 - alpha / 2)
+        lower = self.params - critical_value * self.bse
+        upper = self.params + critical_value * self.bse
+        return pd.DataFrame({0: lower, 1: upper})
+
+
+class CompactLogitResults:
+    """Cache-safe result object that omits raw design matrices and sampled data."""
+
+    def __init__(self, model):
+        self.params = model.params.copy()
+        self.bse = model.bse.copy()
+        self.pvalues = model.pvalues.copy()
+        self.converged = bool(getattr(model, "converged", False))
+        self.nobs = float(getattr(model, "nobs", np.nan))
+        self.prsquared = float(getattr(model, "prsquared", np.nan))
+        self.model_name = getattr(model, "model_name", type(model).__name__)
+
+        optional_attrs = [
+            "dropped_groups",
+            "used_groups",
+            "successful_fit_count",
+            "requested_repeats",
+            "sample_size",
+            "seed_start",
+            "seed_end",
+            "model_note",
+        ]
+        for attr in optional_attrs:
+            if hasattr(model, attr):
+                setattr(self, attr, getattr(model, attr))
+
+        if hasattr(model, "subsample_coef_sd"):
+            self.subsample_coef_sd = model.subsample_coef_sd.copy()
+        if hasattr(model, "average_model_bse"):
+            self.average_model_bse = model.average_model_bse.copy()
+
+    @classmethod
+    def from_payload(cls, payload):
+        obj = cls.__new__(cls)
+        obj.params = payload["params"]
+        obj.bse = payload["bse"]
+        obj.pvalues = payload["pvalues"]
+        obj.converged = payload["converged"]
+        obj.nobs = payload["nobs"]
+        obj.prsquared = payload["prsquared"]
+        obj.model_name = payload["model_name"]
+
+        for attr, value in payload.get("optional_attrs", {}).items():
+            setattr(obj, attr, value)
+
+        if payload.get("subsample_coef_sd") is not None:
+            obj.subsample_coef_sd = payload["subsample_coef_sd"]
+        if payload.get("average_model_bse") is not None:
+            obj.average_model_bse = payload["average_model_bse"]
+
+        return obj
+
+    def to_payload(self):
+        optional_attr_names = [
+            "dropped_groups",
+            "used_groups",
+            "successful_fit_count",
+            "requested_repeats",
+            "sample_size",
+            "seed_start",
+            "seed_end",
+            "model_note",
+        ]
+        return {
+            "params": self.params,
+            "bse": self.bse,
+            "pvalues": self.pvalues,
+            "converged": self.converged,
+            "nobs": self.nobs,
+            "prsquared": self.prsquared,
+            "model_name": self.model_name,
+            "optional_attrs": {
+                attr: getattr(self, attr)
+                for attr in optional_attr_names
+                if hasattr(self, attr)
+            },
+            "subsample_coef_sd": getattr(self, "subsample_coef_sd", None),
+            "average_model_bse": getattr(self, "average_model_bse", None),
+        }
+
+    def conf_int(self, alpha=0.05):
+        critical_value = norm.ppf(1 - alpha / 2)
+        lower = self.params - critical_value * self.bse
+        upper = self.params + critical_value * self.bse
+        return pd.DataFrame({0: lower, 1: upper})
+
+    def summary(self):
+        summary_df = pd.DataFrame(
+            {
+                "coef": self.params,
+                "std err": self.bse,
+                "p>|z|": self.pvalues,
+            }
+        )
+        return summary_df.to_string(float_format=lambda x: f"{x:0.4f}")
+
+
+def compact_model_results(models_2024):
+    """Strip fitted model objects down to cache-safe result summaries."""
+    compact_panels = []
+    for panel in models_2024:
+        compact_panel = []
+        for model in panel:
+            if isinstance(model, str):
+                compact_panel.append(model)
+            else:
+                compact_panel.append(CompactLogitResults(model))
+        compact_panels.append(compact_panel)
+    return compact_panels
+
+
+def serialize_compact_model_results(models_2024):
+    """Serialize compact model results as plain payloads for robust pickling."""
+    serialized_panels = []
+    for panel in compact_model_results(models_2024):
+        serialized_panel = []
+        for model in panel:
+            if isinstance(model, str):
+                serialized_panel.append(model)
+            else:
+                serialized_panel.append(model.to_payload())
+        serialized_panels.append(serialized_panel)
+    return serialized_panels
+
+
+def deserialize_compact_model_results(serialized_models):
+    """Rebuild compact result objects from cache payloads."""
+    panels = []
+    for panel in serialized_models:
+        restored_panel = []
+        for model_payload in panel:
+            if isinstance(model_payload, str):
+                restored_panel.append(model_payload)
+            else:
+                restored_panel.append(CompactLogitResults.from_payload(model_payload))
+        panels.append(restored_panel)
+    return panels
 
 
 def print_firm_fe_sample_diagnostics(data):
@@ -97,41 +395,32 @@ def load_and_prepare_data():
     
     return data
 
-def run_2024_models(data):
-    """Run the five regression specifications used in the analysis."""
-    
-    print("="*80)
-    print("RUNNING REGRESSION MODELS")
-    print("="*80)
 
-    # Model 5 first: replace industry FE with firm FE, keeping state FE, salary, and individual controls
-    print("\n" + "="*50)
-    print("MODEL 5: STATE + FIRM FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
-    print("="*50)
-
-    firm_fe_pool = data.copy()
-    zero_company_mask = firm_fe_pool[firm].astype(str).str.strip() == '0'
-    if zero_company_mask.any():
-        print(f"Dropping {int(zero_company_mask.sum()):,} observations with COMPANY == 0 before firm FE sampling")
-        firm_fe_pool = firm_fe_pool.loc[~zero_company_mask].copy()
-
-    firm_fe_n = min(FIRM_FE_SAMPLE_SIZE, len(firm_fe_pool))
-    if firm_fe_n < len(firm_fe_pool):
+def run_averaged_firm_fe_model(firm_fe_pool, benefit):
+    """Fit Model 5 repeatedly on random subsamples and average successful fits."""
+    sample_n = min(FIRM_FE_SUBSAMPLE_SIZE, len(firm_fe_pool))
+    if sample_n < FIRM_FE_SUBSAMPLE_SIZE:
         print(
-            f"Sampling {firm_fe_n:,} observations (random_state={FIRM_FE_SAMPLE_SEED}) "
-            "for the firm FE model"
+            f"Eligible firm-FE pool has only {sample_n:,} rows; "
+            "using all eligible rows for each repeat"
         )
-        firm_fe_data = firm_fe_pool.sample(n=firm_fe_n, random_state=FIRM_FE_SAMPLE_SEED).copy()
-    else:
-        print("Dataset has <= 100,000 eligible observations; using the full firm FE sample")
-        firm_fe_data = firm_fe_pool.copy()
 
-    print_firm_fe_sample_diagnostics(firm_fe_data)
+    successful_models = []
+    successful_seeds = []
+    all_seeds = [
+        FIRM_FE_SAMPLE_SEED + repeat_idx
+        for repeat_idx in range(FIRM_FE_SUBSAMPLE_REPEATS)
+    ]
 
-    benefit_models_firm_state_5 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
+    for repeat_idx, seed in enumerate(all_seeds, start=1):
+        print(
+            f"Model 5 repeat {repeat_idx}/{FIRM_FE_SUBSAMPLE_REPEATS}: "
+            f"sampling {sample_n:,} rows (random_state={seed})"
+        )
+        firm_fe_data = firm_fe_pool.sample(n=sample_n, random_state=seed).copy()
+        if repeat_idx == 1:
+            print_firm_fe_sample_diagnostics(firm_fe_data)
+
         model = run_logit_model(
             firm_fe_data,
             dependent=benefit,
@@ -142,12 +431,44 @@ def run_2024_models(data):
             get_vif=False,
             fixed_effect_group=firm,
         )
-        if model != "Error" and hasattr(model, 'dropped_groups'):
+
+        if model == "Error":
+            print(f"Model 5 repeat {repeat_idx} returned Error; excluding from average")
+            continue
+        if not getattr(model, "converged", False):
+            print(f"Model 5 repeat {repeat_idx} did not converge; excluding from average")
+            continue
+
+        if hasattr(model, 'dropped_groups'):
             print(
                 f"Conditional logit kept {model.used_groups:,} firms and dropped "
                 f"{model.dropped_groups:,} firms with no within-firm outcome variation"
             )
-        benefit_models_firm_state_5.append(model)
+
+        successful_models.append(model)
+        successful_seeds.append(seed)
+
+    if not successful_models:
+        print(f"No successful Model 5 fits for {benefit}; returning Error")
+        return "Error"
+
+    averaged_model = AveragedLogitResults(
+        successful_models,
+        model_name="Average Conditional Logit (COMPANY fixed effects)",
+        sample_size=sample_n,
+        requested_repeats=FIRM_FE_SUBSAMPLE_REPEATS,
+        seeds=successful_seeds,
+    )
+    print(averaged_model.summary())
+    return averaged_model
+
+
+def run_2024_models(data):
+    """Run the five regression specifications used in the analysis."""
+    
+    print("="*80)
+    print("RUNNING REGRESSION MODELS")
+    print("="*80)
     
     # Model 1: Baseline (Year + Industry fixed effects)
     print("\n" + "="*50)
@@ -218,20 +539,17 @@ def run_2024_models(data):
     print("="*50)
 
     benefit_models_firm_state_5 = []
+    firm_fe_pool = data.copy()
+    zero_company_mask = firm_fe_pool[firm].astype(str).str.strip() == '0'
+    if zero_company_mask.any():
+        print(f"Dropping {int(zero_company_mask.sum()):,} observations with COMPANY == 0 before firm FE sampling")
+        firm_fe_pool = firm_fe_pool.loc[~zero_company_mask].copy()
+
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(
-            data,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, industry, region, education, experience],
-            cont_controls=['LOG_SALARY'],
-            ref_category={education: "No Education Listed", experience: 'None Listed'},
-            get_vif=False,
-            fixed_effect_group=firm,
-        )
-        benefit_models_state_industry_4.append(model)
+        model = run_averaged_firm_fe_model(firm_fe_pool, benefit)
+        benefit_models_firm_state_5.append(model)
 
     return [
         benefit_models_industry,
@@ -306,7 +624,8 @@ def generate_coefficients_plot(results_df):
     
     model_iterations = results_df['Model Iteration'].unique()
     markers = ['o', 's', '^', 'D', 'P', 'X', 'v']  # Different markers for model iterations
-    positions = []
+    benefit_ticks = []
+    benefit_tick_labels = []
     current_pos = 0
     
     # Store legend handles and labels to avoid duplicates
@@ -320,38 +639,62 @@ def generate_coefficients_plot(results_df):
             model_data = benefit_data[benefit_data['Model Iteration'] == model]
             if not model_data.empty:
                 pos = current_pos + i * 0.2  # Adjust spacing between models within same benefit
+                coefficient = model_data['Coefficient'].values[0]
+                error = model_data['Error'].values[0]
+                if pd.isna(coefficient) or pd.isna(error):
+                    continue
+
                 handle = ax.errorbar(
-                    pos, model_data['Coefficient'].values, 
-                    yerr=[model_data['Coefficient'].values - model_data['Lower_CI'].values, 
-                          model_data['Upper_CI'].values - model_data['Coefficient'].values], 
+                    pos, model_data['Coefficient'].values,
+                    yerr=[model_data['Coefficient'].values - model_data['Lower_CI'].values,
+                          model_data['Upper_CI'].values - model_data['Coefficient'].values],
                     fmt=markers[i % len(markers)], color=colors[i % len(colors)], label=model if benefit == benefits4[0] else ""
                 )
                 benefit_positions.append(pos)
                 
-                # Add handles and labels only for the first benefit to avoid duplicates
-                if benefit == benefits4[0]:
+                # Add each model to the legend at its first successfully plotted point.
+                if model not in labels:
                     handles.append(handle)
                     labels.append(model)
                 
                 # Mark non-converged models
                 if not model_data['Converged'].values[0]:
                     ax.plot(pos, model_data['Coefficient'].values[0], 'rx', markersize=12, label='Did Not Converge')
+
+                if model.startswith('M5:'):
+                    ax.annotate(
+                        '*',
+                        xy=(pos, coefficient),
+                        xytext=(4, 8),
+                        textcoords='offset points',
+                        fontsize=14,
+                        fontweight='bold',
+                        color=colors[i % len(colors)],
+                    )
             
-        positions.extend(benefit_positions)
+        if benefit_positions:
+            benefit_ticks.append((min(benefit_positions) + max(benefit_positions)) / 2)
+            benefit_tick_labels.append(benefits4_labels[benefits4.index(benefit)])
         current_pos += len(model_iterations) + 1  # Add space between different benefits
     
     # Customize plot
-    benefit_ticks = [(positions[i * len(model_iterations)] + positions[(i + 1) * len(model_iterations) - 1]) / 2 
-                     for i in range(len(benefits4))]
-    ax.set_xticks(benefit_ticks, labels=benefits4_labels)
+    ax.set_xticks(benefit_ticks, labels=benefit_tick_labels)
     ax.tick_params(axis='y', labelsize=14)
-    ax.set_xticklabels(benefits4_labels, rotation=45, fontsize=14, ha='right')
+    ax.set_xticklabels(benefit_tick_labels, rotation=45, fontsize=14, ha='right')
     ax.set_xlabel(None)
     ax.set_ylabel('Log-Odds Coefficient (with 95% CI)', fontsize=16)
     ax.axhline(0, color='grey', linewidth=0.8)
     ax.legend(handles, labels, title='Model', bbox_to_anchor=(0, 1), loc='upper left', fontsize=12, title_fontsize=12)
+    fig.text(
+        0.01,
+        0.01,
+        f"* {MODEL_5_AVERAGING_NOTE}",
+        ha='left',
+        va='bottom',
+        fontsize=10,
+    )
     
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.08, 1, 1])
     
     # Save plot
     os.makedirs(RESULTS_DIR / "figures_2026", exist_ok=True)
@@ -365,51 +708,20 @@ def create_clean_formatted_table_updated(models, benefit_name):
     """
     Create a clean, properly formatted LaTeX table for one benefit with updated labels
     """
-    # Create Stargazer object
-    stargazer = Stargazer(models)
-    
-    # Get variable names
-    cov_names = stargazer.cov_names.copy()
+    # Use only the lightweight result interface so cached compact results work.
+    cov_names = set()
+    for model in models:
+        cov_names.update(model.params.index)
     
     # Group variables by category
     experience_vars = ['0 years', '1-2 years', '3-5 years', '6-10 years', '11-20 years', '21+ years']
     education_vars = ['Associate degree', "Bachelor's degree", 'High school or GED', "Master's degree", 'Ph.D. or professional degree']
-    
-    # Create new ordered list
-    new_order = []
-    
-    # Add AI ROLE first
-    if 'AI ROLE' in cov_names:
-        new_order.append('AI ROLE')
-    
+
     # Add Experience category (excluding reference)
     exp_in_model = [var for var in experience_vars if var in cov_names and var != 'None Listed']
-    if exp_in_model:
-        new_order.extend(exp_in_model)
     
     # Add Education category (excluding reference) 
     edu_in_model = [var for var in education_vars if var in cov_names and var != 'No Education Listed']
-    if edu_in_model:
-        new_order.extend(edu_in_model)
-        
-    # Add LOG_SALARY if present
-    if 'LOG_SALARY' in cov_names:
-        new_order.append('LOG_SALARY')
-        
-    # Add const
-    if 'const' in cov_names:
-        new_order.append('const')
-        
-    # Filter out year and industry variables from display
-    display_vars = [var for var in new_order if not any(keyword in str(var) for keyword in ['Services', 'Trade', 'Management', 'Information', 'Manufacturing', 'Construction', 'Education', 'Health Care', 'Finance', 'Real Estate', 'Transportation', 'Administration', 'Utilities', 'Arts', 'Agriculture', 'Mining', 'Accommodation', 'Other', 'Unclassified', '2018', '2019', '2020', '2021', '2022', '2023', '2024'])]
-    
-    stargazer.cov_names = display_vars
-    
-    # Set custom column headers
-    stargazer.custom_columns([f"({i+1})" for i in range(len(models))], [1] * len(models))
-    
-    # Generate clean HTML
-    html_table = stargazer.render_html()
     
     # Now manually create the properly formatted table structure
     table_rows = []
@@ -857,6 +1169,14 @@ def generate_panel_summaries(models_2024):
                         'ai_role_pvalue': np.nan,
                         'nobs': np.nan,
                         'pseudo_r2': np.nan,
+                        'model_note': MODEL_5_AVERAGING_NOTE if model_idx == 4 else '',
+                        'model_5_successful_fits': np.nan,
+                        'model_5_requested_repeats': FIRM_FE_SUBSAMPLE_REPEATS if model_idx == 4 else np.nan,
+                        'model_5_subsample_size': FIRM_FE_SUBSAMPLE_SIZE if model_idx == 4 else np.nan,
+                        'model_5_seed_start': np.nan,
+                        'model_5_seed_end': np.nan,
+                        'model_5_ai_role_subsample_coef_sd': np.nan,
+                        'model_5_ai_role_average_model_se': np.nan,
                     })
                     continue
 
@@ -872,6 +1192,22 @@ def generate_panel_summaries(models_2024):
                     'ai_role_pvalue': model.pvalues.get('AI ROLE', np.nan),
                     'nobs': model.nobs,
                     'pseudo_r2': model.prsquared,
+                    'model_note': getattr(model, 'model_note', ''),
+                    'model_5_successful_fits': getattr(model, 'successful_fit_count', np.nan),
+                    'model_5_requested_repeats': getattr(model, 'requested_repeats', np.nan),
+                    'model_5_subsample_size': getattr(model, 'sample_size', np.nan),
+                    'model_5_seed_start': getattr(model, 'seed_start', np.nan),
+                    'model_5_seed_end': getattr(model, 'seed_end', np.nan),
+                    'model_5_ai_role_subsample_coef_sd': getattr(
+                        model,
+                        'subsample_coef_sd',
+                        pd.Series(dtype=float),
+                    ).get('AI ROLE', np.nan),
+                    'model_5_ai_role_average_model_se': getattr(
+                        model,
+                        'average_model_bse',
+                        pd.Series(dtype=float),
+                    ).get('AI ROLE', np.nan),
                 })
 
     long_df = pd.DataFrame(rows)
@@ -1043,17 +1379,31 @@ def html_to_latex_table_dynamic(models_2024):
 
 def main():
     """Main execution function."""
+    args = parse_args()
+
     print("BEYOND SALARY: REGRESSION MODELS ANALYSIS")
     print("=" * 80)
     
     # Load and prepare data
-    data = load_and_prepare_data()
-    if data is None:
-        print("Error: Could not load data. Please check the data path.")
-        return
-    
-    # Run all models
-    models_2024 = run_2024_models(data)
+    data_path = PROCESSED_DIR / "labeled_v2.parquet"
+    cache_path = args.cache_path or get_model_cache_path(data_path)
+
+    # Reuse cached fits when available. This avoids loading the full parquet file
+    # on output-only reruns.
+    models_2024 = None
+    if not args.refresh_cache:
+        models_2024 = load_cached_models(cache_path)
+
+    if models_2024 is None:
+        data = load_and_prepare_data()
+        if data is None:
+            print("Error: Could not load data. Please check the data path.")
+            return
+
+        models_2024 = run_2024_models(data)
+        save_cached_models(cache_path, models_2024)
+    else:
+        print("Using cached model results; pass --refresh-cache to refit all models.")
     
     # Extract results
     results_df = extract_model_results(models_2024)
