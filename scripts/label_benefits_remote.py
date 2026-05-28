@@ -64,6 +64,47 @@ remote_to_exclude = [
 ]
 
 
+def check_benefit_position(body_series, keywords, exclusions=None):
+    """Return the prominence score (0–100) of the first keyword match in each posting.
+
+    Score = (1 - match.start() / len(text)) * 100
+      - 100: match at the very start of the text (most prominent)
+      - 0:   match at the very end of the text (least prominent)
+      - NaN: no match (or empty body)
+    """
+    include_re = re.compile(
+        r"\b(?:" + "|".join(map(re.escape, keywords)) + r")\b", re.IGNORECASE
+    )
+    exclude_re = (
+        re.compile(
+            r"\b(?:" + "|".join(map(re.escape, exclusions)) + r")\b", re.IGNORECASE
+        )
+        if exclusions
+        else None
+    )
+
+    body_filled = body_series.fillna("")
+    positions = pd.array([float("nan")] * len(body_series), dtype="Float64")
+
+    for i, text in enumerate(body_filled):
+        if not text:
+            continue
+        text_len = len(text)
+        for m in include_re.finditer(text):
+            if exclude_re:
+                skip = False
+                for exc in exclude_re.finditer(text):
+                    if exc.start() <= m.start() < exc.end() or exc.start() < m.end() <= exc.end():
+                        skip = True
+                        break
+                if skip:
+                    continue
+            positions[i] = (1 - m.start() / text_len) * 100
+            break
+
+    return positions
+
+
 def check_benefits(body_series, keywords, exclusions=None):
     """Vectorized benefit labeling using compiled regex.
 
@@ -149,12 +190,19 @@ def main():
     body_df['REMOTE_KW'] = check_benefits(body_df['BODY'], remote_keywords, remote_to_exclude)
     print(f"Labeled in {time.time() - start:.1f}s")
 
-    # Merge REMOTE_KW into the full labeled dataset and overwrite labeled_v1
-    print("Merging REMOTE_KW into labeled_v1.parquet...")
+    print("Computing remote work prominence position...")
+    pos_start = time.time()
+    body_df['REMOTE_KW_POSITION'] = check_benefit_position(body_df['BODY'], remote_keywords, remote_to_exclude)
+    valid = body_df['REMOTE_KW_POSITION'].dropna()
+    print(f"  REMOTE_KW_POSITION: {len(valid):,} matches, mean prominence {valid.mean():.1f} ({time.time() - pos_start:.1f}s)")
+
+    # Merge REMOTE_KW and REMOTE_KW_POSITION into the full labeled dataset and overwrite labeled_v1
+    print("Merging REMOTE_KW and REMOTE_KW_POSITION into labeled_v1.parquet...")
     data = pd.read_parquet(input_path)
-    if 'REMOTE_KW' in data.columns:
-        data = data.drop(columns=['REMOTE_KW'])
-    data = data.merge(body_df[['ID', 'REMOTE_KW']], on='ID', how='left')
+    for col in ['REMOTE_KW', 'REMOTE_KW_POSITION']:
+        if col in data.columns:
+            data = data.drop(columns=[col])
+    data = data.merge(body_df[['ID', 'REMOTE_KW', 'REMOTE_KW_POSITION']], on='ID', how='left')
 
     save_time = time.time()
     data.to_parquet(output_path, compression='gzip')

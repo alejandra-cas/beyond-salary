@@ -172,6 +172,52 @@ family_to_exclude = [
 culture_to_exclude = ["maintaining a collaborative environment"]
 
 
+def check_benefit_position(body_series, keywords, exclusions=None):
+    """Return the prominence score (0–100) of the first keyword match in each posting.
+
+    Score = (1 - match.start() / len(text)) * 100
+      - 100: match at the very start of the text (most prominent)
+      - 0:   match at the very end of the text (least prominent)
+      - NaN: no match (or empty body)
+
+    This mirrors the boolean logic of check_benefits() — exclusion-overlapping
+    matches are skipped before recording position.
+    """
+    include_re = re.compile(
+        r"\b(?:" + "|".join(map(re.escape, keywords)) + r")\b", re.IGNORECASE
+    )
+    exclude_re = (
+        re.compile(
+            r"\b(?:" + "|".join(map(re.escape, exclusions)) + r")\b", re.IGNORECASE
+        )
+        if exclusions
+        else None
+    )
+
+    body_filled = body_series.fillna("")
+    positions = pd.array([float("nan")] * len(body_series), dtype="Float64")
+
+    for i, text in enumerate(body_filled):
+        if not text:
+            continue
+        text_len = len(text)
+        for m in include_re.finditer(text):
+            # Skip if this match is covered by an exclusion
+            if exclude_re:
+                skip = False
+                for exc in exclude_re.finditer(text):
+                    if exc.start() <= m.start() < exc.end() or exc.start() < m.end() <= exc.end():
+                        skip = True
+                        break
+                if skip:
+                    continue
+            # First valid match — record prominence and stop
+            positions[i] = (1 - m.start() / text_len) * 100
+            break
+
+    return positions
+
+
 def check_benefits(body_series, keywords, exclusions=None):
     """Vectorized benefit labeling using compiled regex.
 
@@ -265,6 +311,22 @@ def main():
     print(f"  CULTURE: {time.time() - start:.1f}s")
 
     print(f"Total labeling time: {time.time() - start:.1f}s")
+
+    # --- Perk positioning (prominence scores) ---
+    print("Computing perk prominence positions...")
+    pos_start = time.time()
+    data["EDU_ASSISTANCE_POSITION"] = check_benefit_position(body, edu_assistance, exclusions=tuition_to_exclude)
+    data["PAID_LEAVE_POSITION"] = check_benefit_position(body, leave)
+    data["HEALTH_WELLBEING_POSITION"] = check_benefit_position(body, health_wellbeing, wellbeing_to_exclude)
+    data["PARENTAL_LEAVE_POSITION"] = check_benefit_position(body, parental_leave)
+    data["CULTURE_POSITION"] = check_benefit_position(body, culture)
+    print(f"  Positioning done: {time.time() - pos_start:.1f}s")
+
+    # Summary: mean prominence among postings that mention each benefit
+    for col in ["EDU_ASSISTANCE_POSITION", "PAID_LEAVE_POSITION", "HEALTH_WELLBEING_POSITION",
+                "PARENTAL_LEAVE_POSITION", "CULTURE_POSITION"]:
+        valid = data[col].dropna()
+        print(f"  {col}: {len(valid):,} matches, mean prominence {valid.mean():.1f}")
 
     save_time = time.time()
     print("Saving to parquet...")
