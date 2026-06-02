@@ -169,6 +169,50 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - **benefits_defns.py**: Benefit category definitions, labels, color mappings, and standard variable names
 - **logit_model.py**: Logistic regression utilities for model fitting
 
+## Methodology Decisions
+
+### Sample and missing-value treatment
+- The expanded US sample contains 99,860 postings from January 2018 through December 2025.
+- AI roles are postings requiring at least one AI/ML skill.
+- Missing experience requirements are retained as `None Listed`.
+- Postings without listed education requirements are retained as `No Education Listed`, the education reference category.
+- H1 models without salary controls retain the full available sample. H1 salary-controlled models drop postings without `LOG_SALARY`, leaving 35,710 postings for most perks.
+- Existing pipeline behavior excludes 2018 from parental-leave models, leaving 34,090 observations in the salary-controlled H1 parental-leave specification.
+- H2 starts from postings with wage information and drops rows missing state identifiers or any required model field. Education and experience are already retained in their explicit no-requirement categories. The resulting H2 wage sample contains 35,245 postings; the difference from the 35,710 H1 wage sample is primarily 465 postings without state identifiers.
+
+### Sparse fixed-effect categories
+- H1 uses NAICS 3-digit industry fixed effects and state fixed effects. All 99,860 postings have a derived NAICS 3-digit code, covering 97 categories.
+- To avoid quasi-separation, singular matrices, and unstable coefficients in the perk logit models, sparse categories are grouped into `Other NAICS 3-digit` or `Other State`.
+- Grouping is calculated separately for each perk and model sample. Salary-controlled models calculate sparse categories using only postings with wage information.
+- A category is grouped when it has fewer than 50 relevant postings, fewer than 5 postings with the perk, or fewer than 5 postings without the perk.
+- The 50-observation threshold is a pragmatic stabilization rule, not a theoretical cutoff. The positive/negative outcome rules directly guard against separation. Alternative thresholds such as 30, 50, and 100 observations are suitable robustness checks.
+- H1 is fitted with a binomial GLM solver. This preserves the logit specification while converging reliably with the fixed-effect design.
+
+### Firm-size buckets
+- Firm size is a posting-volume proxy rather than employee headcount. `FIRM_POSTING_COUNT` is calculated from each firm's total observations in the complete labeled dataset.
+- `COMPANY == 0` represents `Unclassified` employers. These 12,855 postings are retained in full-sample analyses but are excluded from firm-size subsamples so they are not treated as one large employer.
+- Fixed size buckets are small (`<=2` postings), medium (`3-9` postings), and large (`>=10` postings).
+
+| Firm category | Postings | Share of full sample |
+| --- | ---: | ---: |
+| Small (`<=2`) | 34,167 | 34.2% |
+| Medium (`3-9`) | 16,520 | 16.5% |
+| Large (`>=10`) | 36,318 | 36.4% |
+| Unclassified | 12,855 | 12.9% |
+
+### S&P 500 snapshot
+- S&P 500 membership uses one fixed constituent snapshot, not historical membership at each posting date.
+- The snapshot builder uses conservative normalized-name matching and writes an audit so unmatched or ambiguous companies remain visible.
+- The current snapshot matches 364 constituent companies and identifies 10,743 postings.
+- The reviewed alias `Alphabet -> Google` is encoded in `scripts/build_sp500_snapshot.py`. The posting data contains 62 Google postings, including 16 AI roles and 25 postings with wage information.
+
+### Figure 1 and H2 thresholds
+- Figure 1 estimates separate quarterly AI wage models and plots the `AI ROLE` coefficient directly in log points with 95% confidence intervals. It suppresses quarters with fewer than 10 AI postings containing wage information, leaving 14 plotted quarters.
+- H2 pooled models cover 2018–2025 and include year fixed effects. Calendar-year H2 models omit year fixed effects.
+- H2 skips and records a model when its subsample has fewer than 10 AI wage postings or any `AI ROLE x PERK` cell contains fewer than 3 postings.
+- Firm size and S&P 500 membership define H2 subsamples only; they are not included as H2 controls.
+- A negative `AI ROLE x PERK` coefficient means the AI wage premium is smaller when the perk is present. This is consistent with substitution between monetary and non-monetary compensation, but it is not a causal estimate and does not imply that AI jobs with the perk pay less in absolute terms.
+
 ## Generated Outputs
 
 ### Regression Tables
