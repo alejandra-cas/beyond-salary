@@ -226,6 +226,134 @@ def plot_yearly_results(results):
     print(f"Saved: {output}")
 
 
+def plot_heatmap(results):
+    """Plot a heatmap of pooled beta3 coefficients: perks (rows) × firm type (cols)."""
+    pooled = results[
+        (results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")
+    ].copy()
+
+    perk_order = list(benefits4)
+    perk_labels = [benefits_labels_map[p] for p in perk_order]
+    sample_order = ["Small firms", "Medium firms", "Large firms", "S&P 500 firms"]
+    sample_labels = ["Small", "Medium", "Large", "S&P 500"]
+
+    matrix = np.full((len(perk_order), len(sample_order)), np.nan)
+    pval_matrix = np.full_like(matrix, np.nan)
+    for i, perk in enumerate(perk_order):
+        for j, sample in enumerate(sample_order):
+            row = pooled[(pooled["perk"] == perk) & (pooled["sample"] == sample)]
+            if not row.empty:
+                matrix[i, j] = row["beta3_interaction"].values[0]
+                pval_matrix[i, j] = row["beta3_pvalue"].values[0]
+
+    vmax = np.nanmax(np.abs(matrix)) * 1.05
+
+    fig, ax = plt.subplots(figsize=(8, 5.5))
+    im = ax.imshow(matrix, cmap="viridis", aspect="auto", vmin=-vmax, vmax=vmax)
+
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            val = matrix[i, j]
+            pval = pval_matrix[i, j]
+            if np.isnan(val):
+                continue
+            stars = ""
+            if pval < 0.01:
+                stars = "***"
+            elif pval < 0.05:
+                stars = "**"
+            elif pval < 0.1:
+                stars = "*"
+            label = f"{val:+.3f}{stars}"
+            color = "white" if abs(val) > vmax * 0.55 else "black"
+            ax.text(j, i, label, ha="center", va="center", fontsize=9, color=color)
+
+    ax.set_xticks(range(len(sample_labels)))
+    ax.set_xticklabels(sample_labels, fontsize=10)
+    ax.set_xlabel("Firm Type", fontsize=11)
+    ax.set_yticks(range(len(perk_labels)))
+    ax.set_yticklabels(perk_labels, fontsize=10)
+    ax.set_ylabel("Perk", fontsize=11)
+
+    cbar = fig.colorbar(im, ax=ax, shrink=0.85, pad=0.02)
+    cbar.set_label(r"$\beta_3$: AI Role × Perk Interaction (log points)", fontsize=10)
+
+    ax.set_title(
+        r"Interaction Coefficient $\beta_3$ by Perk and Firm Type"
+        "\nPositive = complementarity, Negative = substitution",
+        fontsize=12,
+    )
+
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "wage_perk_interaction_beta3_heatmap.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def plot_yearly_single_perk(results, perk="REMOTE_KW"):
+    """Plot a single-perk time series of beta3 by firm type with confidence ribbons."""
+    yearly = results[
+        (results["period"] != "Pooled 2018-2025")
+        & (results["status"] == "ok")
+        & (results["perk"] == perk)
+    ].copy()
+    yearly["year"] = yearly["period"].astype(int)
+
+    sample_order = ["Small firms", "Medium firms", "Large firms", "S&P 500 firms"]
+    sample_colors = {
+        "Small firms": "#1f77b4",
+        "Medium firms": "#ff7f0e",
+        "Large firms": "#2ca02c",
+        "S&P 500 firms": "#d62728",
+    }
+
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+
+    for sample in sample_order:
+        line = yearly[yearly["sample"] == sample].sort_values("year")
+        if line.empty:
+            continue
+        color = sample_colors[sample]
+        ax.fill_between(
+            line["year"],
+            line["beta3_lower_ci"],
+            line["beta3_upper_ci"],
+            alpha=0.12,
+            color=color,
+        )
+        ax.plot(
+            line["year"],
+            line["beta3_interaction"],
+            marker="o",
+            markersize=5,
+            label=sample.replace(" firms", ""),
+            color=color,
+            linewidth=1.8,
+        )
+
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax.set_xlabel("Year", fontsize=11)
+    ax.set_ylabel(r"$\beta_3$ Interaction Coefficient", fontsize=11)
+    perk_label = benefits_labels_map[perk]
+    ax.set_title(
+        rf"Development of $\beta_3$ (AI × {perk_label} Interaction)"
+        "\nPositive = Complementarity, Negative = Substitution",
+        fontsize=12,
+    )
+    ax.legend(title="Firm Type", fontsize=9, title_fontsize=10)
+    ax.grid(alpha=0.2)
+
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    slug = perk.lower().replace(" ", "_")
+    output = FIGURES_DIR / f"wage_perk_interaction_beta3_timeseries_{slug}.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
 def main():
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
     data = load_data()
@@ -237,6 +365,8 @@ def main():
     print(results.groupby(["period", "status"]).size().to_string())
     plot_pooled_results(results)
     plot_yearly_results(results)
+    plot_heatmap(results)
+    plot_yearly_single_perk(results, perk="REMOTE_KW")
 
 
 if __name__ == "__main__":
