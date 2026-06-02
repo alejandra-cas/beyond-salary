@@ -129,15 +129,18 @@ def run_logit_model(
 
     # if error, continue to next model
     try:
-        logit_model = sm.Logit(y, X).fit()
+        logit_model = sm.GLM(y, X, family=sm.families.Binomial()).fit(maxiter=200)
+        logit_model.prsquared = logit_model.pseudo_rsquared(kind="cs")
     except Exception as error:
         # print error
         print(error)
         return "Error"
 
-    # Print the summary of the model
-    print(logit_model.summary())
-    # print(summary_col(logit_model, stars=True, float_format='%0.2f'))
+    print(
+        f"Logit fit: converged={logit_model.converged} "
+        f"nobs={int(logit_model.nobs):,} "
+        f"{predictor}={logit_model.params.get(predictor, np.nan):.4f}"
+    )
     return logit_model
 
 

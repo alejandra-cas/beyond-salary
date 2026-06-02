@@ -12,6 +12,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── occupation_year_balanced_sample_analysis.py  # Occupation-year regression models
 │   ├── regression_models.py                 # Job-level regression models
 │   ├── salary_analysis.py                   # Salary premium analysis
+│   ├── wage_perk_interaction_analysis.py    # H2 wage-perk interaction models
 │   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
 │   ├── industry_year_coefficient_analysis.py # Industry-year wage vs perk coefficient comparison
 │   ├── high_ai_firm_analysis.py             # Within-firm perk premium by firm AI-share tier
@@ -45,6 +46,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   │   ├── descriptive/                     # Descriptive figures
 │   │   ├── regression/                      # Regression coefficient plots
 │   │   ├── salary/                          # Salary analysis figures
+│   │   ├── wage_perk_interactions/          # H2 interaction coefficient figures
 │   │   ├── industry_year/                   # Industry-year wage vs perk coefficient figures
 │   │   ├── robustness/                      # Robustness check figures
 │   │   ├── perk_positioning/                # Perk prominence-position figures
@@ -57,7 +59,9 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │       ├── high_ai_firm_summary.csv         # Firm counts and median AI share per tier
 │       ├── ai_threshold_robustness.csv      # AI ROLE coefficients across 1+/2+/3+ thresholds
 │       ├── perk_positioning_results.csv     # OLS coefficients: AI ROLE on perk prominence score
-│       └── structured_benefits_regression.csv  # Structured benefit logit results (P1 M2)
+│       ├── structured_benefits_regression.csv  # Structured benefit logit results (P1 M2)
+│       ├── quarterly_ai_wage_betas.csv      # Figure 1 quarterly AI log-wage coefficients
+│       └── wage_perk_interaction_results.csv # Pooled and yearly H2 model results
 ├── config.example.yaml # Template for local data path config (tracked)
 ├── config.yaml         # Local data path config (gitignored)
 └── pyproject.toml      # Project dependencies (uv)
@@ -85,6 +89,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
      skills_csv: "OII_US_10M_SKILLS.csv" # your skills filename
      body_csv: "OII_US_10M_BODY.csv"     # your body text filename
      wham_csv: "ID_CNTRY_ALL_WHAM.csv"
+     sp500_csv: "sp500_snapshot.csv"     # optional fixed snapshot keyed by COMPANY
      processed_dir: "data/processed"      # where pipeline outputs go
    ```
 
@@ -95,6 +100,18 @@ This repository contains the reproducible code and analysis for the paper Beyond
    - Skills CSV - Skills dataset (used for AI role classification)
    - Body CSV - Job posting body text
    - `ID_CNTRY_ALL_WHAM.csv` - Remote work classification data (LLM)
+   - Optional S&P 500 snapshot CSV - fixed constituent snapshot with a `COMPANY` column matching the posting data. Add `COMPANY_NAME` and `SNAPSHOT_DATE` for auditing when available.
+
+   To convert a scraped constituent table into the required posting-system `COMPANY` snapshot, run:
+   ```bash
+   uv run python scripts/build_sp500_snapshot.py \
+     --input /path/to/sp500_constituents.txt \
+     --posts-csv data/OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv \
+     --output data/sp500_snapshot.csv \
+     --audit-output data/sp500_snapshot_audit.csv \
+     --snapshot-date YYYY-MM-DD
+   ```
+   Review `data/sp500_snapshot_audit.csv` before running the pipeline. The builder matches conservative normalized company names only and leaves uncertain names unmatched or ambiguous.
 
 4. **Run Pipeline**
    ```bash
@@ -109,6 +126,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
    uv run python analysis/descriptive_analysis.py
    uv run python analysis/descriptive_analysis.py --include-structured
    uv run python analysis/regression_models.py
+   uv run python analysis/wage_perk_interaction_analysis.py
    uv run python analysis/occupation_year_balanced_sample_analysis.py
    uv run python analysis/salary_analysis.py
    uv run python analysis/scatterplot_analysis.py
@@ -116,34 +134,32 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
 ## Key Analysis Components
 
+Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Stephany (2024), *Skills or Degree? The Rise of Skill-Based Hiring for AI and Green Jobs*. The cited UK analysis explains log asking wages using AI-skill indicators, education, experience, and fixed effects. This US extension plots quarterly `AI ROLE` coefficients directly in log points and intentionally omits occupation fixed effects.
+
 ### Data Preparation (`scripts/`)
-- **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
+- **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, NAICS 3-digit industry, posting-volume firm-size buckets, optional S&P 500 snapshot membership, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
 - **label_benefits.py**: Processes and labels workplace benefits from job posting text. Also computes `{BENEFIT}_POSITION` columns (0–100 prominence score, 100 = top of posting) for each benefit.
 - **label_benefits_remote.py**: Labels remote work benefits using keyword matching; merges `REMOTE_KW` and `REMOTE_KW_POSITION` directly into `labeled_v1.parquet`
 - **occ_year_analysis.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
 - **export_samples.py**: Creates balanced samples for regression analysis
 
 ### Core Analysis (`analysis/`)
-- **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis
+- **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis. Figure 1 combines quarterly AI demand with quarterly adjusted `AI ROLE` log-wage coefficients and 95% confidence intervals. Quarterly wage models control for education, experience, NAICS 3-digit industry, and state fixed effects; quarters with fewer than 10 AI wage postings are suppressed.
   - Default run outputs keyword-benefit figures.
   - Add `--include-structured` to also output combined keyword+structured figures.
-- **regression_models.py**: Runs job-level logit models for each benefit with `AI ROLE` as the key predictor using two model panels.
-   - **Panel 1 (Industry-based progression)**
-      1. **P1 M1 (Baseline):** Year FE + Industry FE
-      2. **P1 M2 (+ Individual Controls):** Year FE + Industry FE + Education FE + Experience FE
-      3. **P1 M3 (+ Salary):** P1 M2 + Log Salary
-      4. **P1 M4 (+ Firm/State FE):** Year FE + Firm FE + State FE + Education FE + Experience FE + Log Salary
-   - **Panel 2 (Firm/State baseline progression)**
-      1. **P2 M1 (Baseline):** Year FE + Firm FE + State FE
-      2. **P2 M2 (+ Individual Controls):** Year FE + Firm FE + State FE + Education FE + Experience FE
-      3. **P2 M3 (+ Salary):** intentionally omitted to avoid repeating the full specification already fit in Panel 1
+- **regression_models.py**: Runs H1 job-level logit models for each benefit with `AI ROLE` as the key predictor.
+   1. **M1 (Baseline):** Year FE + NAICS 3-digit FE
+   2. **M2 (+ Individual/State Controls):** M1 + State FE + Education FE + Experience FE
+   3. **M3 (+ Salary):** M2 + Log Salary
+   4. **M4 (+ S&P 500):** M3 + S&P 500 indicator. This is the preferred specification.
+- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample and small (`<=2` postings), medium (`3-9`), large (`>=10`), and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative.
 - **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
-- **industry_year_coefficient_analysis.py**: Estimates AI wage (OLS) and perk (logit) premiums per industry-year cell, then scatterplots wage betas vs perk betas to test complementarity. Runs both controlled (education + experience) and unconditional (AI ROLE only) variants with outlier filtering.
+- **industry_year_coefficient_analysis.py**: Supplementary prior analysis estimating AI wage and perk coefficients per industry-year cell. It is no longer the primary H2 strategy.
 - **high_ai_firm_analysis.py**: Robustness check addressing the concern that large tech firms drive results by offering perks to everyone. Assigns firms to AI-share tiers and computes within-firm perk gaps between AI and non-AI postings. Tuition assistance, paid leave, and parental leave show genuine within-firm AI premiums; remote work and culture appear more firm-wide.
 - **ai_threshold_robustness.py**: Robustness check on AI role classification threshold. Re-runs the main P1 M2 spec with 1+, 2+, and 3+ AI skill requirements. Workplace culture strengthens with stricter thresholds; parental leave and remote work are robust at 1+ and 2+ but lose significance at 3+ (power issue — only 226 postings).
-- **perk_positioning_analysis.py**: OLS regression of perk prominence score on AI ROLE, conditional on the benefit being mentioned. Health & Wellbeing and Paid Leave appear significantly *lower* in AI postings, suggesting perks are part of compensation packages rather than recruiting bait.
+- **perk_positioning_analysis.py**: Existing supplementary analysis of perk prominence. This analysis is currently on hold.
 - **keyword_vs_structured_benefits.ipynb**: Validates keyword-based benefit labels against the structured `BENEFIT_NAME` / `BENEFIT_SUBCATEGORY_NAME` / `BENEFIT_CATEGORIES_NAME` fields. Reports precision, recall, and F1 per benefit, with disagreement inspection.
 - **structured_benefits_regression.py**: Runs P1 M2 logit models for structured categories (`S_FLEX_WORK`, `S_PROF_DEV`, `S_HEALTH_WELLNESS`, `S_REMOTE`) and outputs a coefficient table + plot. Current takeaway: no notable positive structured-benefit premium for AI postings; coefficients are lower/near-zero for most structured benefits, except remote work which is positive.
 - **new_data_exploration.ipynb**: Exploratory analysis notebook for the MAY26 subsample data
@@ -164,12 +180,13 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ### Key Figures
 - **Model coefficients plot**: `results/figures_2026/regression/model_coefficients_plot_industry_converged.png`
 - **Structured-benefit coefficients plot**: `results/figures_2026/regression/structured_benefits_ai_role_coef.png`
-- **AI roles over time**: `results/figures_2026/descriptive/pct_ai_roles_overall_industry.png`
+- **Figure 1 — AI demand and wage coefficients**: `results/figures_2026/descriptive/figure1_ai_demand_wage_beta.png`
 - **Keyword benefit differences**: `results/figures_2026/descriptive/benefits_over_time/benefit_diffs_time_keyword.png`
 - **Combined keyword + structured differences**: `results/figures_2026/descriptive/benefits_over_time/benefit_diffs_time_all.png`
 - **Individual keyword benefit trends**: `results/figures_2026/descriptive/benefits_over_time/benefit_over_time_{benefit}.png` (6 files)
 - **Occupation analysis**: `results/figures_2026/descriptive/by_occupation/percent_by_occupation_{benefit}.png` (6 files)
 - **Salary analysis**: `results/figures_2026/salary/salary_by_benefit_combined.png`
+- **Wage-perk interaction figures**: `results/figures_2026/wage_perk_interactions/`
 - **Industry-year wage vs perk figures**: `results/figures_2026/industry_year/`
 - **Threshold robustness figure**: `results/figures_2026/robustness/ai_threshold_robustness.png`
 - **Perk positioning figure**: `results/figures_2026/perk_positioning/perk_positioning_ai_coef.png`

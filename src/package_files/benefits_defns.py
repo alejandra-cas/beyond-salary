@@ -77,6 +77,7 @@ benefits6_labels = benefits4_labels + [
 
 region = "STATE_NAME"
 industry = "NAICS_2022_2_NAME"
+industry_3 = "NAICS_2022_3_DIGIT"
 education = "MIN_EDULEVELS_NAME"
 year = "YEAR"
 occupation = "SOC_MAJOR_GROUP"

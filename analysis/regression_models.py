@@ -36,7 +36,7 @@ plt.rcParams.update({'font.size': 14})
 
 # Field mappings
 region = 'STATE_NAME'
-industry = 'NAICS_2022_2_NAME'
+industry = 'NAICS_2022_3_DIGIT'
 firm = 'COMPANY'
 education = 'MIN_EDULEVELS_NAME'
 year = 'YEAR'
@@ -49,6 +49,27 @@ benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
+
+
+def collapse_sparse_fixed_effects(data, dependent, require_salary=False, min_outcomes=5):
+    """Collapse thin NAICS 3-digit and state cells to keep logit models estimable."""
+    data_model = data.copy()
+    count_data = data_model.dropna(subset=[dependent])
+    if require_salary:
+        count_data = count_data.dropna(subset=['LOG_SALARY'])
+
+    for column, other_label in [
+        (industry, 'Other NAICS 3-digit'),
+        (region, 'Other State'),
+    ]:
+        summary = count_data.groupby(column, dropna=False)[dependent].agg(['count', 'sum'])
+        sparse = summary[
+            (summary['count'] < 50)
+            | (summary['sum'] < min_outcomes)
+            | ((summary['count'] - summary['sum']) < min_outcomes)
+        ].index
+        data_model[column] = data_model[column].replace(sparse, other_label)
+    return data_model
 
 
 def prepare_firm_fixed_effects(data, min_firm_obs=30):
@@ -95,26 +116,27 @@ def load_and_prepare_data():
     return data
 
 def run_2024_models(data):
-    """Run model specifications, including a second firm+state FE progression panel."""
+    """Run the H1 perk-prevalence model progression."""
     
     print("="*80)
     print("RUNNING 2024 REGRESSION MODELS")
     print("="*80)
     
-    # Model 1: Baseline (Year + Industry fixed effects)
+    # Model 1: Baseline (Year + NAICS 3-digit fixed effects)
     print("\n" + "="*50)
-    print("MODEL 1: BASELINE (YEAR + INDUSTRY FIXED EFFECTS)")
+    print("MODEL 1: BASELINE (YEAR + NAICS 3-DIGIT FIXED EFFECTS)")
     print("="*50)
     
     benefit_models_industry = []
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(data, dependent=benefit, predictor='AI ROLE', 
+        model_data = collapse_sparse_fixed_effects(data, benefit)
+        model = run_logit_model(model_data, dependent=benefit, predictor='AI ROLE',
                               cat_controls=[year, industry], get_vif=False)
         benefit_models_industry.append(model)
     
-    # Model 2: With Individual Controls (Year + Industry + Education + Experience)
+    # Model 2: Add individual controls and state fixed effects
     print("\n" + "="*50)  
     print("MODEL 2: WITH INDIVIDUAL CONTROLS")
     print("="*50)
@@ -123,13 +145,14 @@ def run_2024_models(data):
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(data, dependent=benefit, predictor='AI ROLE', 
-                              cat_controls=[year, industry, education, experience],  
+        model_data = collapse_sparse_fixed_effects(data, benefit)
+        model = run_logit_model(model_data, dependent=benefit, predictor='AI ROLE',
+                              cat_controls=[year, industry, region, education, experience],
                               ref_category={education: "No Education Listed", experience: 'None Listed'}, 
                               get_vif=False)
         benefit_models_industry_2.append(model)
     
-    # Model 3: With Salary Control (Year + Industry + Education + Experience + Log Salary)
+    # Model 3: Add salary control
     print("\n" + "="*50)
     print("MODEL 3: WITH SALARY CONTROL") 
     print("="*50)
@@ -138,76 +161,40 @@ def run_2024_models(data):
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
-        model = run_logit_model(data, dependent=benefit, predictor='AI ROLE', 
-                              cat_controls=[year, industry, education, experience], 
+        model_data = collapse_sparse_fixed_effects(data, benefit, require_salary=True)
+        model = run_logit_model(model_data, dependent=benefit, predictor='AI ROLE',
+                              cat_controls=[year, industry, region, education, experience],
                               cont_controls=['LOG_SALARY'], 
                               ref_category={education: "No Education Listed", experience: 'None Listed'})
         benefit_models_industry_3.append(model)
 
-    # Model 4: Full model with firm + state FE
+    # Model 4: Preferred specification with S&P 500 indicator
     print("\n" + "="*50)
-    print("MODEL 4: FIRM + STATE FIXED EFFECTS")
+    print("MODEL 4: PREFERRED SPECIFICATION (+ S&P 500)")
     print("="*50)
 
-    data_fe = prepare_firm_fixed_effects(data)
-    benefit_models_firm_state_4 = []
+    benefit_models_sp500_4 = []
     for benefit in benefits4:
         print(f"\n{benefit}")
         print('-'*100)
+        model_data = collapse_sparse_fixed_effects(data, benefit, require_salary=True)
         model = run_logit_model(
-            data_fe,
+            model_data,
             dependent=benefit,
             predictor='AI ROLE',
-            cat_controls=[year, firm, region, education, experience],
+            cat_controls=[year, industry, region, education, experience],
             cont_controls=['LOG_SALARY'],
+            binary_vars=['SP500'],
             ref_category={education: "No Education Listed", experience: 'None Listed'},
             get_vif=False,
         )
-        benefit_models_firm_state_4.append(model)
-
-    # Panel 2 starts here: baseline with firm+state FE, then incremental controls
-    print("\n" + "="*50)
-    print("MODEL 5: PANEL 2 BASELINE (YEAR + FIRM + STATE FE)")
-    print("="*50)
-
-    benefit_models_firm_state_5 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_logit_model(
-            data_fe,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, firm, region],
-            get_vif=False,
-        )
-        benefit_models_firm_state_5.append(model)
-
-    print("\n" + "="*50)
-    print("MODEL 6: PANEL 2 + INDIVIDUAL CONTROLS")
-    print("="*50)
-
-    benefit_models_firm_state_6 = []
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_logit_model(
-            data_fe,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, firm, region, education, experience],
-            ref_category={education: "No Education Listed", experience: 'None Listed'},
-            get_vif=False,
-        )
-        benefit_models_firm_state_6.append(model)
+        benefit_models_sp500_4.append(model)
 
     return [
         benefit_models_industry,
         benefit_models_industry_2,
         benefit_models_industry_3,
-        benefit_models_firm_state_4,
-        benefit_models_firm_state_5,
-        benefit_models_firm_state_6,
+        benefit_models_sp500_4,
     ]
 
 def extract_model_results(models_2024):
@@ -216,11 +203,9 @@ def extract_model_results(models_2024):
     
     model_names = [
         'P1 M1: Baseline',
-        'P1 M2: +Indiv Controls',
+        'P1 M2: +Indiv+State Controls',
         'P1 M3: +Salary',
-        'P1 M4: +Firm+State FE',
-        'P2 M1: Firm+State Baseline',
-        'P2 M2: +Indiv Controls',
+        'P1 M4: +S&P 500',
     ]
     
     for model_idx, models in enumerate(models_2024):
@@ -269,6 +254,8 @@ def generate_coefficients_plot(results_df):
     print("\nGenerating model coefficients plot...")
     
     # Calculate 95% confidence intervals
+    results_df['Coefficient'] = pd.to_numeric(results_df['Coefficient'], errors='coerce')
+    results_df['Error'] = pd.to_numeric(results_df['Error'], errors='coerce')
     results_df['Lower_CI'] = results_df['Coefficient'] - 1.96 * results_df['Error']
     results_df['Upper_CI'] = results_df['Coefficient'] + 1.96 * results_df['Error']
     
@@ -277,6 +264,7 @@ def generate_coefficients_plot(results_df):
     model_iterations = results_df['Model Iteration'].unique()
     markers = ['o', 's', '^', 'D', 'P', 'X', 'v']  # Different markers for model iterations
     positions = []
+    benefit_ticks = []
     current_pos = 0
     
     # Store legend handles and labels to avoid duplicates
@@ -288,7 +276,7 @@ def generate_coefficients_plot(results_df):
         
         for i, model in enumerate(model_iterations):
             model_data = benefit_data[benefit_data['Model Iteration'] == model]
-            if not model_data.empty:
+            if not model_data.empty and model_data['Coefficient'].notna().any():
                 pos = current_pos + i * 0.2  # Adjust spacing between models within same benefit
                 handle = ax.errorbar(
                     pos, model_data['Coefficient'].values, 
@@ -304,15 +292,14 @@ def generate_coefficients_plot(results_df):
                     labels.append(model)
                 
                 # Mark non-converged models
-                if not model_data['Converged'].values[0]:
+                if model_data['Converged'].values[0] is False:
                     ax.plot(pos, model_data['Coefficient'].values[0], 'rx', markersize=12, label='Did Not Converge')
             
         positions.extend(benefit_positions)
+        benefit_ticks.append(np.mean(benefit_positions) if benefit_positions else current_pos)
         current_pos += len(model_iterations) + 1  # Add space between different benefits
     
     # Customize plot
-    benefit_ticks = [(positions[i * len(model_iterations)] + positions[(i + 1) * len(model_iterations) - 1]) / 2 
-                     for i in range(len(benefits4))]
     ax.set_xticks(benefit_ticks, labels=benefits4_labels)
     ax.tick_params(axis='y', labelsize=14)
     ax.set_xticklabels(benefits4_labels, rotation=45, fontsize=14, ha='right')
@@ -797,18 +784,13 @@ def generate_panel_summaries(models_2024):
     print("\nGenerating panel summary tables...")
     os.makedirs('results/tables_2026', exist_ok=True)
 
-    panel_map = {
-        'P1': [0, 1, 2, 3],
-        'P2': [4, 5],
-    }
+    panel_map = {'P1': [0, 1, 2, 3]}
 
     model_labels = {
-        0: 'M1 Baseline (Year+Industry)',
-        1: 'M2 + Individual Controls',
+        0: 'M1 Baseline (Year+NAICS3)',
+        1: 'M2 + Individual+State Controls',
         2: 'M3 + Salary',
-        3: 'M4 + Firm+State FE',
-        4: 'M1 Baseline (Year+Firm+State)',
-        5: 'M2 + Individual Controls',
+        3: 'M4 + S&P 500 (Preferred)',
     }
 
     rows = []

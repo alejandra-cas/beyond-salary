@@ -32,7 +32,9 @@ def load_data_paths():
             "skills_csv": raw_dir / cfg["skills_csv"],
             "body_csv": raw_dir / cfg["body_csv"],
             "wham_data": raw_dir / cfg["wham_csv"],
+            "sp500_csv": raw_dir / cfg["sp500_csv"] if cfg.get("sp500_csv") else None,
             "output_parquet": processed_dir / "data_v1.parquet",
+            "sp500_audit_csv": processed_dir / "sp500_match_audit.csv",
         }
     else:
         print("Warning: config.yaml not found, using default paths. "
@@ -43,7 +45,9 @@ def load_data_paths():
             "skills_csv": base / "OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv",
             "body_csv": base / "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv",
             "wham_data": base / "ID_CNTRY_ALL_WHAM.csv",
+            "sp500_csv": None,
             "output_parquet": base / "processed" / "data_v1.parquet",
+            "sp500_audit_csv": base / "processed" / "sp500_match_audit.csv",
         }
 
 
@@ -110,6 +114,70 @@ def add_year_column(df):
     return df
 
 
+def add_industry_columns(df):
+    """Derive 2-digit and 3-digit NAICS industry columns."""
+    naics_code = df["NAICS_2022_6"].astype("Int64").astype(str)
+    df["NAICS_2022_2_DIGIT"] = naics_code.str[:2]
+    df["NAICS_2022_3_DIGIT"] = naics_code.str[:3]
+    return df
+
+
+def add_firm_size(df):
+    """Add posting-volume firm size buckets, excluding unclassified employers."""
+    df = df.copy()
+    classified_firms = df["COMPANY"].notna() & (df["COMPANY"] != 0)
+    firm_counts = df.loc[classified_firms, "COMPANY"].value_counts()
+
+    df["FIRM_POSTING_COUNT"] = df["COMPANY"].map(firm_counts).astype("Int64")
+    df["FIRM_SIZE_BUCKET"] = pd.cut(
+        df["FIRM_POSTING_COUNT"],
+        bins=[0, 2, 9, np.inf],
+        labels=["Small (<=2)", "Medium (3-9)", "Large (>=10)"],
+    )
+
+    print("Firm size bucket distribution:")
+    print(df["FIRM_SIZE_BUCKET"].value_counts(dropna=False))
+    return df
+
+
+def merge_sp500_snapshot(df, snapshot_path, audit_path):
+    """Join a fixed S&P 500 constituent snapshot keyed by COMPANY."""
+    df = df.copy()
+    df["SP500"] = False
+
+    if snapshot_path is None or not Path(snapshot_path).exists():
+        print("Warning: S&P 500 snapshot not configured or not found; SP500 set to False.")
+        return df
+
+    snapshot = pd.read_csv(snapshot_path)
+    if "COMPANY" not in snapshot.columns:
+        raise ValueError("S&P 500 snapshot must contain a COMPANY column.")
+
+    snapshot = snapshot.copy()
+    snapshot["COMPANY"] = pd.to_numeric(snapshot["COMPANY"], errors="coerce")
+    snapshot = snapshot[snapshot["COMPANY"].notna() & (snapshot["COMPANY"] != 0)]
+    snapshot["COMPANY"] = snapshot["COMPANY"].astype(df["COMPANY"].dtype)
+    snapshot = snapshot.drop_duplicates(subset=["COMPANY"])
+
+    sp500_ids = set(snapshot["COMPANY"])
+    df["SP500"] = df["COMPANY"].isin(sp500_ids) & (df["COMPANY"] != 0)
+
+    audit_columns = ["COMPANY"]
+    if "COMPANY_NAME" in snapshot.columns:
+        audit_columns.append("COMPANY_NAME")
+    audit = snapshot[audit_columns].copy()
+    audit["MATCHED_POSTINGS"] = audit["COMPANY"].map(df["COMPANY"].value_counts()).fillna(0).astype(int)
+    audit["MATCHED_IN_POSTINGS"] = audit["MATCHED_POSTINGS"] > 0
+    Path(audit_path).parent.mkdir(parents=True, exist_ok=True)
+    audit.to_csv(audit_path, index=False)
+
+    print(f"S&P 500 snapshot companies: {len(snapshot):,}")
+    print(f"S&P 500 companies matched to postings: {audit['MATCHED_IN_POSTINGS'].sum():,}")
+    print(f"S&P 500 postings: {df['SP500'].sum():,}")
+    print(f"S&P 500 match audit saved to {audit_path}")
+    return df
+
+
 def merge_wham_data(df, wham_df):
     """Add remote work classification from WHAM data."""
     # Filter for US data only
@@ -154,6 +222,19 @@ def main():
     # Add year column
     all_data = add_year_column(all_data)
 
+    # Add industry columns
+    all_data = add_industry_columns(all_data)
+
+    # Add posting-volume firm size buckets
+    all_data = add_firm_size(all_data)
+
+    # Join fixed S&P 500 constituent snapshot when configured
+    all_data = merge_sp500_snapshot(
+        all_data,
+        paths["sp500_csv"],
+        paths["sp500_audit_csv"],
+    )
+
     # Add experience buckets
     all_data = create_experience_buckets(all_data)
 
@@ -193,7 +274,6 @@ def main():
         '81': 'Other Services (except Public Administration)',
         '92': 'Public Administration',
     }
-    all_data['NAICS_2022_2_DIGIT'] = all_data['NAICS_2022_6'].astype(str).str[:2]
     all_data['NAICS_2022_2_NAME'] = all_data['NAICS_2022_2_DIGIT'].map(NAICS_2_DIGIT)
 
     # Derive SOC major group from ONET code

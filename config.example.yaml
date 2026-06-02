@@ -10,6 +10,9 @@ data:
   skills_csv: "OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv"
   body_csv: "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv"
   wham_csv: "ID_CNTRY_ALL_WHAM.csv"
+  # Optional fixed S&P 500 constituent snapshot keyed by COMPANY.
+  # Leave blank until a snapshot CSV is available.
+  sp500_csv:
 
   # Directory for processed parquet outputs (relative to repo root)
   processed_dir: "data/processed"

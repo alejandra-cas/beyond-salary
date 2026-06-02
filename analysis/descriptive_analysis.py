@@ -13,6 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import statsmodels.api as sm
 from pathlib import Path
 from matplotlib.colors import to_rgba
 
@@ -96,7 +97,6 @@ def load_data():
     print("Data loaded")
     usdf["POSTED"] = pd.to_datetime(usdf["POSTED"])
     usdf["QUARTER"] = usdf["POSTED"].dt.to_period("Q")
-    usdf = usdf[usdf["QUARTER"] != "2024Q3"]  # Remove incomplete quarter
     return usdf
 
 
@@ -107,11 +107,63 @@ def create_figures_directory():
         os.makedirs(directory, exist_ok=True)
 
 
+def estimate_quarterly_ai_wage_betas(usdf, min_ai_wage_postings=10):
+    """Estimate quarterly AI log-wage coefficients with standard controls."""
+    controls = [
+        "MIN_EDULEVELS_NAME",
+        "EXPERIENCE_BUCKET",
+        "NAICS_2022_3_DIGIT",
+        "STATE_NAME",
+    ]
+    required = ["QUARTER", "LOG_SALARY", "AI ROLE"] + controls
+    wage_df = usdf.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
+
+    results = []
+    for quarter, group in wage_df.groupby("QUARTER", observed=True):
+        ai_wage_postings = int(group["AI ROLE"].sum())
+        row = {
+            "QUARTER": quarter,
+            "wage_postings": len(group),
+            "ai_wage_postings": ai_wage_postings,
+            "ai_role_beta": np.nan,
+            "ai_role_se": np.nan,
+            "lower_ci": np.nan,
+            "upper_ci": np.nan,
+            "status": "suppressed_sparse_ai_wage_postings",
+        }
+        if ai_wage_postings < min_ai_wage_postings:
+            results.append(row)
+            continue
+
+        X = group[["AI ROLE"]].astype(float)
+        for control in controls:
+            dummies = pd.get_dummies(group[control], prefix=control, drop_first=True, dtype=float)
+            X = pd.concat([X, dummies], axis=1)
+        X = sm.add_constant(X, has_constant="add")
+
+        try:
+            model = sm.OLS(group["LOG_SALARY"].astype(float), X.astype(float)).fit(cov_type="HC1")
+            beta = model.params["AI ROLE"]
+            se = model.bse["AI ROLE"]
+            row.update({
+                "ai_role_beta": beta,
+                "ai_role_se": se,
+                "lower_ci": beta - 1.96 * se,
+                "upper_ci": beta + 1.96 * se,
+                "status": "ok",
+            })
+        except Exception as error:
+            row["status"] = f"error: {error}"
+        results.append(row)
+
+    return pd.DataFrame(results).sort_values("QUARTER")
+
+
 def generate_ai_roles_over_time_plot(usdf):
     """
-    Generate Figure 1: % AI roles over time plot (overall and industry average)
+    Generate Figure 1: quarterly AI demand and adjusted AI log-wage coefficients.
     """
-    print("Generating Figure 1: % AI roles over time plot...")
+    print("Generating Figure 1: AI demand and adjusted AI wage coefficients...")
 
     # Calculate overall percentages
     percent_data = (
@@ -143,27 +195,79 @@ def generate_ai_roles_over_time_plot(usdf):
     #     pct_df_all.index[-1], inplace=True
     # )  # Remove last incomplete quarter
 
+    wage_betas = estimate_quarterly_ai_wage_betas(usdf)
+    tables_dir = Path("results/tables_2026")
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    wage_betas.assign(QUARTER=wage_betas["QUARTER"].astype(str)).to_csv(
+        tables_dir / "quarterly_ai_wage_betas.csv",
+        index=False,
+    )
+
     # Create plot
-    fig, ax = plt.subplots(figsize=(10, 6))
-    pct_df_all.plot(ax=ax, marker=None, fontsize=16)
+    fig, (demand_ax, wage_ax) = plt.subplots(
+        nrows=2,
+        ncols=1,
+        figsize=(11, 9),
+        sharex=True,
+    )
+    quarter_positions = np.arange(len(pct_df_all.index))
+    demand_ax.plot(
+        quarter_positions,
+        pct_df_all["% AI Roles"],
+        linewidth=1.8,
+        label="Overall",
+    )
+    demand_ax.plot(
+        quarter_positions,
+        pct_df_all["Industry Average"],
+        linewidth=1.8,
+        linestyle="--",
+        label="Industry Average",
+    )
 
     # Set industry average line to dashed with same color
-    ai_roles_line = ax.lines[pct_df_all.columns.get_loc("% AI Roles")]
-    industry_avg_line = ax.lines[pct_df_all.columns.get_loc("Industry Average")]
-    industry_avg_line.set_linestyle("--")
-    industry_avg_line.set_color(ai_roles_line.get_color())
-
-    # Formatting
-    ax.legend(
+    demand_ax.legend(
         title=None,
         labels=["Overall", "Industry Average"],
         loc="upper left",
         fontsize=16,
     )
-    plt.xlabel(None)
-    plt.ylabel("% AI Roles", fontsize=18)
-    plt.savefig(FIG_ROOT / "pct_ai_roles_overall_industry.png", bbox_inches="tight")
-    # plt.show()
+    demand_ax.set_xlabel(None)
+    demand_ax.set_ylabel("% AI Roles", fontsize=15)
+    demand_ax.set_title("Demand for AI Skills", fontsize=15)
+    demand_ax.grid(alpha=0.25)
+
+    plotted = wage_betas[wage_betas["status"] == "ok"].copy()
+    quarter_position_map = {quarter: idx for idx, quarter in enumerate(pct_df_all.index)}
+    plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
+    wage_ax.errorbar(
+        plotted["x"],
+        plotted["ai_role_beta"],
+        yerr=[
+            plotted["ai_role_beta"] - plotted["lower_ci"],
+            plotted["upper_ci"] - plotted["ai_role_beta"],
+        ],
+        fmt="o-",
+        color="#0072B2",
+        capsize=3,
+        linewidth=1.5,
+        markersize=4,
+    )
+    wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=13)
+    wage_ax.set_title("Adjusted AI-Skills Wage Premium", fontsize=15)
+    wage_ax.grid(alpha=0.25)
+
+    tick_positions = list(range(0, len(pct_df_all.index), 4))
+    wage_ax.set_xticks(tick_positions)
+    wage_ax.set_xticklabels([str(pct_df_all.index[idx]) for idx in tick_positions], rotation=45)
+    wage_ax.set_xlabel("Quarter", fontsize=13)
+
+    plt.tight_layout()
+    output_path = FIG_ROOT / "figure1_ai_demand_wage_beta.png"
+    plt.savefig(output_path, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output_path}")
 
 
 def count_benefits(data, benefit, period):
