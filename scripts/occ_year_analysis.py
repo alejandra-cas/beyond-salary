@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import sys
 import os
+import yaml
 from pathlib import Path
 
 # Add parent directory to sys.path
@@ -9,8 +10,37 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd()) + "/src")
 sys.path.append(parent_dir)
 from package_files.benefits_defns import *
 
-_base = Path(__file__).parent.parent / "data" / "processed"
-path = _base / "labeled_v1.parquet"
+
+def load_processed_paths():
+    """Load processed parquet paths from config.yaml.
+
+    Falls back to repo-local defaults if config.yaml is not found.
+    """
+    repo_root = Path(__file__).parent.parent
+    config_path = repo_root / "config.yaml"
+
+    if config_path.exists():
+        with open(config_path) as f:
+            cfg = yaml.safe_load(f)["data"]
+        processed_dir = Path(cfg["processed_dir"])
+        if not processed_dir.is_absolute():
+            processed_dir = repo_root / processed_dir
+    else:
+        print(
+            "Warning: config.yaml not found, using default processed paths. "
+            "Copy config.example.yaml to config.yaml to configure."
+        )
+        processed_dir = repo_root / "data" / "processed"
+
+    return {
+        "input_path": processed_dir / "labeled_v2.parquet",
+        "occ_output_path": processed_dir / "occ_year_analysis_raw.parquet",
+        "ind_output_path": processed_dir / "ind_year_analysis_raw.parquet",
+    }
+
+
+paths = load_processed_paths()
+path = paths["input_path"]
 print("reading data")
 data = pd.read_parquet(path)
 print("data read")
@@ -18,7 +48,7 @@ print("data read")
 COUNTY_COL = 'COUNTY'  # adjust if your county column has a different name
 
 
-def run_analysis(data, group_col, output_name):
+def run_analysis(data, group_col, output_path):
     print(f"\n=== Running analysis by {group_col} ===")
     data_select = data[data[group_col].notna()]
     data_select['LOG_SALARY'] = np.log(data_select['SALARY'])
@@ -138,15 +168,14 @@ def run_analysis(data, group_col, output_name):
     analysis_df.rename(columns={'AI ROLE % CHANGE': 'AI Demand % Change'}, inplace=True)
     analysis_df.rename(columns={'AI ROLE %': 'AI Demand'}, inplace=True)
 
-    out_path = _base / f'{output_name}.parquet'
-    print(f"exporting to {out_path}")
+    print(f"exporting to {output_path}")
     print(analysis_df.columns)
-    analysis_df.to_parquet(out_path, index=False)
+    analysis_df.to_parquet(output_path, index=False)
     return analysis_df
 
 
 # Run occupation-year analysis
-occ_df = run_analysis(data, 'SOC_MAJOR_GROUP', 'occ_year_analysis_raw')
+occ_df = run_analysis(data, 'SOC_MAJOR_GROUP', paths["occ_output_path"])
 
 # Run industry-year analysis
-ind_df = run_analysis(data, 'NAICS_2022_2_NAME', 'ind_year_analysis_raw')
+ind_df = run_analysis(data, 'NAICS_2022_2_NAME', paths["ind_output_path"])

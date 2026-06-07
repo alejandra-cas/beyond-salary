@@ -14,8 +14,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import statsmodels.api as sm
+import sys
 from pathlib import Path
 from matplotlib.colors import to_rgba
+
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+
+from package_files.config_utils import get_processed_dir, get_repo_root
 
 # Benefit definitions and colors
 benefits4 = [
@@ -72,7 +77,10 @@ occupation = "SOC_MAJOR_GROUP"
 # Set plot font size
 plt.rcParams.update({"font.size": 14})
 
-FIG_ROOT = Path("results/figures_2026/descriptive")
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+
+FIG_ROOT = REPO_ROOT / "results" / "figures_2026" / "descriptive"
 BENEFITS_OVER_TIME_DIR = FIG_ROOT / "benefits_over_time"
 BENEFITS_BY_ROLE_DIR = FIG_ROOT / "pct_jobs_by_benefit_and_role_type"
 BY_OCCUPATION_DIR = FIG_ROOT / "by_occupation"
@@ -92,8 +100,7 @@ def benefit_slug(benefit_key):
 
 def load_data():
     """Load the main dataset."""
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    usdf = pd.read_parquet(_base / 'labeled_v1.parquet')
+    usdf = pd.read_parquet(PROCESSED_DIR / "labeled_v2.parquet")
     print("Data loaded")
     usdf["POSTED"] = pd.to_datetime(usdf["POSTED"])
     usdf["QUARTER"] = usdf["POSTED"].dt.to_period("Q")

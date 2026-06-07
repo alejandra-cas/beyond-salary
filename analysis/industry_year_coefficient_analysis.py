@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from package_files.benefits_defns import benefits_labels_map
+from package_files.config_utils import get_processed_dir, get_repo_root
 
 # ─── Configuration ──────────────────────────────────────────────────────────────
 
@@ -36,16 +37,17 @@ MIN_CELL_OBS = 50       # Minimum observations per industry-year cell
 MIN_POSITIVE = 10       # Minimum positive outcomes for logit to be estimable
 OUTLIER_BETA_CAP = 5    # Drop perk betas with |beta| > this (quasi-separation artifacts)
 
-RESULTS_DIR = Path(__file__).parent.parent / "results" / "figures_2026" / "industry_year"
-TABLES_DIR = Path(__file__).parent.parent / "results" / "tables_2026"
+PROCESSED_DIR = get_processed_dir()
+REPO_ROOT = get_repo_root()
+RESULTS_DIR = REPO_ROOT / "results" / "figures_2026" / "industry_year"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
 
 
 # ─── Data Loading ───────────────────────────────────────────────────────────────
 
 def load_data():
     """Load and prepare the job-level dataset."""
-    base = Path(__file__).parent.parent / "data" / "processed"
-    data = pd.read_parquet(base / "labeled_v1.parquet")
+    data = pd.read_parquet(PROCESSED_DIR / "labeled_v2.parquet")
 
     # Cast AI ROLE to int (stored as bool in parquet)
     data["AI ROLE"] = data["AI ROLE"].astype(int)

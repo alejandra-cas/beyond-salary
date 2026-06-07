@@ -32,17 +32,27 @@ from package_files.benefits_defns import (
     benefit_colors,
     firm,
 )
+from package_files.config_utils import get_processed_dir, get_repo_root
 
 plt.rcParams.update({"font.size": 14})
 
-OUTPUT_FIGS = Path("results/figures_2026/high_ai_firms")
-OUTPUT_TABLES = Path("results/tables_2026")
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+OUTPUT_FIGS = REPO_ROOT / "results" / "figures_2026" / "high_ai_firms"
+OUTPUT_TABLES = REPO_ROOT / "results" / "tables_2026"
 
 
 def load_data():
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    df = pd.read_parquet(_base / "labeled_v1.parquet")
-    print(f"Loaded {len(df):,} rows")
+    """Load the configured analysis dataset."""
+    print("Loading analysis dataset...")
+
+    data_path = PROCESSED_DIR / "labeled_v2.parquet"
+    if not data_path.exists():
+        print(f"Warning: {data_path} not found. Please update the path.")
+        return None
+
+    df = pd.read_parquet(data_path)
+    print(f"Loaded {len(df):,} rows from {data_path}")
     return df
 
 
@@ -264,6 +274,9 @@ def main():
 
     print("Loading data...")
     df = load_data()
+    if df is None:
+        print("Error: Could not load data. Please check the data path.")
+        return
 
     print("\nComputing firm statistics...")
     df, firm_totals = compute_firm_stats(df)
