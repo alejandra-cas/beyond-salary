@@ -152,7 +152,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
    2. **M2 (+ Individual/State Controls):** M1 + State FE + Education FE + Experience FE
    3. **M3 (+ Salary):** M2 + Log Salary
    4. **M4 (+ S&P 500):** M3 + S&P 500 indicator. This is the preferred specification.
-- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample and small (`<=2` postings), medium (`3-9`), large (`>=10`), and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative.
+- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample and small (`<=2` postings), medium (`3-9`), large (`>=10`), and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Outputs include a β₃ heatmap across all perks and firm types and per-perk time-series plots with 95% CI ribbons.
 - **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
@@ -185,11 +185,11 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - To avoid quasi-separation, singular matrices, and unstable coefficients in the perk logit models, sparse categories are grouped into `Other NAICS 3-digit` or `Other State`.
 - Grouping is calculated separately for each perk and model sample. Salary-controlled models calculate sparse categories using only postings with wage information.
 - A category is grouped when it has fewer than 50 relevant postings, fewer than 5 postings with the perk, or fewer than 5 postings without the perk.
-- The 50-observation threshold is a pragmatic stabilization rule, not a theoretical cutoff. The positive/negative outcome rules directly guard against separation. Alternative thresholds such as 30, 50, and 100 observations are suitable robustness checks.
+- Alternative thresholds such as 30, 50, and 100 observations are suitable robustness checks.
 - H1 is fitted with a binomial GLM solver. This preserves the logit specification while converging reliably with the fixed-effect design.
 
 ### Firm-size buckets
-- Firm size is a posting-volume proxy rather than employee headcount. `FIRM_POSTING_COUNT` is calculated from each firm's total observations in the complete labeled dataset.
+- Firm size is a posting-volume proxy. `FIRM_POSTING_COUNT` is calculated from each firm's total observations in the complete labeled dataset.
 - `COMPANY == 0` represents `Unclassified` employers. These 12,855 postings are retained in full-sample analyses but are excluded from firm-size subsamples so they are not treated as one large employer.
 - Fixed size buckets are small (`<=2` postings), medium (`3-9` postings), and large (`>=10` postings).
 
@@ -201,7 +201,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 | Unclassified | 12,855 | 12.9% |
 
 ### S&P 500 snapshot
-- S&P 500 membership uses one fixed constituent snapshot, not historical membership at each posting date.
+- S&P 500 membership uses one fixed constituent snapshot.
 - The snapshot builder uses conservative normalized-name matching and writes an audit so unmatched or ambiguous companies remain visible.
 - The current snapshot matches 364 constituent companies and identifies 10,743 postings.
 - The reviewed alias `Alphabet -> Google` is encoded in `scripts/build_sp500_snapshot.py`. The posting data contains 62 Google postings, including 16 AI roles and 25 postings with wage information.
@@ -231,6 +231,10 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - **Occupation analysis**: `results/figures_2026/descriptive/by_occupation/percent_by_occupation_{benefit}.png` (6 files)
 - **Salary analysis**: `results/figures_2026/salary/salary_by_benefit_combined.png`
 - **Wage-perk interaction figures**: `results/figures_2026/wage_perk_interactions/`
+  - Pooled β₃ dot plots: `wage_perk_interaction_beta3_pooled.png`
+  - Yearly β₃ time series (all perks): `wage_perk_interaction_beta3_yearly.png`
+  - **β₃ heatmap (perk × firm type)**: `wage_perk_interaction_beta3_heatmap.png`
+  - **β₃ single-perk time series with CI ribbons**: `wage_perk_interaction_beta3_timeseries_{perk}.png`
 - **Industry-year wage vs perk figures**: `results/figures_2026/industry_year/`
 - **Threshold robustness figure**: `results/figures_2026/robustness/ai_threshold_robustness.png`
 - **Perk positioning figure**: `results/figures_2026/perk_positioning/perk_positioning_ai_coef.png`
