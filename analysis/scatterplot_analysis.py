@@ -22,6 +22,7 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
 try:
     from package_files.benefits_defns import *
+    from package_files.config_utils import get_processed_dir, get_repo_root
 except ImportError:
     # Fallback definitions
     benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
@@ -46,6 +47,16 @@ except ImportError:
         'REMOTE_KW': '#c765a6'
     }
 
+    def get_processed_dir():
+        return Path(__file__).parent.parent / "data" / "processed"
+
+    def get_repo_root():
+        return Path(__file__).parent.parent
+
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+RESULTS_DIR = REPO_ROOT / "results" / "figures_2026" / "scatterplots"
+
 def remove_outliers(df, columns):
     """Remove outliers using IQR method for specified columns."""
     result_df = df.copy()
@@ -64,8 +75,7 @@ def remove_outliers(df, columns):
 def load_occupation_year_data():
     """Load occupation-year analysis data."""
     print("Loading occupation-year data...")
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    return pd.read_parquet(_base / 'occ_year_analysis_raw.parquet')
+    return pd.read_parquet(PROCESSED_DIR / "occ_year_analysis_raw.parquet")
 
 def generate_percentage_scatterplots(coeff_df, output_dir):
     """Generate percentage-based scatterplots (from original remotekw analysis)."""
@@ -225,7 +235,7 @@ def main():
     print("=" * 50)
     
     # Setup output directory
-    output_dir = '../results/figures_2026/scatterplots'
+    output_dir = RESULTS_DIR
     os.makedirs(output_dir, exist_ok=True)
     
     try:
@@ -238,7 +248,7 @@ def main():
         
         # Try to load percentage data for percentage scatterplots (optional)
         try:
-            coeff_df_path = '../exports/occ_year_data/occ_year_analysis_remotekw.csv'
+            coeff_df_path = REPO_ROOT / "exports" / "occ_year_data" / "occ_year_analysis_remotekw.csv"
             if os.path.exists(coeff_df_path):
                 coeff_df = pd.read_csv(coeff_df_path)
                 print(f"Also found percentage data with {len(coeff_df)} rows")

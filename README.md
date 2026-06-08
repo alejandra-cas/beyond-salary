@@ -9,7 +9,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ├── analysis/           # Main analysis scripts
 │   ├── descriptive_analysis.py              # Descriptive statistics and data exploration
 │   ├── new_data_exploration.ipynb           # Exploratory analysis notebook for MAY26 subsample
-│   ├── occupation_year_balanced_sample_analysis.py  # Occupation-year regression models
+│   ├── occupation_year_prevalence_analysis.py  # Occupation-year regression models
 │   ├── regression_models.py                 # Job-level regression models
 │   ├── salary_analysis.py                   # Salary premium analysis
 │   ├── wage_perk_interaction_analysis.py    # H2 wage-perk interaction models
@@ -37,7 +37,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── ID_CNTRY_ALL_WHAM.csv                    # Remote work classification data (LLM)
 │   └── processed/                               # Pipeline outputs
 │       ├── data_v1.parquet                      # Cleaned data with AI roles and experience
-│       ├── labeled_v1.parquet                   # Data with keyword + structured benefit labels
+│       ├── labeled_v2.parquet                   # Data with benefit labels (incl. REMOTE_KW)
 │       ├── occ_year_analysis_raw.parquet        # Occupation-year aggregated analysis data
 │       └── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
 ├── results/            # Generated outputs
@@ -127,7 +127,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
    uv run python analysis/descriptive_analysis.py --include-structured
    uv run python analysis/regression_models.py
    uv run python analysis/wage_perk_interaction_analysis.py
-   uv run python analysis/occupation_year_balanced_sample_analysis.py
+   uv run python analysis/occupation_year_prevalence_analysis.py
    uv run python analysis/salary_analysis.py
    uv run python analysis/scatterplot_analysis.py
    ```
@@ -153,7 +153,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
    3. **M3 (+ Salary):** M2 + Log Salary
    4. **M4 (+ S&P 500):** M3 + S&P 500 indicator. This is the preferred specification.
 - **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample and small (`<=2` postings), medium (`3-9`), large (`>=10`), and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Outputs include a β₃ heatmap across all perks and firm types and per-perk time-series plots with 95% CI ribbons.
-- **occupation_year_balanced_sample_analysis.py**: OLS regressions on benefit differences at occupation-year level
+- **occupation_year_prevalence_analysis.py**: OLS regressions on AI benefit prevalence at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
 - **industry_year_coefficient_analysis.py**: Supplementary prior analysis estimating AI wage and perk coefficients per industry-year cell. It is no longer the primary H2 strategy.

@@ -25,7 +25,9 @@ import matplotlib.ticker as mticker
 import statsmodels.api as sm
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent / "src"))
+REPO_ROOT_PATH = Path(__file__).resolve().parent.parent
+sys.path.append(str(REPO_ROOT_PATH))
+sys.path.append(str(REPO_ROOT_PATH / "src"))
 from package_files.benefits_defns import (
     benefits4,
     benefits4_labels,
@@ -33,11 +35,25 @@ from package_files.benefits_defns import (
     industry,
     year,
 )
+from package_files.config_utils import get_processed_dir, get_repo_root
+from scripts.label_benefits import (
+    check_benefit_position,
+    culture,
+    edu_assistance,
+    health_wellbeing,
+    leave,
+    parental_leave,
+    tuition_to_exclude,
+    wellbeing_to_exclude,
+)
+from scripts.label_benefits_remote import remote_keywords, remote_to_exclude
 
 plt.rcParams.update({"font.size": 13})
 
-OUTPUT_FIGS = Path("results/figures_2026/perk_positioning")
-OUTPUT_TABLES = Path("results/tables_2026")
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+OUTPUT_FIGS = REPO_ROOT / "results" / "figures_2026" / "perk_positioning"
+OUTPUT_TABLES = REPO_ROOT / "results" / "tables_2026"
 
 POSITION_COLS = {
     "EDU_ASSISTANCE":    "EDU_ASSISTANCE_POSITION",
@@ -48,16 +64,79 @@ POSITION_COLS = {
     "REMOTE_KW":         "REMOTE_KW_POSITION",
 }
 
+POSITION_KEYWORDS = {
+    "EDU_ASSISTANCE": (edu_assistance, tuition_to_exclude),
+    "PAID LEAVE": (leave, None),
+    "HEALTH_WELLBEING": (health_wellbeing, wellbeing_to_exclude),
+    "PARENTAL_LEAVE": (parental_leave, None),
+    "CULTURE": (culture, None),
+    "REMOTE_KW": (remote_keywords, remote_to_exclude),
+}
+
+
+def ensure_position_columns(df):
+    """Add missing prominence columns from BODY using the existing keyword rules."""
+    missing = [col for col in POSITION_COLS.values() if col not in df.columns]
+    if not missing:
+        return df
+
+    if "BODY" not in df.columns:
+        raise KeyError(
+            "Missing perk prominence columns and BODY is unavailable, so positions "
+            f"cannot be computed. Missing columns: {', '.join(missing)}"
+        )
+
+    print(
+        "Computing missing perk prominence columns from BODY: "
+        + ", ".join(missing)
+    )
+
+    for benefit, pos_col in POSITION_COLS.items():
+        if pos_col in df.columns:
+            continue
+
+        keywords, exclusions = POSITION_KEYWORDS[benefit]
+        if benefit in df.columns:
+            mask = df[benefit].fillna(False).astype(bool)
+        else:
+            mask = pd.Series(True, index=df.index)
+            print(f"  Warning: {benefit} flag missing; scanning all postings")
+
+        df[pos_col] = np.nan
+        if not mask.any():
+            print(f"  {pos_col}: no matching {benefit} rows")
+            continue
+
+        positions = check_benefit_position(df.loc[mask, "BODY"], keywords, exclusions)
+        df.loc[mask, pos_col] = pd.Series(
+            positions.astype("float64"),
+            index=df.index[mask],
+        )
+
+        valid = df[pos_col].notna().sum()
+        print(f"  {pos_col}: {valid:,} matches")
+
+    return df
+
 
 def load_data():
-    _base = Path(__file__).parent.parent / "data" / "processed"
-    df = pd.read_parquet(_base / "labeled_v1.parquet")
-    print(f"Loaded {len(df):,} rows")
+    """Load and prepare the configured analysis dataset."""
+    print("Loading analysis dataset...")
+
+    data_path = PROCESSED_DIR / "labeled_v2.parquet"
+    if not data_path.exists():
+        print(f"Warning: {data_path} not found. Please update the path.")
+        return None
+
+    df = pd.read_parquet(data_path)
+    print(f"Loaded {len(df):,} rows from {data_path}")
 
     # Consolidate rare industries
     ind_counts = df[industry].value_counts()
     small = ind_counts[ind_counts < 30].index
     df[industry] = df[industry].replace(small, "Other")
+
+    df = ensure_position_columns(df)
 
     return df
 
@@ -218,6 +297,9 @@ def plot_results(results_df):
 def main():
     print("Loading data...")
     df = load_data()
+    if df is None:
+        print("Error: Could not load data. Please check the data path.")
+        return
 
     print("\nDescriptive statistics:")
     desc_df = print_descriptive(df)
