@@ -30,6 +30,13 @@ SAMPLE_FILTERS = {
     "Large firms": lambda df: df["firm_size_bucket"] == "Large (>=10)",
     "S&P 500 firms": lambda df: df["sp500"],
 }
+SAMPLE_COLORS = {
+    "Full sample": "#9467bd",
+    "Small firms": "#1f77b4",
+    "Medium firms": "#ff7f0e",
+    "Large firms": "#2ca02c",
+    "S&P 500 firms": "#d62728",
+}
 
 
 def load_data():
@@ -214,7 +221,13 @@ def plot_yearly_results(results):
             line_data = subset[subset["sample"] == sample].sort_values("year")
             if line_data.empty:
                 continue
-            ax.plot(line_data["year"], line_data["beta3_interaction"], marker="o", label=sample)
+            ax.plot(
+                line_data["year"],
+                line_data["beta3_interaction"],
+                marker="o",
+                label=sample,
+                color=SAMPLE_COLORS[sample],
+            )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
         ax.set_title(benefits_labels_map[perk])
         ax.set_ylabel("AI Role × Perk Coefficient")
@@ -305,20 +318,13 @@ def plot_yearly_single_perk(results, perk="REMOTE_KW"):
     yearly["year"] = yearly["period"].astype(int)
 
     sample_order = ["Small firms", "Medium firms", "Large firms", "S&P 500 firms"]
-    sample_colors = {
-        "Small firms": "#1f77b4",
-        "Medium firms": "#ff7f0e",
-        "Large firms": "#2ca02c",
-        "S&P 500 firms": "#d62728",
-    }
-
     fig, ax = plt.subplots(figsize=(9, 5.5))
 
     for sample in sample_order:
         line = yearly[yearly["sample"] == sample].sort_values("year")
         if line.empty:
             continue
-        color = sample_colors[sample]
+        color = SAMPLE_COLORS[sample]
         ax.fill_between(
             line["year"],
             line["beta3_lower_ci"],
