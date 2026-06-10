@@ -41,7 +41,7 @@ PROCESSED_DIR = get_processed_dir()
 RESULTS_DIR = REPO_ROOT / "results"
 TABLES_DIR = RESULTS_DIR / "tables_2026"
 MODEL_CACHE_DIR = TABLES_DIR / "model_cache"
-CACHE_VERSION = "v3_m5_30x100k_mcse_compact"
+CACHE_VERSION = "v4_preferred_sp500_no_firm_fe"
 CACHE_FORMAT = "compact_results_only"
 
 # Field mappings
@@ -59,13 +59,6 @@ benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
-FIRM_FE_SUBSAMPLE_SIZE = 100_000
-FIRM_FE_SUBSAMPLE_REPEATS = 30
-FIRM_FE_SAMPLE_SEED = 42
-MODEL_5_AVERAGING_NOTE = (
-    "Model 5 coefficients are means from 30 random 100,000-row firm-FE subsample fits; "
-    "standard errors are Monte Carlo SEs of the mean across subsample estimates."
-)
 
 
 def collapse_sparse_fixed_effects(data, dependent, require_salary=False, min_outcomes=5):
@@ -132,9 +125,6 @@ def get_model_cache_path(data_path):
 
     filename = (
         f"job_level_models_{CACHE_VERSION}_"
-        f"seed{FIRM_FE_SAMPLE_SEED}_"
-        f"repeats{FIRM_FE_SUBSAMPLE_REPEATS}_"
-        f"n{FIRM_FE_SUBSAMPLE_SIZE}_"
         f"data{data_mtime_ns}.pkl"
     )
     return MODEL_CACHE_DIR / filename
@@ -165,94 +155,11 @@ def save_cached_models(cache_path, models_2024):
     payload = {
         "cache_version": CACHE_VERSION,
         "cache_format": CACHE_FORMAT,
-        "firm_fe_subsample_size": FIRM_FE_SUBSAMPLE_SIZE,
-        "firm_fe_subsample_repeats": FIRM_FE_SUBSAMPLE_REPEATS,
-        "firm_fe_sample_seed": FIRM_FE_SAMPLE_SEED,
-        "model_5_note": MODEL_5_AVERAGING_NOTE,
         "models_2024": serialize_compact_model_results(models_2024),
     }
     with open(cache_path, "wb") as f:
         pickle.dump(payload, f)
     print(f"Cached model results saved to {cache_path}")
-
-
-class AveragedLogitResults:
-    """Statsmodels-like result wrapper for averaged subsample estimates."""
-
-    def __init__(
-        self,
-        models,
-        model_name,
-        sample_size,
-        requested_repeats,
-        seeds,
-    ):
-        if not models:
-            raise ValueError("Cannot average Model 5 results without any successful fits.")
-
-        params_df = pd.concat([model.params for model in models], axis=1)
-        bse_df = pd.concat([model.bse for model in models], axis=1)
-
-        self.params = params_df.mean(axis=1)
-        self.average_model_bse = bse_df.mean(axis=1)
-        self.subsample_coef_sd = params_df.std(axis=1, ddof=1)
-        self.bse = self.subsample_coef_sd / np.sqrt(len(models))
-        if len(models) == 1:
-            self.bse = self.average_model_bse.copy()
-
-        z_scores = self.params.divide(self.bse).replace([np.inf, -np.inf], np.nan)
-        self.pvalues = pd.Series(
-            2 * (1 - norm.cdf(np.abs(z_scores))),
-            index=self.params.index,
-        )
-        self.converged = all(getattr(model, "converged", False) for model in models)
-        self.nobs = float(np.mean([model.nobs for model in models]))
-        self.prsquared = float(np.nanmean([model.prsquared for model in models]))
-        self.model_name = model_name
-        self.successful_fit_count = len(models)
-        self.requested_repeats = requested_repeats
-        self.sample_size = sample_size
-        self.seed_start = min(seeds)
-        self.seed_end = max(seeds)
-        self.model_note = MODEL_5_AVERAGING_NOTE
-
-        self.dropped_groups = int(
-            round(np.mean([getattr(model, "dropped_groups", np.nan) for model in models]))
-        )
-        self.used_groups = int(
-            round(np.mean([getattr(model, "used_groups", np.nan) for model in models]))
-        )
-
-    def summary(self):
-        summary_df = pd.DataFrame(
-            {
-                "coef": self.params,
-                "monte carlo std err": self.bse,
-                "subsample coef sd": self.subsample_coef_sd,
-                "avg model std err": self.average_model_bse,
-                "p>|z|": self.pvalues,
-            }
-        )
-        lines = [
-            self.model_name,
-            f"Converged in all averaged fits: {self.converged}",
-            f"Successful fits: {self.successful_fit_count}/{self.requested_repeats}",
-            f"Subsample size per fit: {self.sample_size:,}",
-            f"Seed range: {self.seed_start}-{self.seed_end}",
-            f"Average observations used: {self.nobs:,.0f}",
-            f"Average groups used: {self.used_groups:,}",
-            f"Average groups dropped: {self.dropped_groups:,}",
-            f"Average pseudo R-squared: {self.prsquared:.4f}",
-            "",
-            summary_df.to_string(float_format=lambda x: f"{x:0.4f}"),
-        ]
-        return "\n".join(lines)
-
-    def conf_int(self, alpha=0.05):
-        critical_value = norm.ppf(1 - alpha / 2)
-        lower = self.params - critical_value * self.bse
-        upper = self.params + critical_value * self.bse
-        return pd.DataFrame({0: lower, 1: upper})
 
 
 class CompactLogitResults:
@@ -394,18 +301,6 @@ def deserialize_compact_model_results(serialized_models):
     return panels
 
 
-def print_firm_fe_sample_diagnostics(data):
-    """Print quick diagnostics for the sampled firm-FE dataset."""
-    firm_counts = data[firm].dropna().astype(str).value_counts()
-
-    print("\nFirm FE sample diagnostics:")
-    print(f"Observations: {len(data):,}")
-    print(f"Firms with non-missing IDs: {len(firm_counts):,}")
-    if not firm_counts.empty:
-        print(f"Max firm size: {int(firm_counts.max()):,}")
-        print("Top 10 firm sizes:")
-        print(firm_counts.head(10).to_string())
-
 def load_and_prepare_data():
     """Load and prepare the analysis dataset with all preprocessing."""
     print("Loading analysis dataset...")
@@ -434,75 +329,8 @@ def load_and_prepare_data():
     return data
 
 
-def run_averaged_firm_fe_model(firm_fe_pool, benefit):
-    """Fit Model 5 repeatedly on random subsamples and average successful fits."""
-    sample_n = min(FIRM_FE_SUBSAMPLE_SIZE, len(firm_fe_pool))
-    if sample_n < FIRM_FE_SUBSAMPLE_SIZE:
-        print(
-            f"Eligible firm-FE pool has only {sample_n:,} rows; "
-            "using all eligible rows for each repeat"
-        )
-
-    successful_models = []
-    successful_seeds = []
-    all_seeds = [
-        FIRM_FE_SAMPLE_SEED + repeat_idx
-        for repeat_idx in range(FIRM_FE_SUBSAMPLE_REPEATS)
-    ]
-
-    for repeat_idx, seed in enumerate(all_seeds, start=1):
-        print(
-            f"Model 5 repeat {repeat_idx}/{FIRM_FE_SUBSAMPLE_REPEATS}: "
-            f"sampling {sample_n:,} rows (random_state={seed})"
-        )
-        firm_fe_data = firm_fe_pool.sample(n=sample_n, random_state=seed).copy()
-        if repeat_idx == 1:
-            print_firm_fe_sample_diagnostics(firm_fe_data)
-
-        model = run_logit_model(
-            firm_fe_data,
-            dependent=benefit,
-            predictor='AI ROLE',
-            cat_controls=[year, region, education, experience],
-            cont_controls=['LOG_SALARY'],
-            ref_category={education: "No Education Listed", experience: 'None Listed'},
-            get_vif=False,
-            fixed_effect_group=firm,
-        )
-
-        if model == "Error":
-            print(f"Model 5 repeat {repeat_idx} returned Error; excluding from average")
-            continue
-        if not getattr(model, "converged", False):
-            print(f"Model 5 repeat {repeat_idx} did not converge; excluding from average")
-            continue
-
-        if hasattr(model, 'dropped_groups'):
-            print(
-                f"Conditional logit kept {model.used_groups:,} firms and dropped "
-                f"{model.dropped_groups:,} firms with no within-firm outcome variation"
-            )
-
-        successful_models.append(model)
-        successful_seeds.append(seed)
-
-    if not successful_models:
-        print(f"No successful Model 5 fits for {benefit}; returning Error")
-        return "Error"
-
-    averaged_model = AveragedLogitResults(
-        successful_models,
-        model_name="Average Conditional Logit (COMPANY fixed effects)",
-        sample_size=sample_n,
-        requested_repeats=FIRM_FE_SUBSAMPLE_REPEATS,
-        seeds=successful_seeds,
-    )
-    print(averaged_model.summary())
-    return averaged_model
-
-
 def run_2024_models(data):
-    """Run the five H1 perk-prevalence regression specifications."""
+    """Run the four H1 perk-prevalence regression specifications."""
     
     print("="*80)
     print("RUNNING REGRESSION MODELS")
@@ -576,30 +404,11 @@ def run_2024_models(data):
         )
         benefit_models_sp500_4.append(model)
 
-    # Model 5: Replace industry FE with firm FE, keeping state FE, salary, and individual controls
-    print("\n" + "="*50)
-    print("MODEL 5: STATE + FIRM FIXED EFFECTS WITH SALARY + INDIVIDUAL CONTROLS")
-    print("="*50)
-
-    benefit_models_firm_state_5 = []
-    firm_fe_pool = data.copy()
-    zero_company_mask = firm_fe_pool[firm].astype(str).str.strip() == '0'
-    if zero_company_mask.any():
-        print(f"Dropping {int(zero_company_mask.sum()):,} observations with COMPANY == 0 before firm FE sampling")
-        firm_fe_pool = firm_fe_pool.loc[~zero_company_mask].copy()
-
-    for benefit in benefits4:
-        print(f"\n{benefit}")
-        print('-'*100)
-        model = run_averaged_firm_fe_model(firm_fe_pool, benefit)
-        benefit_models_firm_state_5.append(model)
-
     return [
         benefit_models_industry,
         benefit_models_industry_2,
         benefit_models_industry_3,
         benefit_models_sp500_4,
-        benefit_models_firm_state_5,
     ]
 
 def extract_model_results(models_2024):
@@ -611,7 +420,6 @@ def extract_model_results(models_2024):
         'M2: +Indiv Controls',
         'M3: +Salary',
         'M4: +S&P 500',
-        'M5: Industry FE -> Firm FE',
     ]
     
     for model_idx, models in enumerate(models_2024):
@@ -706,17 +514,6 @@ def generate_coefficients_plot(results_df):
                 if model_data['Converged'].values[0] is False:
                     ax.plot(pos, model_data['Coefficient'].values[0], 'rx', markersize=12, label='Did Not Converge')
 
-                if model.startswith('M5:'):
-                    ax.annotate(
-                        '*',
-                        xy=(pos, coefficient),
-                        xytext=(4, 8),
-                        textcoords='offset points',
-                        fontsize=14,
-                        fontweight='bold',
-                        color=colors[i % len(colors)],
-                    )
-            
         if benefit_positions:
             benefit_ticks.append((min(benefit_positions) + max(benefit_positions)) / 2)
             benefit_tick_labels.append(benefits4_labels[benefits4.index(benefit)])
@@ -730,16 +527,8 @@ def generate_coefficients_plot(results_df):
     ax.set_ylabel('Log-Odds Coefficient (with 95% CI)', fontsize=16)
     ax.axhline(0, color='grey', linewidth=0.8)
     ax.legend(handles, labels, title='Model', bbox_to_anchor=(0, 1), loc='upper left', fontsize=12, title_fontsize=12)
-    fig.text(
-        0.01,
-        0.01,
-        f"* {MODEL_5_AVERAGING_NOTE}",
-        ha='left',
-        va='bottom',
-        fontsize=10,
-    )
     
-    plt.tight_layout(rect=[0, 0.08, 1, 1])
+    plt.tight_layout()
     
     # Save plot
     os.makedirs(RESULTS_DIR / "figures_2026/regression", exist_ok=True)
@@ -1186,7 +975,7 @@ def generate_panel_summaries(models_2024):
     os.makedirs(TABLES_DIR, exist_ok=True)
 
     panel_map = {
-        'Main': [0, 1, 2, 3, 4],
+        'Main': [0, 1, 2, 3],
     }
 
     model_labels = {
@@ -1194,7 +983,6 @@ def generate_panel_summaries(models_2024):
         1: 'M2 + Individual+State Controls',
         2: 'M3 + Salary',
         3: 'M4 + S&P 500 (Preferred)',
-        4: 'M5 Replace Industry FE with State+Firm FE + Salary + Indiv Controls',
     }
 
     rows = []
@@ -1214,14 +1002,6 @@ def generate_panel_summaries(models_2024):
                         'ai_role_pvalue': np.nan,
                         'nobs': np.nan,
                         'pseudo_r2': np.nan,
-                        'model_note': MODEL_5_AVERAGING_NOTE if model_idx == 4 else '',
-                        'model_5_successful_fits': np.nan,
-                        'model_5_requested_repeats': FIRM_FE_SUBSAMPLE_REPEATS if model_idx == 4 else np.nan,
-                        'model_5_subsample_size': FIRM_FE_SUBSAMPLE_SIZE if model_idx == 4 else np.nan,
-                        'model_5_seed_start': np.nan,
-                        'model_5_seed_end': np.nan,
-                        'model_5_ai_role_subsample_coef_sd': np.nan,
-                        'model_5_ai_role_average_model_se': np.nan,
                     })
                     continue
 
@@ -1237,22 +1017,6 @@ def generate_panel_summaries(models_2024):
                     'ai_role_pvalue': model.pvalues.get('AI ROLE', np.nan),
                     'nobs': model.nobs,
                     'pseudo_r2': model.prsquared,
-                    'model_note': getattr(model, 'model_note', ''),
-                    'model_5_successful_fits': getattr(model, 'successful_fit_count', np.nan),
-                    'model_5_requested_repeats': getattr(model, 'requested_repeats', np.nan),
-                    'model_5_subsample_size': getattr(model, 'sample_size', np.nan),
-                    'model_5_seed_start': getattr(model, 'seed_start', np.nan),
-                    'model_5_seed_end': getattr(model, 'seed_end', np.nan),
-                    'model_5_ai_role_subsample_coef_sd': getattr(
-                        model,
-                        'subsample_coef_sd',
-                        pd.Series(dtype=float),
-                    ).get('AI ROLE', np.nan),
-                    'model_5_ai_role_average_model_se': getattr(
-                        model,
-                        'average_model_bse',
-                        pd.Series(dtype=float),
-                    ).get('AI ROLE', np.nan),
                 })
 
     long_df = pd.DataFrame(rows)
