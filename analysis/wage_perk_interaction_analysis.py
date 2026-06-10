@@ -11,11 +11,14 @@ import statsmodels.formula.api as smf
 
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 from package_files.benefits_defns import benefits4, benefits_labels_map
+from package_files.config_utils import get_processed_dir, get_repo_root
 
 
-DATA_PATH = Path(__file__).parent.parent / "data" / "processed" / "labeled_v1.parquet"
-TABLES_DIR = Path(__file__).parent.parent / "results" / "tables_2026"
-FIGURES_DIR = Path(__file__).parent.parent / "results" / "figures_2026" / "wage_perk_interactions"
+REPO_ROOT = get_repo_root()
+PROCESSED_DIR = get_processed_dir()
+DATA_PATH = PROCESSED_DIR / "labeled_v2.parquet"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
+FIGURES_DIR = REPO_ROOT / "results" / "figures_2026" / "wage_perk_interactions"
 
 MIN_AI_WAGE_POSTINGS = 10
 MIN_INTERACTION_CELL_POSTINGS = 3

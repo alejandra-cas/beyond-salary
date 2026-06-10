@@ -7,64 +7,75 @@ This repository contains the reproducible code and analysis for the paper Beyond
 
 ```
 ├── analysis/           # Main analysis scripts
-│   ├── descriptive_analysis.py              # Descriptive statistics and data exploration
-│   ├── new_data_exploration.ipynb           # Exploratory analysis notebook for MAY26 subsample
-│   ├── occupation_year_prevalence_analysis.py  # Occupation-year regression models
-│   ├── regression_models.py                 # Job-level regression models
-│   ├── salary_analysis.py                   # Salary premium analysis
-│   ├── wage_perk_interaction_analysis.py    # H2 wage-perk interaction models
-│   ├── scatterplot_analysis.py              # Correlation and scatterplot analysis
-│   ├── industry_year_coefficient_analysis.py # Industry-year wage vs perk coefficient comparison
-│   ├── high_ai_firm_analysis.py             # Within-firm perk premium by firm AI-share tier
-│   ├── ai_threshold_robustness.py           # Robustness check: 1+/2+/3+ AI skills thresholds
-│   ├── keyword_vs_structured_benefits.ipynb  # Keyword label validation against structured fields
-│   └── wage_info.ipynb                      # Wage distribution analysis notebook
+│   ├── ai_threshold_robustness.py             # Robustness check: 1+/2+/3+ AI skills thresholds
+│   ├── descriptive_analysis.py                # Descriptive statistics and data exploration
+│   ├── high_ai_firm_analysis.py               # Within-firm perk premium by firm AI-share tier
+│   ├── industry_year_coefficient_analysis.py  # Industry-year wage vs perk coefficient comparison
+│   ├── occupation_year_prevalence_analysis.py # Occupation-year perk prevalence models
+│   ├── perk_positioning_analysis.py           # Perk prominence-position analysis
+│   ├── regression_models.py                   # Job-level regression models
+│   ├── salary_analysis.py                     # Salary premium analysis
+│   ├── scatterplot_analysis.py                # Correlation and scatterplot analysis
+│   ├── structured_benefits_regression.py      # Structured benefit regression models
+│   ├── wage_perk_interaction_analysis.py      # H2 wage-perk interaction models
+│   ├── join_remote_kw.ipynb                   # Remote keyword joining exploration
+│   ├── keyword_vs_structured_benefits.ipynb   # Keyword label validation against structured fields
+│   ├── new_data_exploration.ipynb             # Exploratory analysis notebook for MAY26 subsample
+│   ├── regression_failure_investigation.ipynb # Regression diagnostics notebook
+│   └── wage_info.ipynb                        # Wage distribution analysis notebook
 ├── scripts/            # Data preparation and processing scripts
+│   ├── build_sp500_snapshot.py              # Build fixed S&P 500 company-ID snapshot
 │   ├── export_samples.py                    # Export balanced samples for analysis
 │   ├── label_benefits.py                    # Benefit labeling and classification
 │   ├── label_benefits_remote.py             # Remote work benefit labeling
 │   ├── occ_year_analysis.py                 # Occupation-year and industry-year aggregation
-│   └── prepare_data.py                      # Data merging, cleaning, and AI role classification
+│   ├── prepare_data.py                      # Data merging, cleaning, and AI role classification
+│   └── relabel_sp500.py                     # Refresh SP500 labels in existing processed files
 ├── src/                # Supporting Python modules
 │   └── package_files/  # Core utility functions and model definitions
 │       ├── __init__.py                      # Package initialization
 │       ├── benefits_defns.py                # Benefit category definitions and mappings
+│       ├── config_utils.py                  # Shared config/path helpers
 │       └── logit_model.py                   # Logistic regression utilities
 ├── data/               # Input data files and processed datasets (not included in repo)
 │   ├── OII_US_10M_POSTS_MAY26_SUBSAMPLE.csv     # Job postings data
 │   ├── OII_US_10M_SKILLS_MAY26_SUBSAMPLE.csv    # Skills data (for AI role classification)
 │   ├── OII_US_10M_BODY_MAY26_SUBSAMPLE.csv      # Job posting body text
 │   ├── ID_CNTRY_ALL_WHAM.csv                    # Remote work classification data (LLM)
+│   ├── sp500_snapshot.csv                       # Matched S&P 500 company-ID snapshot
+│   ├── sp500_snapshot_audit.csv                 # Snapshot matching audit
 │   └── processed/                               # Pipeline outputs
 │       ├── data_v1.parquet                      # Cleaned data with AI roles and experience
+│       ├── labeled_v1.parquet                   # Data with non-remote benefit labels
 │       ├── labeled_v2.parquet                   # Data with benefit labels (incl. REMOTE_KW)
 │       ├── occ_year_analysis_raw.parquet        # Occupation-year aggregated analysis data
-│       └── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
+│       ├── ind_year_analysis_raw.parquet        # Industry-year aggregated analysis data
+│       ├── sp500_match_audit.csv                # Processed-data S&P 500 match audit
+│       └── sp500_relabel_audit.csv              # Standalone S&P 500 relabel audit
 ├── results/            # Generated outputs
 │   ├── figures/                              # Original figures (prior runs)
 │   ├── figures_2026/                         # Updated figures (MAY26 dataset)
+│   │   ├── benefits_over_time/              # Benefit prevalence over time
 │   │   ├── descriptive/                     # Descriptive figures
-│   │   ├── regression/                      # Regression coefficient plots
-│   │   ├── salary/                          # Salary analysis figures
-│   │   ├── wage_perk_interactions/          # H2 interaction coefficient figures
-│   │   ├── industry_year/                   # Industry-year wage vs perk coefficient figures
-│   │   ├── robustness/                      # Robustness check figures
-│   │   ├── perk_positioning/                # Perk prominence-position figures
 │   │   ├── high_ai_firms/                   # Within-firm perk premium plots
+│   │   ├── pct_jobs_by_benefit_and_role_type/ # Benefit prevalence by AI role
+│   │   ├── salary/                          # Salary analysis figures
 │   │   └── scatterplots/                    # Correlation analyses
+│   ├── tables/                              # Original tables (prior runs)
 │   └── tables_2026/    # Updated regression tables and robustness outputs
+│       ├── job_level_model/                 # Individual benefit regression tables
 │       ├── job_level_model_2026/            # Individual benefit regression tables
-│       ├── occ_year_models/                 # Occupation-year tables
+│       ├── robustness/                      # Robustness check outputs
 │       ├── within_firm_perk_diff.csv        # Within-firm AI−Non-AI perk gap by firm tier
 │       ├── high_ai_firm_summary.csv         # Firm counts and median AI share per tier
 │       ├── ai_threshold_robustness.csv      # AI ROLE coefficients across 1+/2+/3+ thresholds
 │       ├── perk_positioning_results.csv     # OLS coefficients: AI ROLE on perk prominence score
-│       ├── structured_benefits_regression.csv  # Structured benefit logit results (P1 M2)
-│       ├── quarterly_ai_wage_betas.csv      # Figure 1 quarterly AI log-wage coefficients
-│       └── wage_perk_interaction_results.csv # Pooled and yearly H2 model results
+│       ├── model_panels_ai_role_coef_wide.csv # Job-level model summary, wide format
+│       └── model_panels_ai_role_long.csv    # Job-level model summary, long format
 ├── config.example.yaml # Template for local data path config (tracked)
 ├── config.yaml         # Local data path config (gitignored)
-└── pyproject.toml      # Project dependencies (uv)
+├── pyproject.toml      # Project dependencies (uv)
+└── uv.lock             # Locked uv dependency versions
 ```
 
 ## Setup Instructions
@@ -119,6 +130,8 @@ This repository contains the reproducible code and analysis for the paper Beyond
    uv run python scripts/prepare_data.py
    uv run python scripts/label_benefits.py
    uv run python scripts/label_benefits_remote.py
+   # Optional: refresh SP500 labels only after updating data/sp500_snapshot.csv
+   uv run python scripts/relabel_sp500.py
    uv run python scripts/occ_year_analysis.py
    uv run python scripts/export_samples.py
 
@@ -203,8 +216,8 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 ### S&P 500 snapshot
 - S&P 500 membership uses one fixed constituent snapshot.
 - The snapshot builder uses conservative normalized-name matching and writes an audit so unmatched or ambiguous companies remain visible.
-- The current snapshot matches 364 constituent companies and identifies 10,743 postings.
-- The reviewed alias `Alphabet -> Google` is encoded in `scripts/build_sp500_snapshot.py`. The posting data contains 62 Google postings, including 16 AI roles and 25 postings with wage information.
+- The current snapshot matches 409 constituent companies and identifies 11,660 postings.
+- Reviewed aliases, including `Alphabet -> Google` and `Capital One Financial -> Capital One`, are encoded in `scripts/build_sp500_snapshot.py`.
 
 ### Figure 1 and H2 thresholds
 - Figure 1 estimates separate quarterly AI wage models and plots the `AI ROLE` coefficient directly in log points with 95% confidence intervals. It suppresses quarters with fewer than 10 AI postings containing wage information, leaving 14 plotted quarters.

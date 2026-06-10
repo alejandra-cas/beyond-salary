@@ -1,0 +1,501 @@
+COMPANY,COMPANY_NAME,SP500_COMPANY_NAME,SYMBOLS,SNAPSHOT_DATE,MATCH_STATUS,NORMALIZED_NAME,SUGGESTED_NORMALIZED_NAMES
+34789532,Nvidia,NVIDIA Corp,NVDA,2026-06-02,matched,nvidia,nvidia
+89628087,Apple,Apple Inc,AAPL,2026-06-02,matched,apple,apple | appen | applause
+8046280,Microsoft,Microsoft Corp,MSFT,2026-06-02,matched,microsoft,microsoft | macrosoft | maconsoft
+20,Amazon,Amazon.com Inc,AMZN,2026-06-02,matched,amazon,amazon | aaon
+16932009,Google,Alphabet Inc,"GOOGL,GOOG",2026-06-02,matched,google,google
+40252853,Broadcom,Broadcom Inc,AVGO,2026-06-02,matched,broadcom,broadcom | brado
+37356086,Tesla,Tesla Inc,TSLA,2026-06-02,matched,tesla,tesla
+36969497,Meta,Meta Platforms Inc,META,2026-06-02,matched,meta,meta | metra | mta
+33484636,Micron Technology,Micron Technology Inc,MU,2026-06-02,matched,micron technology,micron technology | iconic technology | microchip technology
+34481911,Berkshire Hathaway,Berkshire Hathaway Inc,BRK.B,2026-06-02,matched,berkshire hathaway,berkshire hathaway
+,,Eli Lilly & Co,LLY,2026-06-02,unmatched,eli lilly,
+36704772,Walmart,Walmart Inc,WMT,2026-06-02,matched,walmart,walmart | kalmar
+,,Advanced Micro Devices Inc,AMD,2026-06-02,unmatched,advanced micro devices,
+33553916,JPMorgan Chase,JPMorgan Chase & Co,JPM,2026-06-02,matched,jpmorgan chase,jpmorgan chase
+89628092,Oracle,Oracle Corp,ORCL,2026-06-02,matched,oracle,oracle
+38614427,ExxonMobil,Exxon Mobil Corp,XOM,2026-06-02,matched,exxon mobil,exxonmobil
+8792060,Visa,Visa Inc,V,2026-06-02,matched,visa,visa | vista | vsa
+8482428,Intel,Intel Corp,INTC,2026-06-02,matched,intel,intel | inktel | nitel
+42,Johnson & Johnson,Johnson & Johnson,JNJ,2026-06-02,matched,johnson johnson,johnson johnson
+89628088,Cisco,Cisco Systems Inc,CSCO,2026-06-02,matched,cisco,cisco | cis | cic
+1136,Mastercard,Mastercard Inc,MA,2026-06-02,matched,mastercard,mastercard | mastercorp | masterclass
+19799425,Costco,Costco Wholesale Corp,COST,2026-06-02,matched,costco,costco
+2552872,Caterpillar,Caterpillar Inc,CAT,2026-06-02,matched,caterpillar,caterpillar
+35102053,Lam Research,Lam Research Corp,LRCX,2026-06-02,matched,lam research,lam research | asm research | 4m research
+36136059,Applied Materials,Applied Materials Inc,AMAT,2026-06-02,matched,applied materials,applied materials | applied medical
+37924,AbbVie,AbbVie Inc,ABBV,2026-06-02,matched,abbvie,abbvie
+346991,Chevron,Chevron Corp,CVX,2026-06-02,matched,chevron,chevron | everon | percheron
+4808322,Bank of America,Bank of America Corp,BAC,2026-06-02,matched,bank of america,bank of america | bogner of america | mall of america
+42175308,Palantir Technologies,Palantir Technologies Inc,PLTR,2026-06-02,matched,palantir technologies,palantir technologies | valiant technologies | plato technologies
+35242913,Netflix,Netflix Inc,NFLX,2026-06-02,matched,netflix,netflix
+99,UnitedHealth Group,UnitedHealth Group Inc,UNH,2026-06-02,matched,unitedhealth,unitedhealth | hunter health | ut health
+39551416,Morgan Stanley,Morgan Stanley,MS,2026-06-02,matched,morgan stanley,morgan stanley
+469459,The Coca-Cola Company,Coca-Cola Co/The,KO,2026-06-02,matched,coca cola,coca cola
+,,General Electric Co,GE,2026-06-02,unmatched,general electric,garner electric | portland general electric | rogers electric
+6505993,Procter & Gamble,Procter & Gamble Co/The,PG,2026-06-02,matched,procter gamble,procter gamble
+37825458,Goldman Sachs,Goldman Sachs Group Inc/The,GS,2026-06-02,matched,goldman sachs,goldman sachs
+21230682,The Home Depot,Home Depot Inc/The,HD,2026-06-02,matched,home depot,home depot | home doctor
+101036629,IBM,International Business Machines Corp,IBM,2026-06-02,matched,ibm,ibm | i b m
+34991124,Dell Technologies,Dell Technologies Inc,DELL,2026-06-02,matched,dell technologies,dell technologies | zel technologies | zl technologies
+39209858,Merck & Co.,Merck & Co Inc,MRK,2026-06-02,matched,merck,merck | merrick | mercy
+37407004,Texas Instruments,Texas Instruments Inc,TXN,2026-06-02,matched,texas instruments,texas instruments | ta instruments | apex instruments
+,,Philip Morris International Inc,PM,2026-06-02,unmatched,philip morris international,xplor international | inbios international | camris international
+108337,KLA,KLA Corp,KLAC,2026-06-02,matched,kla,kla | ookla
+108231221,GE Vernova,GE Vernova Inc,GEV,2026-06-02,matched,ge vernova,ge vernova
+,,Sandisk Corp/DE,SNDK,2026-06-02,unmatched,sandisk,sandis | andis | sandia
+33355578,Qualcomm,QUALCOMM Inc,QCOM,2026-06-02,matched,qualcomm,qualcomm | alcom
+37615159,Wells Fargo,Wells Fargo & Co,WFC,2026-06-02,matched,wells fargo,wells fargo
+1176619,Palo Alto Networks,Palo Alto Networks Inc,PANW,2026-06-02,matched,palo alto networks,palo alto networks | palo alto networks unit 42
+35344865,RTX,RTX Corp,RTX,2026-06-02,matched,rtx,rtx
+8821559,Linde,Linde PLC,LIN,2026-06-02,matched,linde,linde | lincode | uline
+582288,Citigroup,Citigroup Inc,C,2026-06-02,matched,citigroup,citigroup
+38903403,Arista Networks,Arista Networks Inc,ANET,2026-06-02,matched,arista networks,arista networks | data networks | alyrica networks
+2219962,American Express,American Express Co,AXP,2026-06-02,matched,american express,american express | american tires | arka express
+2353333,Seagate Technology,Seagate Technology Holdings PLC,STX,2026-06-02,matched,seagate technology,seagate technology | stc technology | isg technology
+33276931,Analog Devices,Analog Devices Inc,ADI,2026-06-02,matched,analog devices,analog devices
+41047343,Applovin,AppLovin Corp,APP,2026-06-02,matched,applovin,applovin | apple moving | aplin
+36267524,T-Mobile US,T-Mobile US Inc,TMUS,2026-06-02,matched,t mobile us,t mobile us | imobile us | mobilize us
+37914916,Verizon Communications,Verizon Communications Inc,VZ,2026-06-02,matched,verizon communications,verizon communications | brian communications | silo communications
+994310,McDonald's,McDonald's Corp,MCD,2026-06-02,matched,mcdonald s,mcdonald s
+326005,Western Digital,Western Digital Corp,WDC,2026-06-02,matched,western digital,western digital | western dental | western tel
+40596479,PepsiCo,PepsiCo Inc,PEP,2026-06-02,matched,pepsico,pepsico | pepco | pestco
+44765391,CrowdStrike,Crowdstrike Holdings Inc,CRWD,2026-06-02,matched,crowdstrike,crowdstrike | crowdstreet
+33104784,Amphenol,Amphenol Corp,APH,2026-06-02,matched,amphenol,amphenol
+1799176,Thermo Fisher Scientific,Thermo Fisher Scientific Inc,TMO,2026-06-02,matched,thermo fisher scientific,thermo fisher scientific | helmer scientific
+36513137,NextEra Energy,NextEra Energy Inc,NEE,2026-06-02,matched,nextera energy,nextera energy | tas energy | nrg energy
+9156215,Amgen,Amgen Inc,AMGN,2026-06-02,matched,amgen,amgen
+,,Walt Disney Co/The,DIS,2026-06-02,unmatched,walt disney,
+43327097,Corning,Corning Inc,GLW,2026-06-02,matched,corning,corning | boring
+1629540,Boeing,Boeing Co/The,BA,2026-06-02,matched,boeing,boeing | boring
+36874975,AT&T,AT&T Inc,T,2026-06-02,matched,at t,at t
+89628133,TJX,TJX Cos Inc/The,TJX,2026-06-02,matched,tjx,tjx
+89628101,Salesforce,Salesforce Inc,CRM,2026-06-02,matched,salesforce,salesforce | leoforce | sales focus
+1539288,Eaton Corporation,Eaton Corp PLC,ETN,2026-06-02,matched,eaton,eaton | peraton | sheraton
+35343005,Gilead Sciences,Gilead Sciences Inc,GILD,2026-06-02,matched,gilead sciences,gilead sciences | exact sciences | aegis sciences
+976,BlackRock,Blackrock Inc,BLK,2026-06-02,matched,blackrock,blackrock
+38658795,Union Pacific Railroad,Union Pacific Corp,UNP,2026-06-02,matched,union pacific railroad,union pacific railroad
+,,Deere & Co,DE,2026-06-02,unmatched,deere,derse | devereux
+89628114,Charles Schwab,Charles Schwab Corp/The,SCHW,2026-06-02,matched,charles schwab,charles schwab
+2295140,Abbott Laboratories,Abbott Laboratories,ABT,2026-06-02,matched,abbott laboratories,abbott laboratories | core laboratories | arup laboratories
+1523411,Honeywell International,Honeywell International Inc,HON,2026-06-02,matched,honeywell international,honeywell international | gainwell international | toll international
+2430029,Uber,Uber Technologies Inc,UBER,2026-06-02,matched,uber,uber | lumber
+101393367,Pfizer,Pfizer Inc,PFE,2026-06-02,matched,pfizer,pfizer
+,,Blackstone Inc,BX,2026-06-02,unmatched,blackstone,luck stone
+,,ConocoPhillips,COP,2026-06-02,unmatched,conocophillips,
+79037416,Intuitive,Intuitive Surgical Inc,ISRG,2026-06-02,matched,intuitive,intuitive | intuites | intuit
+,,Welltower Inc,WELL,2026-06-02,unmatched,welltower,
+1681036,ServiceNow,ServiceNow Inc,NOW,2026-06-02,matched,servicenow,servicenow | servicespro | servicelink
+,,Booking Holdings Inc,BKNG,2026-06-02,unmatched,booking,bookingpal | boring | boeing
+41008236,Vertiv,Vertiv Holdings,VRT,2026-06-02,matched,vertiv,vertiv | veritiv | veritis
+,,Prologis Inc,PLD,2026-06-02,unmatched,prologis,pro logics | prologic its
+36926534,Danaher,Danaher Corp,DHR,2026-06-02,matched,danaher,danaher | daher
+99459645,S&P Global,S&P Global Inc,SPGI,2026-06-02,matched,s p global,s p global | wsp global | vsp global
+99479706,Chubb,Chubb Ltd,CB,2026-06-02,matched,chubb,chubb | hub
+37027932,Lockheed Martin,Lockheed Martin Corp,LMT,2026-06-02,matched,lockheed martin,lockheed martin
+89628149,Newmont,Newmont Corp,NEM,2026-06-02,matched,newmont,newmont
+37662275,Lowe's,Lowe's Cos Inc,LOW,2026-06-02,matched,lowe s,lowe s | love s
+37839757,CVS Health,CVS Health Corp,CVS,2026-06-02,matched,cvs health,cvs health | docs health | curv health
+38360945,Capital One,Capital One Financial Corp,COF,2026-06-02,matched,capital one,capital one | capital i | capital sand
+38333389,Altria Group,Altria Group Inc,MO,2026-06-02,matched,altria,altria | altia
+38522287,Progressive,Progressive Corp/The,PGR,2026-06-02,matched,progressive,progressive | progressivehealth | progressions
+8592955,Accenture,Accenture PLC,ACN,2026-06-02,matched,accenture,accenture | accentcare | ocenture
+,,Stryker Corp,SYK,2026-06-02,ambiguous,stryker,stryker
+,,Cadence Design Systems Inc,CDNS,2026-06-02,unmatched,cadence design systems,nsys design systems
+25195085,Bristol-Myers Squibb,Bristol-Myers Squibb Co,BMY,2026-06-02,matched,bristol myers squibb,bristol myers squibb
+2730848,Starbucks,Starbucks Corp,SBUX,2026-06-02,matched,starbucks,starbucks
+3691012,Vertex Pharmaceuticals,Vertex Pharmaceuticals Inc,VRTX,2026-06-02,matched,vertex pharmaceuticals,vertex pharmaceuticals | teva pharmaceuticals | paratek pharmaceuticals
+2993397,Fortinet,Fortinet Inc,FTNT,2026-06-02,matched,fortinet,fortinet | fortiline | fortive
+34313436,Equinix,Equinix Inc,EQIX,2026-06-02,matched,equinix,equinix | equinox | equix
+89628122,Adobe,Adobe Inc,ADBE,2026-06-02,matched,adobe,adobe
+1742028,Parker Hannifin,Parker-Hannifin Corp,PH,2026-06-02,matched,parker hannifin,parker hannifin
+45788713,Quanta Services,Quanta Services Inc,PWR,2026-06-02,matched,quanta services,quanta services | quantech services | intact services
+38349110,Freeport-McMoRan,Freeport-McMoRan Inc,FCX,2026-06-02,matched,freeport mcmoran,freeport mcmoran
+36798433,Southern Company,Southern Co/The,SO,2026-06-02,matched,southern,southern | southerncare | sutherland
+25521446,Howmet Aerospace,Howmet Aerospace Inc,HWM,2026-06-02,matched,howmet aerospace,howmet aerospace | ge aerospace | lmi aerospace
+105498780,Trane Technologies,Trane Technologies PLC,TT,2026-06-02,matched,trane technologies,trane technologies | rang technologies | aer technologies
+11257336,Marriott International,Marriott International Inc/MD,MAR,2026-06-02,matched,marriott international,marriott international | faro international | print international
+39362058,Constellation Energy,Constellation Energy Corp,CEG,2026-06-02,matched,constellation energy,constellation energy | constellation brands
+4383680,BNY Mellon,Bank of New York Mellon Corp/The,BNY,2026-06-02,matched,bny mellon,bny mellon
+1886813,Synopsys,Synopsys Inc,SNPS,2026-06-02,matched,synopsys,synopsys | fynbosys
+33808262,Datadog,Datadog Inc,DDOG,2026-06-02,matched,datadog,datadog
+35622956,Medtronic,Medtronic PLC,MDT,2026-06-02,matched,medtronic,medtronic | tronic
+39773756,Duke Energy,Duke Energy Corp,DUK,2026-06-02,matched,duke energy,duke energy | dte energy | pure energy
+,,United Parcel Service Inc,UPS,2026-06-02,unmatched,united parcel service,united health services | united freight service | united counseling service
+2893206,Cummins,Cummins Inc,CMI,2026-06-02,matched,cummins,cummins | cumming | culmin
+,,Automatic Data Processing Inc,ADP,2026-06-02,unmatched,automatic data processing,adp automatic data processing
+3157026,General Dynamics,General Dynamics Corp,GD,2026-06-02,matched,general dynamics,general dynamics | general atomics | global dynamics
+34404991,CME Group,CME Group Inc,CME,2026-06-02,matched,cme,cme | cmes | cemex
+40257897,Comcast,Comcast Corp,CMCSA,2026-06-02,matched,comcast,comcast
+36832260,McKesson,McKesson Corp,MCK,2026-06-02,matched,mckesson,mckesson
+37869367,PNC,PNC Financial Services Group Inc/The,PNC,2026-06-02,matched,pnc,pnc | pinch
+,,Ciena,CIEN,2026-06-02,unmatched,ciena,cigna | cieca
+35326006,Intuit,Intuit Inc,INTU,2026-06-02,matched,intuit,intuit | intuites | intuitive
+7749595,Williams,Williams Cos Inc/The,WMB,2026-06-02,matched,williams,williams | williams lea | william nash
+42096680,American Tower,American Tower Corp,AMT,2026-06-02,matched,american tower,american tower | american water | americatowne
+100729442,Johnson Controls,Johnson Controls International plc,JCI,2026-06-02,matched,johnson controls,johnson controls | johnson county | johnston county
+40181367,Monster Beverage,Monster Beverage Corp,MNST,2026-06-02,matched,monster beverage,monster beverage | hensley beverage
+38121853,Elevance Health,Elevance Health Inc,ELV,2026-06-02,matched,elevance health,elevance health | reliance health | elevated health
+,,KKR & Co Inc,KKR,2026-06-02,unmatched,kkr,
+35602002,CSX,CSX Corp,CSX,2026-06-02,matched,csx,csx
+4323366,Waste Management,Waste Management Inc,WM,2026-06-02,matched,waste management,waste management | castle management | wingate management
+,,US Bancorp,USB,2026-06-02,unmatched,us bancorp,
+,,SLB Ltd,SLB,2026-06-02,unmatched,slb,
+12122363,Coherent,Coherent,COHR,2026-06-02,matched,coherent,coherent | cohere | onerent
+,,NXP Semiconductors NV,NXPI,2026-06-02,unmatched,nxp semiconductors nv,on semiconductor | polar semiconductor
+89628093,HCA Healthcare,HCA Healthcare Inc,HCA,2026-06-02,matched,hca healthcare,hca healthcare | am healthcare | sharp healthcare
+40256794,Airbnb,Airbnb Inc,ABNB,2026-06-02,matched,airbnb,airbnb
+38330232,Intercontinental Exchange,Intercontinental Exchange Inc,ICE,2026-06-02,matched,intercontinental exchange,intercontinental exchange | intercontinental hotels
+10616646,Emerson Electric,Emerson Electric Co,EMR,2026-06-02,matched,emerson electric,emerson electric | vision electric | terrys electric
+39344281,FedEx,FedEx Corp,FDX,2026-06-02,matched,fedex,fedex
+,,Monolithic Power Systems Inc,MPWR,2026-06-02,unmatched,monolithic power systems,electric power systems
+1113791,3M,3M Co,MMM,2026-06-02,matched,3m,3m
+1481583,Moody's,Moody's Corp,MCO,2026-06-02,matched,moody s,moody s
+37080579,Royal Caribbean Group,Royal Caribbean Cruises Ltd,RCL,2026-06-02,matched,royal caribbean,royal caribbean | royal care trans
+,,Robinhood Markets Inc,HOOD,2026-06-02,unmatched,robinhood markets,
+99459535,Mondelez International,Mondelez International Inc,MDLZ,2026-06-02,matched,mondelez international,mondelez international | monterey international | montage international
+,,Lumentum Holdings,LITE,2026-06-02,unmatched,lumentum,amentum | momentum
+89628142,Marsh McLennan,Marsh & McLennan Cos Inc,MRSH,2026-06-02,matched,marsh mclennan,marsh mclennan
+40171528,Marathon Petroleum,Marathon Petroleum Corp,MPC,2026-06-02,matched,marathon petroleum,marathon petroleum
+37057669,Northrop Grumman,Northrop Grumman Corp,NOC,2026-06-02,matched,northrop grumman,northrop grumman
+3244732,Valero Energy,Valero Energy Corp,VLO,2026-06-02,matched,valero energy,valero energy | talen energy | arc energy
+99459484,Hewlett Packard Enterprise,Hewlett Packard Enterprise Co,HPE,2026-06-02,matched,hewlett packard enterprise,hewlett packard enterprise
+75783181,Hilton,Hilton Worldwide Holdings Inc,HLT,2026-06-02,matched,hilton,hilton | hilltop
+37493873,General Motors,General Motors Co,GM,2026-06-02,matched,general motors,general motors | general hotels | general atomics
+36379656,Apollo Global Management,Apollo Global Management Inc,APO,2026-06-02,matched,apollo global management,apollo global management | polly management
+,,EOG Resources Inc,EOG,2026-06-02,unmatched,eog resources,qep resources | hro resources | glo resources
+6775086,Phillips 66,Phillips 66,PSX,2026-06-02,matched,phillips 66,phillips 66 | phillips
+38800374,Sherwin-Williams,Sherwin-Williams Co/The,SHW,2026-06-02,matched,sherwin williams,sherwin williams
+32848673,Cigna,Cigna Group/The,CI,2026-06-02,matched,cigna,cigna | vigna
+1933624,Ecolab,Ecolab Inc,ECL,2026-06-02,matched,ecolab,ecolab | mercola
+39054344,Ross Stores,Ross Stores Inc,ROST,2026-06-02,matched,ross stores,ross stores | ssl store | express stores
+108922724,CRH plc,CRH PLC,CRH,2026-06-02,matched,crh,crh | rh
+,,Illinois Tool Works Inc,ITW,2026-06-02,unmatched,illinois tool works,
+,,O'Reilly Automotive Inc,ORLY,2026-06-02,unmatched,o reilly automotive,kelly automotive | kelley automotive | regional automotive
+79037373,Boston Scientific,Boston Scientific Corp,BSX,2026-06-02,matched,boston scientific,boston scientific | thomas scientific
+503305,Colgate-Palmolive,Colgate-Palmolive Co,CL,2026-06-02,matched,colgate palmolive,colgate palmolive
+,,TransDigm Group Inc,TDG,2026-06-02,unmatched,transdigm,
+53993098,Doordash,DoorDash Inc,DASH,2026-06-02,matched,doordash,doordash | dotdash
+38200507,Kinder Morgan,Kinder Morgan Inc,KMI,2026-06-02,matched,kinder morgan,kinder morgan
+35578191,Norfolk Southern,Norfolk Southern Corp,NSC,2026-06-02,matched,norfolk southern,norfolk southern
+40108921,Cintas,Cintas Corp,CTAS,2026-06-02,matched,cintas,cintas
+40284956,Warner Bros. Discovery,Warner Bros Discovery Inc,WBD,2026-06-02,matched,warner bros discovery,warner bros discovery
+1168055,Motorola Solutions,Motorola Solutions Inc,MSI,2026-06-02,matched,motorola solutions,motorola solutions | trans solutions | tetra solutions
+38586150,American Electric Power,American Electric Power Co Inc,AEP,2026-06-02,matched,american electric power,american electric power | american tower
+4241295,AON,Aon PLC,AON,2026-06-02,matched,aon,aon | axon | aeon
+37844540,Simon Property Group,Simon Property Group Inc,SPG,2026-06-02,matched,simon property,simon property | lincoln property | milestone property
+2783746,Ford,Ford Motor Co,F,2026-06-02,matched,ford,ford | nord
+,,Comfort Systems USA Inc,FIX,2026-06-02,unmatched,comfort systems usa,
+44339329,Digital Realty,Digital Realty Trust Inc,DLR,2026-06-02,matched,digital realty,digital realty
+89628094,Nike,NIKE Inc,NKE,2026-06-02,matched,nike,nike | niku | nice
+7317957,Baker Hughes,Baker Hughes Co,BKR,2026-06-02,matched,baker hughes,baker hughes
+902867,United Rentals,United Rentals Inc,URI,2026-06-02,matched,united rentals,united rentals | future rentals | united tires
+100068864,TE Connectivity,TE Connectivity PLC,TEL,2026-06-02,matched,te connectivity,te connectivity
+38449442,Regeneron Pharmaceuticals,Regeneron Pharmaceuticals Inc,REGN,2026-06-02,matched,regeneron pharmaceuticals,regeneron pharmaceuticals | noven pharmaceuticals | glenmark pharmaceuticals
+39449493,Air Products & Chemicals,Air Products and Chemicals Inc,APD,2026-06-02,matched,air products chemicals,air products chemicals
+99459653,Travelers,Travelers Cos Inc/The,TRV,2026-06-02,matched,travelers,travelers | travelex
+38580394,Republic Services,Republic Services Inc,RSG,2026-06-02,matched,republic services,republic services | reliant services | truco services
+,,Teradyne Inc,TER,2026-06-02,unmatched,teradyne,netradyne | teledyne | reladyne
+37852748,Truist Financial,Truist Financial Corp,TFC,2026-06-02,matched,truist financial,truist financial | wintrust financial | unitrust financial
+41359260,Keysight,Keysight Technologies Inc,KEYS,2026-06-02,matched,keysight,keysight
+40497720,W.W. Grainger,WW Grainger Inc,GWW,2026-06-02,matched,ww grainger,w w grainger
+35866960,Paccar,PACCAR Inc,PCAR,2026-06-02,matched,paccar,paccar | packard
+34647401,Nucor,Nucor Corp,NUE,2026-06-02,matched,nucor,nucor | nuco2 | ncr
+,,Occidental Petroleum Corp,OXY,2026-06-02,unmatched,occidental petroleum,midwest petroleum
+36563761,Dominion Energy,Dominion Energy Inc,D,2026-06-02,matched,dominion energy,dominion energy
+,,Sempra,SRE,2026-06-02,unmatched,sempra,sephora
+1135798,L3Harris Technologies,L3Harris Technologies Inc,LHX,2026-06-02,matched,l3harris technologies,l3harris technologies | laiba technologies | glass technologies
+89628098,Aflac,Aflac Inc,AFL,2026-06-02,matched,aflac,aflac | lac | afl
+,,Diamondback Energy Inc,FANG,2026-06-02,unmatched,diamondback energy,diamondback drugs
+11699713,Carrier Corporation,Carrier Global Corp,CARR,2026-06-02,matched,carrier,carrier | cartier | q carriers
+1569362,Target,Target Corp,TGT,2026-06-02,matched,target,target | jobtarget
+38560222,Targa Resources,Targa Resources Corp,TRGP,2026-06-02,matched,targa resources,targa resources | tripax resources | true resources
+,,Realty Income Corp,O,2026-06-02,unmatched,realty income,
+42387946,Oneok Services Company,ONEOK Inc,OKE,2026-06-02,matched,oneok services,oneok services | tyonek services | work services
+36191478,Vistra Group,Vistra Corp,VST,2026-06-02,matched,vistra,vistra | vista | victra
+89628089,Allstate,Allstate Corp/The,ALL,2026-06-02,matched,allstate,allstate | allseated | all star
+664,MetLife,MetLife Inc,MET,2026-06-02,matched,metlife,metlife | mylife | metrie
+,,Devon Energy Corp,DVN,2026-06-02,unmatched,devon energy,dte energy | teco energy | seco energy
+594997,Delta Air Lines,Delta Air Lines Inc,DAL,2026-06-02,matched,delta air lines,delta air lines
+33987233,Arthur J. Gallagher,Arthur J Gallagher & Co,AJG,2026-06-02,matched,arthur j gallagher,arthur j gallagher
+42934242,Public Storage,Public Storage,PSA,2026-06-02,matched,public storage,public storage | pure storage | life storage
+38034719,Corteva,Corteva Inc,CTVA,2026-06-02,matched,corteva,corteva | cortex
+1449341,Ametek,AMETEK Inc,AME,2026-06-02,matched,ametek,ametek | farmtek
+33467982,Microchip Technology,Microchip Technology Inc,MCHP,2026-06-02,matched,microchip technology,microchip technology | micron technology | iconic technology
+99459491,Rockwell Automation,Rockwell Automation Inc,ROK,2026-06-02,matched,rockwell automation,rockwell automation
+34090005,Cencora Limited,Cencora Inc,COR,2026-06-02,matched,cencora,cencora | xencor | wencor
+40992132,Fastenal,Fastenal Co,FAST,2026-06-02,matched,fastenal,fastenal
+101461861,Electronic Arts,Electronic Arts Inc,EA,2026-06-02,matched,electronic arts,electronic arts | tt electronics
+79037426,Edwards Lifesciences,Edwards Lifesciences Corp,EW,2026-06-02,matched,edwards lifesciences,edwards lifesciences | caris life sciences | verdesian life sciences
+33166091,ON Semiconductor,ON Semiconductor Corp,ON,2026-06-02,matched,on semiconductor,on semiconductor | polar semiconductor | sensitron semiconductor
+101260746,Autodesk,Autodesk Inc,ADSK,2026-06-02,matched,autodesk,autodesk
+89630725,Nasdaq,Nasdaq Inc,NDAQ,2026-06-02,matched,nasdaq,nasdaq | nasa | nasdaq omx
+34131843,AutoZone,AutoZone Inc,AZO,2026-06-02,matched,autozone,autozone
+37470543,Entergy,Entergy Corp,ETR,2026-06-02,matched,entergy,entergy | venergy | cenergy
+33545375,eBay,eBay Inc,EBAY,2026-06-02,matched,ebay,ebay | bay | bway
+40973917,Xcel Energy,Xcel Energy Inc,XEL,2026-06-02,matched,xcel energy,xcel energy | cenergy | fuelcell energy
+45501410,Old Dominion Freight Line,Old Dominion Freight Line Inc,ODFL,2026-06-02,matched,old dominion freight line,old dominion freight line
+33181055,Carvana,Carvana Co,CVNA,2026-06-02,matched,carvana,carvana
+37122716,Exelon,Exelon Corp,EXC,2026-06-02,matched,exelon,exelon
+657124,MSCI,MSCI Inc,MSCI,2026-06-02,matched,msci,msci | mci | rmsi
+79037368,Cardinal Health,Cardinal Health Inc,CAH,2026-06-02,matched,cardinal health,cardinal health | capital health | regional health
+34185129,Garmin International,Garmin Ltd,GRMN,2026-06-02,matched,garmin international,garmin international | harman international | gordian international
+47450,Coinbase Global,Coinbase Global Inc,COIN,2026-06-02,matched,coinbase global,coinbase global | ciber global | cis global
+61796602,Fifth Third,Fifth Third Bancorp,FITB,2026-06-02,matched,fifth third,fifth third | fifth third bank
+7968440,Block,Block Inc,XYZ,2026-06-02,matched,block,block | blockfi | brock
+35807747,State Street Corporation,State Street Corp,STT,2026-06-02,matched,state street,state street | sesame street | stage stores
+99459650,Wabtec,Westinghouse Air Brake Technologies Corp,WAB,2026-06-02,matched,wabtec,wabtec | wasteco
+1213139,IDEXX,IDEXX Laboratories Inc,IDXX,2026-06-02,matched,idexx,idexx | idex | idx
+39331095,D.R. Horton,DR Horton Inc,DHI,2026-06-02,matched,dr horton,d r horton | boris horton
+39511702,Keurig Dr Pepper,Keurig Dr Pepper Inc,KDP,2026-06-02,matched,keurig dr pepper,keurig dr pepper
+41227141,Take-Two Interactive Software,Take-Two Interactive Software Inc,TTWO,2026-06-02,matched,take two interactive software,take two interactive software
+,,Yum! Brands Inc,YUM,2026-06-02,unmatched,yum brands,pim brands | custom brands
+89628135,Interactive Brokers,Interactive Brokers Group Inc,IBKR,2026-06-02,matched,interactive brokers,interactive brokers | interactive resources
+43075762,Ameriprise Financial,Ameriprise Financial Inc,AMP,2026-06-02,matched,ameriprise financial,ameriprise financial
+,,Archer-Daniels-Midland Co,ADM,2026-06-02,unmatched,archer daniels midland,
+,,Becton Dickinson & Co,BDX,2026-06-02,unmatched,becton dickinson,becton dickson
+39608040,Crown Castle,Crown Castle Inc,CCI,2026-06-02,matched,crown castle,crown castle | crown cigars ales
+38379711,PayPal,PayPal Holdings Inc,PYPL,2026-06-02,matched,paypal,paypal | papa
+79037401,Jabil,Jabil Inc,JBL,2026-06-02,matched,jabil,jabil | abile
+,,Ventas Inc,VTR,2026-06-02,unmatched,ventas,ventanas | vestas | veritas
+6915630,Humana,Humana Inc,HUM,2026-06-02,matched,humana,humana | hussman | humanim
+38528267,Live Nation,Live Nation Entertainment Inc,LYV,2026-06-02,matched,live nation,live nation | iv national | oslin nation
+,,Steel Dynamics Inc,STLD,2026-06-02,unmatched,steel dynamics,general dynamics
+,,American International Group Inc,AIG,2026-06-02,unmatched,american international,americas international | mica international | harman international
+37475658,Public Service Enterprise Group,Public Service Enterprise Group Inc,PEG,2026-06-02,matched,public service enterprise,public service enterprise | nw service enterprises
+46207983,Axon Enterprise,Axon Enterprise Inc,AXON,2026-06-02,matched,axon enterprise,axon enterprise | walton enterprises | a ok enterprises
+,,Consolidated Edison Inc,ED,2026-06-02,unmatched,consolidated edison,consolidated divisions | consolidated metco | consolidated resource
+35696183,Iron Mountain,Iron Mountain Inc,IRM,2026-06-02,matched,iron mountain,iron mountain | stratton mountain | vail mountain
+,,Carnival Corp,CCL,2026-06-02,unmatched,carnival,shoe carnival
+33451929,Agilent Technologies,Agilent Technologies Inc,A,2026-06-02,matched,agilent technologies,agilent technologies | glean technologies | vigilant technologies
+40163672,Kroger,Kroger Co/The,KR,2026-06-02,matched,kroger,kroger
+23924727,Chipotle,Chipotle Mexican Grill Inc,CMG,2026-06-02,matched,chipotle,chipotle
+39431141,The Hershey Company,Hershey Co/The,HSY,2026-06-02,matched,hershey,hershey | hersha
+32048440,EMCOR Group,EMCOR Group Inc,EME,2026-06-02,matched,emcor,emcor | emcore | imcor
+6213303,CBRE,CBRE Group Inc,CBRE,2026-06-02,matched,cbre,cbre | jbre | brex
+42040688,Vulcan Materials,Vulcan Materials Co,VMC,2026-06-02,matched,vulcan materials,vulcan materials | gaf materials | bnz materials
+36075424,PG&E,PG&E Corp,PCG,2026-06-02,matched,pg e,pg e
+,,Waters Corp,WAT,2026-06-02,ambiguous,waters,waters | weather | wachter
+99465574,EchoStar,EchoStar,SATS,2026-06-02,matched,echostar,echostar | costar | exostar
+89628115,Workday,Workday Inc,WDAY,2026-06-02,matched,workday,workday
+38746262,Paychex,Paychex Inc,PAYX,2026-06-02,matched,paychex,paychex | spacex
+,,WEC Energy Group Inc,WEC,2026-06-02,unmatched,wec energy,teco energy | seco energy | cenergy
+8263000,United Airlines,United Airlines Holdings Inc,UAL,2026-06-02,matched,united airlines,united airlines | united tires | united ability
+1852,Prudential Financial,Prudential Financial Inc,PRU,2026-06-02,matched,prudential financial,prudential financial | principal financial | guidant financial
+4586544,Sysco,Sysco Corp,SYY,2026-06-02,matched,sysco,sysco | yesco | susco
+9568684,NetApp,NetApp Inc,NTAP,2026-06-02,matched,netapp,netapp | oneapps
+89628139,The Hartford,Hartford Insurance Group Inc/The,HIG,2026-06-02,matched,hartford,hartford
+42095388,Martin Marietta,Martin Marietta Materials Inc,MLM,2026-06-02,matched,martin marietta,martin marietta
+,,EQT Corp,EQT,2026-06-02,unmatched,eqt,
+37611679,Las Vegas Sands Corp.,Las Vegas Sands Corp,LVS,2026-06-02,matched,las vegas sands,las vegas sands
+,,Roper Technologies Inc,ROP,2026-06-02,unmatched,roper technologies,iopex technologies | rpm technologies | r p technologies
+4402064,Halliburton,Halliburton Co,HAL,2026-06-02,matched,halliburton,halliburton
+2661011,First Solar,First Solar Inc,FSLR,2026-06-02,matched,first solar,first solar
+,,Kenvue Inc,KVUE,2026-06-02,unmatched,kenvue,
+40095920,Huntington Bancshares,Huntington Bancshares Inc/OH,HBAN,2026-06-02,matched,huntington bancshares,huntington bancshares
+,,Qnity Electronics Inc,Q,2026-06-02,unmatched,qnity electronics,tt electronics | trc electronics | spirit electronics
+2415680,Kimberly-Clark,Kimberly-Clark Corp,KMB,2026-06-02,matched,kimberly clark,kimberly clark
+41180857,Zoetis,Zoetis Inc,ZTS,2026-06-02,matched,zoetis,zoetis
+38735393,M&T Bank,M&T Bank Corp,MTB,2026-06-02,matched,m t bank,m t bank | s t bank | td bank
+40222123,Northern Trust,Northern Trust Corp,NTRS,2026-06-02,matched,northern trust,northern trust | northern transitions
+40025090,Arch Capital Group Ltd.,Arch Capital Group Ltd,ACGL,2026-06-02,matched,arch capital,arch capital | lhp capital | h10 capital
+,,Estee Lauder Cos Inc/The,EL,2026-06-02,unmatched,estee lauder,
+89628136,IQVIA,IQVIA Holdings Inc,IQV,2026-06-02,matched,iqvia,iqvia
+33893272,Fiserv,Fiserv Inc,FISV,2026-06-02,matched,fiserv,fiserv | iserv | fischer
+,,Super Micro Computer Inc,SMCI,2026-06-02,unmatched,super micro computer,
+36119280,Extra Space Storage,Extra Space Storage Inc,EXR,2026-06-02,matched,extra space storage,extra space storage | rightspace storage
+36843197,Centene,Centene Corp,CNC,2026-06-02,matched,centene,centene | centizen | centerstone
+38907068,DTE Energy,DTE Energy Co,DTE,2026-06-02,matched,dte energy,dte energy | teco energy | duke energy
+,,VICI Properties Inc,VICI,2026-06-02,unmatched,vici properties,hri properties | cvg properties | cfj properties
+36914744,Copart,Copart Inc,CPRT,2026-06-02,matched,copart,copart | cort
+36479055,Ameren,Ameren Corp,AEE,2026-06-02,matched,ameren,ameren | cameron | avamere
+4010282,Veeva Systems,Veeva Systems,VEEV,2026-06-02,matched,veeva systems,veeva systems | vehtek systems | epam systems
+,,Cboe Global Markets Inc,CBOE,2026-06-02,unmatched,cboe global markets,gqr global markets
+,,Ares Management Corp,ARES,2026-06-02,unmatched,ares management,zrs management | esa management | aeo management
+3609149,FAIR  ISAAC,Fair Isaac Corp,FICO,2026-06-02,matched,fair isaac,fair isaac
+40023932,Teledyne Technologies,Teledyne Technologies Inc,TDY,2026-06-02,matched,teledyne technologies,teledyne technologies | lynker technologies | triplenet technologies
+2484950,Dover Corporation,Dover Corp,DOV,2026-06-02,matched,dover,dover | rover | hover
+34525055,NRG Energy,NRG Energy Inc,NRG,2026-06-02,matched,nrg energy,nrg energy | bang energy | nv energy
+,,Raymond James Financial Inc,RJF,2026-06-02,unmatched,raymond james financial,sammons financial
+797802,Dexcom,Dexcom Inc,DXCM,2026-06-02,matched,dexcom,dexcom
+79037412,GE Healthcare,GE HealthCare Technologies Inc,GEHC,2026-06-02,matched,ge healthcare,ge healthcare | grey healthcare | grace healthcare
+864195,Ingersoll Rand,Ingersoll Rand Inc,IR,2026-06-02,matched,ingersoll rand,ingersoll rand
+38338722,Casey's,Casey's General Stores,CASY,2026-06-02,matched,casey s,casey s
+99459520,Tapestry,Tapestry Inc,TPR,2026-06-02,matched,tapestry,tapestry | mapistry | ancestry
+,,Atmos Energy Corp,ATO,2026-06-02,unmatched,atmos energy,tas energy | teco energy | ethosenergy
+43679894,Kraft Heinz,Kraft Heinz Co/The,KHC,2026-06-02,matched,kraft heinz,kraft heinz
+32103263,Biogen,Biogen Inc,BIIB,2026-06-02,matched,biogen,biogen
+,,VeriSign Inc,VRSN,2026-06-02,unmatched,verisign,
+1210326,Edison International,Edison International,EIX,2026-06-02,matched,edison international,edison international | medlink international | union international
+37331480,CenterPoint Energy,CenterPoint Energy Inc,CNP,2026-06-02,matched,centerpoint energy,centerpoint energy | center point dental
+6315471,Expedia Group,Expedia Group Inc,EXPE,2026-06-02,matched,expedia,expedia | epredia | experian
+,,Otis Worldwide Corp,OTIS,2026-06-02,unmatched,otis worldwide,sts worldwide | pts worldwide | nzs worldwide
+79037617,ResMed,ResMed Inc,RMD,2026-06-02,matched,resmed,resmed | remedy
+37478930,FirstEnergy,FirstEnergy Corp,FE,2026-06-02,matched,firstenergy,firstenergy | igs energy | formenergy
+,,Citizens Financial Group Inc,CFG,2026-06-02,unmatched,citizens financial,ocwen financial | cohen financial | ftn financial
+37612921,Xylem,Xylem Inc/NY,XYL,2026-06-02,matched,xylem,xylem
+5587669,PPL,PPL Corp,PPL,2026-06-02,matched,ppl,ppl | apple
+42138992,JB Hunt,JB Hunt Transport Services Inc,JBHT,2026-06-02,matched,jb hunt,jb hunt
+35447165,AvalonBay Communities,AvalonBay Communities Inc,AVB,2026-06-02,matched,avalonbay communities,avalonbay communities | global communities | harmony communities
+94544,HP,HP Inc,HPQ,2026-06-02,matched,hp,hp
+34840531,Cognizant Technology Solutions,Cognizant Technology Solutions Corp,CTSH,2026-06-02,matched,cognizant technology solutions,cognizant technology solutions | galen technology solutions | dci technology solutions
+688982,PPG,PPG Industries Inc,PPG,2026-06-02,matched,ppg,ppg
+38332562,Eversource Energy,Eversource Energy,ES,2026-06-02,matched,eversource energy,eversource energy
+,,Texas Pacific Land Corp,TPL,2026-06-02,unmatched,texas pacific land,
+34776018,Hubbell,Hubbell Inc,HUBB,2026-06-02,matched,hubbell,hubbell
+2003684,Bunge,Bunge Global SA,BG,2026-06-02,matched,bunge,bunge
+,,Dow Inc,DOW,2026-06-02,unmatched,dow,
+34368341,Equity Residential,Equity Residential,EQR,2026-06-02,matched,equity residential,equity residential | imt residential | evu residential
+,,Cincinnati Financial Corp,CINF,2026-06-02,unmatched,cincinnati financial,cincinnati insurance | cna financial | principal financial
+10137,W.R. Berkley,W R Berkley Corp,WRB,2026-06-02,matched,w r berkley,w r berkley | berkley
+36150752,Williams-Sonoma,Williams-Sonoma Inc,WSM,2026-06-02,matched,williams sonoma,williams sonoma
+40333245,Willis Towers Watson,Willis Towers Watson PLC,WTW,2026-06-02,matched,willis towers watson,willis towers watson
+10106637,Synchrony,Synchrony Financial,SYF,2026-06-02,matched,synchrony,synchrony | synechron | syncreon
+42002225,Regions Financial,Regions Financial Corp,RF,2026-06-02,matched,regions financial,regions financial | equis financial | truist financial
+36955778,Dollar General,Dollar General Corp,DG,2026-06-02,matched,dollar general,dollar general
+38217106,American Water Works,American Water Works Co Inc,AWK,2026-06-02,matched,american water works,american water works | american water | ca american water
+1620112,Mettler Toledo,Mettler-Toledo International Inc,MTD,2026-06-02,matched,mettler toledo,mettler toledo
+38737378,Constellation Brands,Constellation Brands Inc,STZ,2026-06-02,matched,constellation brands,constellation brands | constellation energy
+34097636,Akamai Technologies,Akamai Technologies Inc,AKAM,2026-06-02,matched,akamai technologies,akamai technologies | akka technologies | oak technologies
+41740379,Corpay,Corpay Inc,CPAY,2026-06-02,matched,corpay,corpay | clopay | corptax
+35324557,Verisk Analytics,Verisk Analytics Inc,VRSK,2026-06-02,matched,verisk analytics,verisk analytics | swm analytics
+,,KeyCorp,KEY,2026-06-02,unmatched,keycorp,ezcorp
+37179677,Darden Restaurants,Darden Restaurants Inc,DRI,2026-06-02,matched,darden restaurants,darden restaurants | great nh restaurants | barcelona restaurant
+,,F5 Inc,FFIV,2026-06-02,unmatched,f5,
+36173312,Church & Dwight,Church & Dwight Co Inc,CHD,2026-06-02,matched,church dwight,church dwight
+38336912,PulteGroup,PulteGroup Inc,PHM,2026-06-02,matched,pultegroup,pultegroup
+39636220,T. Rowe Price Group,T Rowe Price Group Inc,TROW,2026-06-02,matched,t rowe price,t rowe price
+42456532,Principal Financial Group,Principal Financial Group Inc,PFG,2026-06-02,matched,principal financial,principal financial | prudential financial | principal financial services
+41047520,Lennar,Lennar Corp,LEN,2026-06-02,matched,lennar,lennar | lear
+99459575,West Pharmaceutical Services,West Pharmaceutical Services Inc,WST,2026-06-02,matched,west pharmaceutical services,west pharmaceutical services | access pharmaceutical services | apps paramedical services
+,,Smurfit WestRock PLC,SW,2026-06-02,unmatched,smurfit westrock,
+41220187,Rollins,Rollins Inc,ROL,2026-06-02,matched,rollins,rollins
+,,Expand Energy Corp,EXE,2026-06-02,unmatched,expand energy,pdc energy | bang energy
+,,CMS Energy Corp,CMS,2026-06-02,unmatched,cms energy,cenergy | uns energy | tas energy
+37389667,NiSource,NiSource Inc,NI,2026-06-02,matched,nisource,nisource | omnisource | insource
+40037875,Ralph Lauren Retail,Ralph Lauren Corp,RL,2026-06-02,matched,ralph lauren retail,ralph lauren retail
+38898648,LyondellBasell,LyondellBasell Industries NV,LYB,2026-06-02,matched,lyondellbasell,lyondellbasell
+,,Fidelity National Information Services Inc,FIS,2026-06-02,unmatched,fidelity national information services,
+37749631,Loews,Loews Corp,L,2026-06-02,matched,loews,loews
+36563759,Ulta Beauty,Ulta Beauty Inc,ULTA,2026-06-02,matched,ulta beauty,ulta beauty
+,,Omnicom Group Inc,OMC,2026-06-02,unmatched,omnicom,
+38758311,Quest Diagnostics,Quest Diagnostics Inc,DGX,2026-06-02,matched,quest diagnostics,quest diagnostics | e3 diagnostics | snap diagnostics
+38585155,SBA Communications,SBA Communications Corp,SBAC,2026-06-02,matched,sba communications,sba communications | shea communications | salem communications
+42188476,Tyson Foods,Tyson Foods Inc,TSN,2026-06-02,matched,tyson foods,tyson foods | keystone foods | sofo foods
+38498746,Labcorp,Labcorp Holdings Inc,LH,2026-06-02,matched,labcorp,labcorp | clubcorp
+34538057,C.H. Robinson Worldwide,CH Robinson Worldwide Inc,CHRW,2026-06-02,matched,ch robinson worldwide,c h robinson worldwide | nelson worldwide
+36264802,Dollar Tree,Dollar Tree Inc,DLTR,2026-06-02,matched,dollar tree,dollar tree | dollar empire
+38333848,Expeditors,Expeditors International of Washington Inc,EXPD,2026-06-02,matched,expeditors,expeditors
+34294036,Equifax,Equifax Inc,EFX,2026-06-02,matched,equifax,equifax | equix | equian
+38690267,Southwest Airlines,Southwest Airlines Co,LUV,2026-06-02,matched,southwest airlines,southwest airlines | skywest airlines | southwest gas
+9693857,Steris Corporation,STERIS PLC,STE,2026-06-02,matched,steris,steris | tetris | theoris
+97824913,Veralto,Veralto Corp,VLTO,2026-06-02,matched,veralto,veralto | versal
+404315,Albemarle,Albemarle Corp,ALB,2026-06-02,matched,albemarle,albemarle
+61486839,Packaging Corporation of America,Packaging Corp of America,PKG,2026-06-02,matched,packaging of america,packaging of america | packing of america | parking of america
+33083448,Global Payments,Global Payments Inc,GPN,2026-06-02,matched,global payments,global payments | talus payments
+8515296,DuPont,DuPont de Nemours Inc,DD,2026-06-02,matched,dupont,dupont
+99459501,Snap-on,Snap-on Inc,SNA,2026-06-02,matched,snap on,snap on
+32869538,Brown & Brown,Brown & Brown Inc,BRO,2026-06-02,matched,brown brown,brown brown | brown root
+,,International Flavors & Fragrances Inc,IFF,2026-06-02,unmatched,international flavors fragrances,bell flavors fragrances
+35363047,Evergy,Evergy Inc,EVRG,2026-06-02,matched,evergy,evergy | venergy | entergy
+33560807,Incyte,Incyte Corp,INCY,2026-06-02,matched,incyte,incyte
+40952136,Alliant Energy,Alliant Energy Corp,LNT,2026-06-02,matched,alliant energy,alliant energy | talen energy | hallador energy
+99462514,Viatris,Viatris Inc,VTRS,2026-06-02,matched,viatris,viatris | varis
+406634,Lennox International,Lennox International Inc,LII,2026-06-02,matched,lennox international,lennox international | alo international | pentex international
+79032877,Fortive,Fortive Corp,FTV,2026-06-02,matched,fortive,fortive | fortinet | fortil
+8158898,International Paper,International Paper Co,IP,2026-06-02,matched,international paper,international paper | international marina | international
+99459684,Broadridge Financial Solutions,Broadridge Financial Solutions Inc,BR,2026-06-02,matched,broadridge financial solutions,broadridge financial solutions | alleviate financial solutions
+99459859,Moderna Therapeutics,Moderna Inc,MRNA,2026-06-02,matched,moderna therapeutics,moderna therapeutics | recode therapeutics | rani therapeutics
+8754478,Amcor,Amcor PLC,AMCR,2026-06-02,matched,amcor,amcor | imcor | emcor
+37451464,Essex Property Trust,Essex Property Trust Inc,ESS,2026-06-02,matched,essex property trust,essex property trust | camden property trust
+2463641,CDW,CDW Corp/DE,CDW,2026-06-02,matched,cdw,cdw
+35879671,Weyerhaeuser,Weyerhaeuser Co,WY,2026-06-02,matched,weyerhaeuser,weyerhaeuser | weyerhaeuser nr
+3312821,General Mills,General Mills Inc,GIS,2026-06-02,matched,general mills,general mills | general atomics | general dynamics
+3915879,CF Industries,CF Industries Holdings Inc,CF,2026-06-02,matched,cf industries,cf industries | fm industries | ufp industries
+,,Charter Communications Inc,CHTR,2026-06-02,unmatched,charter communications,hearst communications | eastern communications | frontier communications
+35455688,Invitation Homes,Invitation Homes Inc,INVH,2026-06-02,matched,invitation homes,invitation homes
+40943116,Generac Power Systems,Generac Holdings Inc,GNRC,2026-06-02,matched,generac power systems,generac power systems | electric power systems | maclean power systems
+3296569,NVR,NVR Inc,NVR,2026-06-02,matched,nvr,nvr | nevro
+,,Franklin Resources Inc,BEN,2026-06-02,unmatched,franklin resources,franklin sports | mindlink resources | living resources
+79037395,Zimmer Biomet,Zimmer Biomet Holdings Inc,ZBH,2026-06-02,matched,zimmer biomet,zimmer biomet
+99459945,Gen Digital,Gen Digital Inc,GEN,2026-06-02,matched,gen digital,gen digital | 1000 gen digital | encora digital
+7135549,PTC Inc,PTC Inc,PTC,2026-06-02,matched,ptc,ptc | petco
+,,Host Hotels & Resorts Inc,HST,2026-06-02,unmatched,host hotels resorts,sh hotels resorts | rosen hotels resorts | tpg hotels resorts
+33845120,Nordson,Nordson Corp,NDSN,2026-06-02,matched,nordson,nordson | nordstrom
+38416486,Tractor Supply,Tractor Supply Co,TSCO,2026-06-02,matched,tractor supply,tractor supply | crawford supply | tri supply
+7692998,Kimco,Kimco Realty Corp,KIM,2026-06-02,matched,kimco,kimco | pimco | imcor
+37424360,Textron,Textron Inc,TXT,2026-06-02,matched,textron,textron | tektronix
+1896889,IDEX,IDEX Corp,IEX,2026-06-02,matched,idex,idex | idexx | idx
+38329190,Leidos,Leidos Holdings Inc,LDOS,2026-06-02,matched,leidos,leidos | lids
+37422702,Best Buy,Best Buy Co Inc,BBY,2026-06-02,matched,best buy,best buy
+,,TKO Group Holdings Inc,TKO,2026-06-02,unmatched,tko,
+99459675,Aptiv,Aptiv PLC,APTV,2026-06-02,matched,aptiv,aptiv | aptive | aptim
+36359330,Deckers,Deckers Outdoor Corp,DECK,2026-06-02,matched,deckers,deckers | eckerd
+38770048,Lululemon,Lululemon Athletica Inc,LULU,2026-06-02,matched,lululemon,lululemon
+,,Mid-America Apartment Communities Inc,MAA,2026-06-02,unmatched,mid america apartment communities,irvine apartment communities | mid america apartments
+2952315,Ball,Ball Corp,BALL,2026-06-02,matched,ball,ball | bealls | pall
+3544402,Jacobs Solutions,Jacobs Solutions Inc,J,2026-06-02,matched,jacobs solutions,jacobs solutions | damco solutions | corps solutions
+3181447,Masco,Masco Corp,MAS,2026-06-02,matched,masco,masco | marco | ausco
+,,Regency Centers Corp,REG,2026-06-02,unmatched,regency centers,kent regency center
+41418228,CoStar Group,CoStar Group Inc,CSGP,2026-06-02,matched,costar,costar | echostar | acosta
+34883932,Genuine Parts Company,Genuine Parts Co,GPC,2026-06-02,matched,genuine parts,genuine parts | genuine bumpers | general parts
+1143992,APA Corporation,APA Corp,APA,2026-06-02,matched,apa,apa | papa | capa
+,,Healthpeak Properties Inc,DOC,2026-06-02,unmatched,healthpeak properties,hearst properties | shea properties | litke properties
+,,Fox Corp,"FOXA,FOX",2026-06-02,ambiguous,fox,fox | fox s | fox c
+7994736,Trimble,Trimble Inc,TRMB,2026-06-02,matched,trimble,trimble | triple
+,,Solventum Corp,SOLV,2026-06-02,unmatched,solventum,
+38083307,Hormel,Hormel Foods Corp,HRL,2026-06-02,matched,hormel,hormel | home
+40621853,The Everest Group,Everest Group Ltd,EG,2026-06-02,matched,everest,everest | everest re
+35865566,MGM Resorts International,MGM Resorts International,MGM,2026-06-02,matched,mgm resorts international,mgm resorts international | gss international | sosi international
+42432353,Tyler Technologies,Tyler Technologies Inc,TYL,2026-06-02,matched,tyler technologies,tyler technologies | aer technologies | milner technologies
+46301492,Assurant,Assurant Inc,AIZ,2026-06-02,matched,assurant,assurant | assurance
+1778144,McCormick,McCormick & Co Inc/MD,MKC,2026-06-02,matched,mccormick,mccormick
+38091246,Stanley Black & Decker,Stanley Black & Decker Inc,SWK,2026-06-02,matched,stanley black decker,stanley black decker
+35375269,Invesco,Invesco Ltd,IVZ,2026-06-02,matched,invesco,invesco
+36018020,DaVita,DaVita Inc,DVA,2026-06-02,matched,davita,davita
+,,Paramount Skydance Corp,PSKY,2026-06-02,unmatched,paramount skydance,
+99459577,Skyworks Solutions,Skyworks Solutions Inc,SWKS,2026-06-02,matched,skyworks solutions,skyworks solutions | york solutions | kyra solutions
+4503144,Align Technology,Align Technology Inc,ALGN,2026-06-02,matched,align technology,align technology | baldwin technology | isg technology
+42660373,GoDaddy,GoDaddy Inc,GDDY,2026-06-02,matched,godaddy,godaddy
+,,Pinnacle West Capital Corp,PNW,2026-06-02,unmatched,pinnacle west capital,
+37693575,Zebra Technologies,Zebra Technologies Corp,ZBRA,2026-06-02,matched,zebra technologies,zebra technologies | zel technologies | zensar technologies
+943738,Avery Dennison,Avery Dennison Corp,AVY,2026-06-02,matched,avery dennison,avery dennison
+89628131,Globe Life,Globe Life Inc,GL,2026-06-02,matched,globe life,globe life
+,,Hasbro Inc,HAS,2026-06-02,unmatched,hasbro,
+1770273,Udr,UDR Inc,UDR,2026-06-02,matched,udr,udr
+,,Cooper Cos Inc/The,COO,2026-06-02,unmatched,cooper,hooper | mr cooper
+37580189,Huntington Ingalls Industries,Huntington Ingalls Industries Inc,HII,2026-06-02,matched,huntington ingalls industries,huntington ingalls industries
+34223219,Gartner,Gartner Inc,IT,2026-06-02,matched,gartner,gartner | partner | ratner
+32907328,Brown-Forman,Brown-Forman Corp,BF.B,2026-06-02,matched,brown forman,brown forman
+34054053,Pentair,Pentair PLC,PNR,2026-06-02,matched,pentair,pentair | sentar | openai
+693052,Allegion,Allegion plc,ALLE,2026-06-02,matched,allegion,allegion | legion | aegion
+108232962,Revvity,Revvity Inc,RVTY,2026-06-02,matched,revvity,revvity
+79032879,Wynn Resorts,Wynn Resorts Ltd,WYNN,2026-06-02,matched,wynn resorts,wynn resorts | boyne resorts | welk resorts
+40054367,Clorox,Clorox Co/The,CLX,2026-06-02,matched,clorox,clorox
+,,Erie Indemnity Co,ERIE,2026-06-02,unmatched,erie indemnity,
+,,J M Smucker Co/The,SJM,2026-06-02,ambiguous,j m smucker,j m smucker
+41501248,The AES Corporation,AES Corp/The,AES,2026-06-02,matched,aes,aes | naes | ares
+41382527,Camden Property Trust,Camden Property Trust,CPT,2026-06-02,matched,camden property trust,camden property trust | essex property trust
+2358186,Domino's Pizza,Domino's Pizza Inc,DPZ,2026-06-02,matched,domino s pizza,domino s pizza | mario s pizza | donatos pizza
+,,Federal Realty Investment Trust,FRT,2026-06-02,unmatched,federal realty investment trust,
+40374079,The Trade Desk,Trade Desk Inc/The,TTD,2026-06-02,matched,trade desk,trade desk
+79038307,Insulet Corporation,Insulet Corp,PODD,2026-06-02,matched,insulet,insulet
+1938075,Baxter International,Baxter International Inc,BAX,2026-06-02,matched,baxter international,baxter international | cowater international | baird international
+44693730,Jack Henry & Associates,Jack Henry & Associates Inc,JKHY,2026-06-02,matched,jack henry associates,jack henry associates | zwicker associates | mahoney associates
+10106586,News Corp,News Corp,"NWSA,NWS",2026-06-02,matched,news,news | nets | ness
+,,BXP Inc,BXP,2026-06-02,unmatched,bxp,bp
+38441795,FactSet Research Systems,FactSet Research Systems Inc,FDS,2026-06-02,matched,factset research systems,factset research systems
+,,Alexandria Real Estate Equities Inc,ARE,2026-06-02,unmatched,alexandria real estate equities,
+37454624,Universal Health Services,Universal Health Services Inc,UHS,2026-06-02,matched,universal health services,universal health services | universal plant services | united health services
+1959414,Henry Schein,Henry Schein Inc,HSIC,2026-06-02,matched,henry schein,henry schein
+42647418,Charles River Laboratories,Charles River Laboratories International Inc,CRL,2026-06-02,matched,charles river laboratories,charles river laboratories | charles river analytics
+34275004,Norwegian Cruise Line,Norwegian Cruise Line Holdings Ltd,NCLH,2026-06-02,matched,norwegian cruise line,norwegian cruise line | american cruise lines
+38661056,Builders FirstSource,Builders FirstSource Inc,BLDR,2026-06-02,matched,builders firstsource,builders firstsource
+40933957,A.O. Smith,A O Smith Corp,AOS,2026-06-02,matched,a o smith,a o smith
+1494241,Bio-Techne,Bio-Techne Corp,TECH,2026-06-02,matched,bio techne,bio techne | biontech
+,,Mosaic Co/The,MOS,2026-06-02,ambiguous,mosaic,mosaic | mozaic | saic
+99459719,Molson Coors,Molson Coors Beverage Co,TAP,2026-06-02,matched,molson coors,molson coors
+,,Pool Corp,POOL,2026-06-02,unmatched,pool,oocl
+,,Campbell's Company/The,CPB,2026-06-02,unmatched,campbell s,campbell soup | campbell oil | campbell ewald
+41153297,Conagra Brands,Conagra Brands Inc,CAG,2026-06-02,matched,conagra brands,conagra brands
+33208531,EPAM Systems,EPAM Systems Inc,EPAM,2026-06-02,matched,epam systems,epam systems | epiq systems | veeva systems
