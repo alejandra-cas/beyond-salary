@@ -344,8 +344,93 @@ def save_firm_category_descriptive_stats(usdf):
     for column in ["postings", "ai_vacancies", "non_ai_vacancies", "firms"]:
         stats[column] = stats[column].fillna(0).astype(int)
     stats["ai_share"] = stats["ai_share"].fillna(0)
+    # Add wage sample counts
+    controls = ["MIN_EDULEVELS_NAME", "EXPERIENCE_BUCKET", "NAICS_2022_3_DIGIT", "STATE_NAME"]
+    wage_required = ["LOG_SALARY", "AI ROLE"] + controls
+    wage_df = usdf.replace([np.inf, -np.inf], np.nan).dropna(subset=wage_required)
+    wage_stats = (
+        wage_df.dropna(subset=[FIRM_CATEGORY])
+        .groupby(FIRM_CATEGORY, observed=False)
+        .agg(
+            wage_postings=("AI ROLE", "size"),
+            ai_wage_postings=("AI ROLE", "sum"),
+        )
+        .reindex(FIRM_CATEGORY_ORDER)
+        .reset_index()
+    )
+    for column in ["wage_postings", "ai_wage_postings"]:
+        wage_stats[column] = wage_stats[column].fillna(0).astype(int)
+    stats = stats.merge(wage_stats, on=FIRM_CATEGORY)
+
     output = TABLES_DIR / "firm_category_descriptive_stats.csv"
     stats.to_csv(output, index=False)
+    print(f"Saved: {output}")
+
+
+def plot_firm_category_sample_sizes(usdf):
+    """Visualize sample composition by firm category."""
+    print("Generating firm-category sample size visualization...")
+    stats = pd.read_csv(TABLES_DIR / "firm_category_descriptive_stats.csv")
+
+    fig, axes = plt.subplots(1, 4, figsize=(18, 5))
+    x = np.arange(len(stats))
+    colors = [FIRM_CATEGORY_COLORS[c] for c in stats[FIRM_CATEGORY]]
+
+    # Panel 1: Total postings
+    bars = axes[0].bar(x, stats["postings"], color=colors, alpha=0.85)
+    for bar, val in zip(bars, stats["postings"]):
+        axes[0].text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                     f"{val:,}", ha="center", va="bottom", fontsize=9)
+    axes[0].set_xticks(x)
+    axes[0].set_xticklabels(stats[FIRM_CATEGORY], fontsize=10)
+    axes[0].set_ylabel("Count", fontsize=12)
+    axes[0].set_title("Total Postings", fontsize=13)
+    axes[0].grid(axis="y", alpha=0.2)
+
+    # Panel 2: Unique firms
+    bars = axes[1].bar(x, stats["firms"], color=colors, alpha=0.85)
+    for bar, val in zip(bars, stats["firms"]):
+        axes[1].text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                     f"{val:,}", ha="center", va="bottom", fontsize=9)
+    axes[1].set_xticks(x)
+    axes[1].set_xticklabels(stats[FIRM_CATEGORY], fontsize=10)
+    axes[1].set_title("Unique Firms", fontsize=13)
+    axes[1].grid(axis="y", alpha=0.2)
+
+    # Panel 3: AI share (%)
+    bars = axes[2].bar(x, stats["ai_share"] * 100, color=colors, alpha=0.85)
+    for bar, val in zip(bars, stats["ai_share"] * 100):
+        axes[2].text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                     f"{val:.1f}%", ha="center", va="bottom", fontsize=9)
+    axes[2].set_xticks(x)
+    axes[2].set_xticklabels(stats[FIRM_CATEGORY], fontsize=10)
+    axes[2].set_ylabel("% AI Roles", fontsize=12)
+    axes[2].set_title("AI Share of Postings", fontsize=13)
+    axes[2].grid(axis="y", alpha=0.2)
+
+    # Panel 4: AI vacancies (total and wage sample)
+    width = 0.35
+    bars1 = axes[3].bar(x - width / 2, stats["ai_vacancies"], width,
+                        label="All AI postings", color=colors, alpha=0.85)
+    bars2 = axes[3].bar(x + width / 2, stats["ai_wage_postings"], width,
+                        label="AI with salary", color=colors, alpha=0.45)
+    for bar, val in zip(bars1, stats["ai_vacancies"]):
+        axes[3].text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                     f"{val:,}", ha="center", va="bottom", fontsize=9)
+    for bar, val in zip(bars2, stats["ai_wage_postings"]):
+        axes[3].text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                     f"{val:,}", ha="center", va="bottom", fontsize=9)
+    axes[3].set_xticks(x)
+    axes[3].set_xticklabels(stats[FIRM_CATEGORY], fontsize=10)
+    axes[3].set_title("AI Vacancies", fontsize=13)
+    axes[3].legend(fontsize=9)
+    axes[3].grid(axis="y", alpha=0.2)
+
+    plt.suptitle("Sample Composition by Firm Category", fontsize=15, y=1.02)
+    plt.tight_layout()
+    output = FIRM_CATEGORY_DIR / "firm_category_sample_sizes.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
     print(f"Saved: {output}")
 
 
@@ -1263,6 +1348,7 @@ def main(include_structured=False):
     # Figure 1: % AI roles over time
     generate_ai_roles_over_time_plot(usdf)
     save_firm_category_descriptive_stats(usdf)
+    plot_firm_category_sample_sizes(usdf)
     premium_df = estimate_pooled_ai_wage_premium_by_firm_category(usdf)
     plot_ai_wage_premium_by_firm_category(premium_df)
     annual_df = estimate_annual_ai_wage_premium_by_firm_category(usdf)
