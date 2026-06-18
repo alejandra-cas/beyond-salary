@@ -157,15 +157,15 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - **export_samples.py**: Creates balanced samples for regression analysis
 
 ### Core Analysis (`analysis/`)
-- **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis. Figure 1 combines quarterly AI demand with quarterly adjusted `AI ROLE` log-wage coefficients and 95% confidence intervals. Quarterly wage models control for education, experience, NAICS 3-digit industry, and state fixed effects; quarters with fewer than 10 AI wage postings are suppressed.
-  - Default run outputs keyword-benefit figures.
+- **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis. Figure 1 combines quarterly AI demand with quarterly adjusted `AI ROLE` log-wage coefficients and 95% confidence intervals. Quarterly wage models control for education, experience, NAICS 3-digit industry, and state fixed effects; quarters with fewer than 10 AI wage postings are suppressed. Also generates firm-category analyses: sample composition, AI demand over time, pooled and annual/period-group AI wage premiums, benefit gap (AI minus non-AI perk prevalence), and benefit prevalence by role type — all broken out by SMEs, Large firms, and S&P 500 firms.
+  - Default run outputs keyword-benefit figures and all firm-category figures.
   - Add `--include-structured` to also output combined keyword+structured figures.
 - **regression_models.py**: Runs H1 job-level logit models for each benefit with `AI ROLE` as the key predictor.
    1. **M1 (Baseline):** Year FE + NAICS 3-digit FE
    2. **M2 (+ Individual/State Controls):** M1 + State FE + Education FE + Experience FE
    3. **M3 (+ Salary):** M2 + Log Salary
    4. **M4 (+ S&P 500):** M3 + S&P 500 indicator. This is the preferred specification.
-- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample and small (`<=2` postings), medium (`3-9`), large (`>=10`), and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Outputs include a β₃ heatmap across all perks and firm types and per-perk time-series plots with 95% CI ribbons.
+- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample, SMEs, Large firms, and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Outputs include pooled and yearly AI-role wage premium (β₁) by firm category, a β₃ heatmap across all perks and firm types, and per-perk time-series plots with 95% CI ribbons.
 - **occupation_year_prevalence_analysis.py**: OLS regressions on AI benefit prevalence at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
@@ -201,17 +201,19 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - Alternative thresholds such as 30, 50, and 100 observations are suitable robustness checks.
 - H1 is fitted with a binomial GLM solver. This preserves the logit specification while converging reliably with the fixed-effect design.
 
-### Firm-size buckets
+### Firm-size categories
 - Firm size is a posting-volume proxy. `FIRM_POSTING_COUNT` is calculated from each firm's total observations in the complete labeled dataset.
-- `COMPANY == 0` represents `Unclassified` employers. These 12,855 postings are retained in full-sample analyses but are excluded from firm-size subsamples so they are not treated as one large employer.
-- Fixed size buckets are small (`<=2` postings), medium (`3-9` postings), and large (`>=10` postings).
+- `COMPANY == 0` represents `Unclassified` employers. These 12,855 postings are retained in full-sample analyses but are excluded from firm-category subsamples so they are not treated as one large employer.
+- Three mutually exclusive firm categories are used:
+  - **SMEs**: firms with fewer than 10 postings
+  - **Large firms**: firms with 10 or more postings (excluding S&P 500)
+  - **S&P 500 firms**: firms matched to the S&P 500 snapshot (override Large)
 
-| Firm category | Postings | Share of full sample |
-| --- | ---: | ---: |
-| Small (`<=2`) | 34,167 | 34.2% |
-| Medium (`3-9`) | 16,520 | 16.5% |
-| Large (`>=10`) | 36,318 | 36.4% |
-| Unclassified | 12,855 | 12.9% |
+| Firm category | Postings | AI vacancies | Firms | AI share |
+| --- | ---: | ---: | ---: | ---: |
+| SMEs | 49,776 | 619 | 33,700 | 1.2% |
+| Large firms | 25,569 | 262 | 971 | 1.0% |
+| S&P 500 firms | 11,660 | 359 | 409 | 3.1% |
 
 ### S&P 500 snapshot
 - S&P 500 membership uses one fixed constituent snapshot.
@@ -223,7 +225,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - Figure 1 estimates separate quarterly AI wage models and plots the `AI ROLE` coefficient directly in log points with 95% confidence intervals. It suppresses quarters with fewer than 10 AI postings containing wage information, leaving 14 plotted quarters.
 - H2 pooled models cover 2018–2025 and include year fixed effects. Calendar-year H2 models omit year fixed effects.
 - H2 skips and records a model when its subsample has fewer than 10 AI wage postings or any `AI ROLE x PERK` cell contains fewer than 3 postings.
-- Firm size and S&P 500 membership define H2 subsamples only; they are not included as H2 controls.
+- Firm category (SMEs, Large firms, S&P 500 firms) defines H2 subsamples only; they are not included as H2 controls.
 - A negative `AI ROLE x PERK` coefficient means the AI wage premium is smaller when the perk is present. This is consistent with substitution between monetary and non-monetary compensation, but it is not a causal estimate and does not imply that AI jobs with the perk pay less in absolute terms.
 
 ## Generated Outputs
@@ -238,12 +240,21 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - **Model coefficients plot**: `results/figures_2026/regression/model_coefficients_plot_industry_converged.png`
 - **Structured-benefit coefficients plot**: `results/figures_2026/regression/structured_benefits_ai_role_coef.png`
 - **Figure 1 — AI demand and wage coefficients**: `results/figures_2026/descriptive/figure1_ai_demand_wage_beta.png`
+- **Figure 1 by firm category**: `results/figures_2026/descriptive/firm_categories/figure1_ai_demand_wage_beta_by_firm_category.png`
+- **Sample composition by firm category**: `results/figures_2026/descriptive/firm_categories/firm_category_sample_sizes.png`
+- **AI wage premium by firm category (pooled)**: `results/figures_2026/descriptive/firm_categories/ai_wage_premium_by_firm_category.png`
+- **AI wage premium by firm category (annual)**: `results/figures_2026/descriptive/firm_categories/ai_wage_premium_by_firm_category_annual.png`
+- **AI wage premium pre vs post GenAI**: `results/figures_2026/descriptive/firm_categories/ai_wage_premium_by_firm_category_pre_post_genai.png`
+- **AI perk premium by firm category**: `results/figures_2026/descriptive/firm_categories/benefit_gap_by_firm_category.png`
+- **Benefits by role and firm category**: `results/figures_2026/descriptive/firm_categories/benefits_all_ai_role_by_firm_category.png`
 - **Keyword benefit differences**: `results/figures_2026/descriptive/benefits_over_time/benefit_diffs_time_keyword.png`
 - **Combined keyword + structured differences**: `results/figures_2026/descriptive/benefits_over_time/benefit_diffs_time_all.png`
 - **Individual keyword benefit trends**: `results/figures_2026/descriptive/benefits_over_time/benefit_over_time_{benefit}.png` (6 files)
 - **Occupation analysis**: `results/figures_2026/descriptive/by_occupation/percent_by_occupation_{benefit}.png` (6 files)
 - **Salary analysis**: `results/figures_2026/salary/salary_by_benefit_combined.png`
 - **Wage-perk interaction figures**: `results/figures_2026/wage_perk_interactions/`
+  - Pooled β₁ AI-role wage premium by firm category: `ai_role_wage_premium_beta1_pooled_by_firm_category.png`
+  - Yearly β₁ AI-role wage premium by firm category: `ai_role_wage_premium_beta1_yearly_by_firm_category.png`
   - Pooled β₃ dot plots: `wage_perk_interaction_beta3_pooled.png`
   - Yearly β₃ time series (all perks): `wage_perk_interaction_beta3_yearly.png`
   - **β₃ heatmap (perk × firm type)**: `wage_perk_interaction_beta3_heatmap.png`
