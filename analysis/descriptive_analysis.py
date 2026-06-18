@@ -84,6 +84,16 @@ FIG_ROOT = REPO_ROOT / "results" / "figures_2026" / "descriptive"
 BENEFITS_OVER_TIME_DIR = FIG_ROOT / "benefits_over_time"
 BENEFITS_BY_ROLE_DIR = FIG_ROOT / "pct_jobs_by_benefit_and_role_type"
 BY_OCCUPATION_DIR = FIG_ROOT / "by_occupation"
+FIRM_CATEGORY_DIR = FIG_ROOT / "firm_categories"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
+
+FIRM_CATEGORY = "FIRM_CATEGORY"
+FIRM_CATEGORY_ORDER = ["SMEs", "Large firms", "S&P 500 firms"]
+FIRM_CATEGORY_COLORS = {
+    "SMEs": "#1f77b4",
+    "Large firms": "#2ca02c",
+    "S&P 500 firms": "#d62728",
+}
 
 
 def format_benefit_label(benefit_key, label):
@@ -104,14 +114,52 @@ def load_data():
     print("Data loaded")
     usdf["POSTED"] = pd.to_datetime(usdf["POSTED"])
     usdf["QUARTER"] = usdf["POSTED"].dt.to_period("Q")
+    usdf = add_firm_category(usdf)
     return usdf
 
 
 def create_figures_directory():
     """Create directories for saving figures if they don't exist."""
-    directories = [FIG_ROOT, BENEFITS_OVER_TIME_DIR, BENEFITS_BY_ROLE_DIR, BY_OCCUPATION_DIR]
+    directories = [
+        FIG_ROOT,
+        BENEFITS_OVER_TIME_DIR,
+        BENEFITS_BY_ROLE_DIR,
+        BY_OCCUPATION_DIR,
+        FIRM_CATEGORY_DIR,
+        TABLES_DIR,
+    ]
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
+
+
+def add_firm_category(usdf):
+    """Add mutually exclusive SME, large, and S&P 500 firm categories."""
+    usdf = usdf.copy()
+    sp500 = usdf.get("SP500", False)
+    if not isinstance(sp500, pd.Series):
+        sp500 = pd.Series(False, index=usdf.index)
+    sp500 = sp500.fillna(False).astype(bool)
+
+    if "FIRM_POSTING_COUNT" in usdf.columns:
+        firm_posting_count = pd.to_numeric(usdf["FIRM_POSTING_COUNT"], errors="coerce")
+    else:
+        firm_posting_count = pd.Series(np.nan, index=usdf.index)
+    if firm_posting_count.isna().all() and "FIRM_SIZE_BUCKET" in usdf.columns:
+        old_bucket = usdf["FIRM_SIZE_BUCKET"].astype("string")
+        firm_posting_count = pd.Series(np.nan, index=usdf.index)
+        firm_posting_count.loc[old_bucket.isin(["Small (<=2)", "Medium (3-9)", "SMEs (<10)"])] = 1
+        firm_posting_count.loc[old_bucket.isin(["Large (>=10)", "Large firms (>=10)"])] = 10
+
+    usdf[FIRM_CATEGORY] = pd.NA
+    usdf.loc[firm_posting_count < 10, FIRM_CATEGORY] = "SMEs"
+    usdf.loc[firm_posting_count >= 10, FIRM_CATEGORY] = "Large firms"
+    usdf.loc[sp500, FIRM_CATEGORY] = "S&P 500 firms"
+    usdf[FIRM_CATEGORY] = pd.Categorical(
+        usdf[FIRM_CATEGORY],
+        categories=FIRM_CATEGORY_ORDER,
+        ordered=True,
+    )
+    return usdf
 
 
 def estimate_quarterly_ai_wage_betas(usdf, min_ai_wage_postings=10):
@@ -277,6 +325,442 @@ def generate_ai_roles_over_time_plot(usdf):
     print(f"Saved: {output_path}")
 
 
+def save_firm_category_descriptive_stats(usdf):
+    """Save posting and AI-vacancy counts for each firm category."""
+    print("Saving firm-category descriptive statistics...")
+    stats = (
+        usdf.dropna(subset=[FIRM_CATEGORY])
+        .groupby(FIRM_CATEGORY, observed=False)
+        .agg(
+            postings=("AI ROLE", "size"),
+            ai_vacancies=("AI ROLE", "sum"),
+            firms=("COMPANY", "nunique"),
+        )
+        .reindex(FIRM_CATEGORY_ORDER)
+        .reset_index()
+    )
+    stats["non_ai_vacancies"] = stats["postings"] - stats["ai_vacancies"]
+    stats["ai_share"] = stats["ai_vacancies"] / stats["postings"]
+    for column in ["postings", "ai_vacancies", "non_ai_vacancies", "firms"]:
+        stats[column] = stats[column].fillna(0).astype(int)
+    stats["ai_share"] = stats["ai_share"].fillna(0)
+    output = TABLES_DIR / "firm_category_descriptive_stats.csv"
+    stats.to_csv(output, index=False)
+    print(f"Saved: {output}")
+
+
+def estimate_pooled_ai_wage_premium_by_firm_category(usdf, min_ai_wage_postings=10):
+    """Estimate pooled AI wage premium and base pay level by firm category."""
+    controls = [
+        "MIN_EDULEVELS_NAME",
+        "EXPERIENCE_BUCKET",
+        "NAICS_2022_3_DIGIT",
+        "STATE_NAME",
+    ]
+    required = ["LOG_SALARY", "AI ROLE", "YEAR", FIRM_CATEGORY] + controls
+    wage_df = (
+        usdf.replace([np.inf, -np.inf], np.nan)
+        .dropna(subset=required)
+        .copy()
+    )
+
+    rows = []
+    for category in FIRM_CATEGORY_ORDER:
+        subset = wage_df[wage_df[FIRM_CATEGORY] == category]
+        ai_count = int(subset["AI ROLE"].sum())
+        row = {
+            "firm_category": category,
+            "wage_postings": len(subset),
+            "ai_wage_postings": ai_count,
+            "mean_log_salary": subset["LOG_SALARY"].mean(),
+            "mean_log_salary_ai": subset.loc[subset["AI ROLE"], "LOG_SALARY"].mean(),
+            "mean_log_salary_non_ai": subset.loc[~subset["AI ROLE"], "LOG_SALARY"].mean(),
+            "raw_gap": (
+                subset.loc[subset["AI ROLE"], "LOG_SALARY"].mean()
+                - subset.loc[~subset["AI ROLE"], "LOG_SALARY"].mean()
+            ),
+            "intercept": np.nan,
+            "ai_role_beta": np.nan,
+            "ai_role_se": np.nan,
+            "lower_ci": np.nan,
+            "upper_ci": np.nan,
+            "r_squared": np.nan,
+            "status": "suppressed",
+        }
+        if ai_count < min_ai_wage_postings:
+            rows.append(row)
+            continue
+
+        X = subset[["AI ROLE"]].astype(float)
+        for control in controls:
+            dummies = pd.get_dummies(subset[control], prefix=control, drop_first=True, dtype=float)
+            X = pd.concat([X, dummies], axis=1)
+        year_dummies = pd.get_dummies(subset["YEAR"], prefix="YEAR", drop_first=True, dtype=float)
+        X = pd.concat([X, year_dummies], axis=1)
+        X = sm.add_constant(X, has_constant="add")
+
+        try:
+            model = sm.OLS(subset["LOG_SALARY"].astype(float), X.astype(float)).fit(cov_type="HC1")
+            beta = model.params["AI ROLE"]
+            se = model.bse["AI ROLE"]
+            row.update({
+                "intercept": model.params["const"],
+                "ai_role_beta": beta,
+                "ai_role_se": se,
+                "lower_ci": beta - 1.96 * se,
+                "upper_ci": beta + 1.96 * se,
+                "r_squared": model.rsquared,
+                "status": "ok",
+            })
+        except Exception as error:
+            row["status"] = f"error: {error}"
+        rows.append(row)
+
+    result = pd.DataFrame(rows)
+    output = TABLES_DIR / "pooled_ai_wage_premium_by_firm_category.csv"
+    result.to_csv(output, index=False)
+    print(f"Saved: {output}")
+    return result
+
+
+def plot_ai_wage_premium_by_firm_category(premium_df):
+    """Bar chart comparing base pay and AI wage premium across firm categories."""
+    ok = premium_df[premium_df["status"] == "ok"].copy()
+    if ok.empty:
+        print("No estimable firm categories for wage premium plot.")
+        return
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.5))
+
+    # Left panel: mean log salary by role type
+    x = np.arange(len(ok))
+    width = 0.3
+    ax1.bar(
+        x - width / 2,
+        ok["mean_log_salary_non_ai"],
+        width,
+        label="Non-AI Role",
+        color="#7f7f7f",
+        alpha=0.6,
+    )
+    ax1.bar(
+        x + width / 2,
+        ok["mean_log_salary_ai"],
+        width,
+        label="AI Role",
+        color="#0072B2",
+    )
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(ok["firm_category"], fontsize=12)
+    ax1.set_ylabel("Mean Log Salary", fontsize=13)
+    ax1.set_title("Average Pay by Firm Category", fontsize=14)
+    ax1.legend(fontsize=11)
+    ax1.grid(axis="y", alpha=0.2)
+
+    # Right panel: adjusted AI wage coefficient
+    ax2.barh(
+        x,
+        ok["ai_role_beta"],
+        xerr=[ok["ai_role_beta"] - ok["lower_ci"], ok["upper_ci"] - ok["ai_role_beta"]],
+        color=[FIRM_CATEGORY_COLORS[c] for c in ok["firm_category"]],
+        capsize=4,
+        height=0.5,
+    )
+    ax2.axvline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax2.set_yticks(x)
+    ax2.set_yticklabels(ok["firm_category"], fontsize=12)
+    ax2.set_xlabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=12)
+    ax2.set_title("Adjusted AI Wage Premium", fontsize=14)
+    ax2.grid(axis="x", alpha=0.2)
+
+    plt.tight_layout()
+    output = FIRM_CATEGORY_DIR / "ai_wage_premium_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def _fit_one_wage_regression(subset, category, period_label, controls, min_ai_wage_postings):
+    """Fit a single OLS wage regression and return a result row."""
+    ai_count = int(subset["AI ROLE"].sum())
+    row = {
+        "firm_category": category,
+        "period": period_label,
+        "wage_postings": len(subset),
+        "ai_wage_postings": ai_count,
+        "mean_log_salary_ai": subset.loc[subset["AI ROLE"], "LOG_SALARY"].mean(),
+        "mean_log_salary_non_ai": subset.loc[~subset["AI ROLE"], "LOG_SALARY"].mean(),
+        "ai_role_beta": np.nan,
+        "ai_role_se": np.nan,
+        "lower_ci": np.nan,
+        "upper_ci": np.nan,
+        "status": "suppressed",
+    }
+    if ai_count < min_ai_wage_postings:
+        return row
+
+    X = subset[["AI ROLE"]].astype(float)
+    for control in controls:
+        dummies = pd.get_dummies(subset[control], prefix=control, drop_first=True, dtype=float)
+        X = pd.concat([X, dummies], axis=1)
+    X = sm.add_constant(X, has_constant="add")
+    try:
+        model = sm.OLS(subset["LOG_SALARY"].astype(float), X.astype(float)).fit(cov_type="HC1")
+        beta = model.params["AI ROLE"]
+        se = model.bse["AI ROLE"]
+        row.update({
+            "ai_role_beta": beta,
+            "ai_role_se": se,
+            "lower_ci": beta - 1.96 * se,
+            "upper_ci": beta + 1.96 * se,
+            "status": "ok",
+        })
+    except Exception as error:
+        row["status"] = f"error: {error}"
+    return row
+
+
+def estimate_annual_ai_wage_premium_by_firm_category(usdf, min_ai_wage_postings=10):
+    """Estimate annual AI wage premium by firm category; fall back to period groups."""
+    controls = [
+        "MIN_EDULEVELS_NAME",
+        "EXPERIENCE_BUCKET",
+        "NAICS_2022_3_DIGIT",
+        "STATE_NAME",
+    ]
+    required = ["LOG_SALARY", "AI ROLE", "YEAR", FIRM_CATEGORY] + controls
+    wage_df = (
+        usdf.replace([np.inf, -np.inf], np.nan)
+        .dropna(subset=required)
+        .copy()
+    )
+
+    # Try annual first
+    annual_rows = []
+    for category in FIRM_CATEGORY_ORDER:
+        cat_df = wage_df[wage_df[FIRM_CATEGORY] == category]
+        for year in sorted(cat_df["YEAR"].unique()):
+            year_df = cat_df[cat_df["YEAR"] == year]
+            annual_rows.append(
+                _fit_one_wage_regression(year_df, category, str(int(year)), controls, min_ai_wage_postings)
+            )
+    annual_df = pd.DataFrame(annual_rows)
+
+    # Check if annual works or if we need period groups
+    ok_counts = annual_df[annual_df["status"] == "ok"].groupby("firm_category").size()
+    needs_grouping = any(ok_counts.get(c, 0) < 3 for c in FIRM_CATEGORY_ORDER)
+
+    if needs_grouping:
+        print("  Annual too sparse for some categories — adding period-group estimates...")
+        period_map = {}
+        for year in wage_df["YEAR"].unique():
+            if year <= 2022:
+                period_map[year] = "2018–2022"
+            else:
+                period_map[year] = "2023–2025"
+        wage_df["PERIOD_GROUP"] = wage_df["YEAR"].map(period_map)
+        group_rows = []
+        for category in FIRM_CATEGORY_ORDER:
+            cat_df = wage_df[wage_df[FIRM_CATEGORY] == category]
+            for period, period_df in cat_df.groupby("PERIOD_GROUP"):
+                group_rows.append(
+                    _fit_one_wage_regression(period_df, category, period, controls, min_ai_wage_postings)
+                )
+        group_df = pd.DataFrame(group_rows)
+        combined = pd.concat([annual_df, group_df], ignore_index=True)
+    else:
+        combined = annual_df
+
+    output = TABLES_DIR / "annual_ai_wage_premium_by_firm_category.csv"
+    combined.to_csv(output, index=False)
+    print(f"Saved: {output}")
+    return combined
+
+
+def plot_annual_ai_wage_premium_by_firm_category(annual_df):
+    """Plot AI wage premium over time by firm category (separate figures)."""
+    ok = annual_df[annual_df["status"] == "ok"].copy()
+    if ok.empty:
+        print("No estimable results for annual wage premium plot.")
+        return
+
+    # Separate annual vs period-group rows
+    annual_rows = ok[ok["period"].str.match(r"^\d{4}$")]
+    group_rows = ok[~ok["period"].str.match(r"^\d{4}$")]
+
+    if not annual_rows.empty:
+        annual_rows = annual_rows.copy()
+        annual_rows["year"] = annual_rows["period"].astype(int)
+        fig, ax = plt.subplots(figsize=(10, 6))
+        for category in FIRM_CATEGORY_ORDER:
+            line = annual_rows[annual_rows["firm_category"] == category].sort_values("year")
+            if line.empty:
+                continue
+            color = FIRM_CATEGORY_COLORS[category]
+            ax.fill_between(
+                line["year"],
+                line["lower_ci"],
+                line["upper_ci"],
+                alpha=0.12,
+                color=color,
+            )
+            ax.plot(
+                line["year"],
+                line["ai_role_beta"],
+                marker="o",
+                markersize=5,
+                label=category,
+                color=color,
+                linewidth=1.8,
+            )
+        ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        ax.set_xlabel("Year", fontsize=12)
+        ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=12)
+        ax.set_title("Annual AI Wage Premium by Firm Category", fontsize=14)
+        ax.legend(fontsize=10)
+        ax.grid(alpha=0.2)
+        plt.tight_layout()
+        output = FIRM_CATEGORY_DIR / "ai_wage_premium_by_firm_category_annual.png"
+        plt.savefig(output, bbox_inches="tight", dpi=300)
+        plt.close()
+        print(f"Saved: {output}")
+
+    if not group_rows.empty:
+        period_order = sorted(group_rows["period"].unique())
+        x = np.arange(len(period_order))
+        n_cats = len(FIRM_CATEGORY_ORDER)
+        width = 0.25
+        fig, ax = plt.subplots(figsize=(10, 6))
+        for i, category in enumerate(FIRM_CATEGORY_ORDER):
+            cat_data = group_rows[group_rows["firm_category"] == category].set_index("period").reindex(period_order)
+            vals = cat_data["ai_role_beta"].values
+            errs = [
+                cat_data["ai_role_beta"].values - cat_data["lower_ci"].values,
+                cat_data["upper_ci"].values - cat_data["ai_role_beta"].values,
+            ]
+            ax.bar(
+                x + (i - (n_cats - 1) / 2) * width,
+                vals,
+                width,
+                yerr=errs,
+                label=category,
+                color=FIRM_CATEGORY_COLORS[category],
+                capsize=3,
+                alpha=0.85,
+            )
+        ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        ax.set_xticks(x)
+        ax.set_xticklabels(period_order, fontsize=12)
+        ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=12)
+        ax.set_title("AI Wage Premium: Pre vs Post GenAI", fontsize=14)
+        ax.legend(fontsize=10)
+        ax.grid(axis="y", alpha=0.2)
+        plt.tight_layout()
+        output = FIRM_CATEGORY_DIR / "ai_wage_premium_by_firm_category_pre_post_genai.png"
+        plt.savefig(output, bbox_inches="tight", dpi=300)
+        plt.close()
+        print(f"Saved: {output}")
+
+
+def estimate_quarterly_ai_wage_betas_by_firm_category(usdf, min_ai_wage_postings=10):
+    """Estimate quarterly AI log-wage coefficients separately by firm category."""
+    rows = []
+    for category in FIRM_CATEGORY_ORDER:
+        subset = usdf[usdf[FIRM_CATEGORY] == category].copy()
+        estimates = estimate_quarterly_ai_wage_betas(subset, min_ai_wage_postings)
+        estimates[FIRM_CATEGORY] = category
+        rows.append(estimates)
+    return pd.concat(rows, ignore_index=True)
+
+
+def generate_ai_roles_over_time_by_firm_category_plot(usdf):
+    """Replicate Figure 1 separately for SME, large, and S&P 500 firms."""
+    print("Generating firm-category AI demand and wage premium plot...")
+    category_df = usdf.dropna(subset=[FIRM_CATEGORY]).copy()
+    demand = (
+        category_df.groupby(["QUARTER", FIRM_CATEGORY], observed=False)["AI ROLE"]
+        .mean()
+        .mul(100)
+        .reset_index(name="ai_role_share")
+    )
+    demand_wide = (
+        demand.pivot(index="QUARTER", columns=FIRM_CATEGORY, values="ai_role_share")
+        .sort_index()
+        .reindex(columns=FIRM_CATEGORY_ORDER)
+    )
+
+    wage_betas = estimate_quarterly_ai_wage_betas_by_firm_category(category_df)
+    wage_betas.assign(QUARTER=wage_betas["QUARTER"].astype(str)).to_csv(
+        TABLES_DIR / "quarterly_ai_wage_betas_by_firm_category.csv",
+        index=False,
+    )
+
+    fig, (demand_ax, wage_ax) = plt.subplots(
+        nrows=2,
+        ncols=1,
+        figsize=(11, 9),
+        sharex=True,
+    )
+    quarter_positions = np.arange(len(demand_wide.index))
+    quarter_position_map = {quarter: idx for idx, quarter in enumerate(demand_wide.index)}
+
+    for category in FIRM_CATEGORY_ORDER:
+        if category not in demand_wide:
+            continue
+        demand_ax.plot(
+            quarter_positions,
+            demand_wide[category],
+            marker="o",
+            markersize=3,
+            linewidth=1.6,
+            label=category,
+            color=FIRM_CATEGORY_COLORS[category],
+        )
+
+    demand_ax.set_ylabel("% AI Roles", fontsize=15)
+    demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
+    demand_ax.legend(title=None, fontsize=11)
+    demand_ax.grid(alpha=0.25)
+
+    plotted = wage_betas[wage_betas["status"] == "ok"].copy()
+    plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
+    for category in FIRM_CATEGORY_ORDER:
+        line = plotted[plotted[FIRM_CATEGORY] == category].sort_values("QUARTER")
+        if line.empty:
+            continue
+        wage_ax.errorbar(
+            line["x"],
+            line["ai_role_beta"],
+            yerr=[
+                line["ai_role_beta"] - line["lower_ci"],
+                line["upper_ci"] - line["ai_role_beta"],
+            ],
+            fmt="o-",
+            capsize=3,
+            linewidth=1.5,
+            markersize=4,
+            label=category,
+            color=FIRM_CATEGORY_COLORS[category],
+        )
+
+    wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=13)
+    wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
+    wage_ax.grid(alpha=0.25)
+    wage_ax.legend(title=None, fontsize=11)
+
+    tick_positions = list(range(0, len(demand_wide.index), 4))
+    wage_ax.set_xticks(tick_positions)
+    wage_ax.set_xticklabels([str(demand_wide.index[idx]) for idx in tick_positions], rotation=45)
+    wage_ax.set_xlabel("Quarter", fontsize=13)
+
+    plt.tight_layout()
+    output_path = FIRM_CATEGORY_DIR / "figure1_ai_demand_wage_beta_by_firm_category.png"
+    plt.savefig(output_path, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output_path}")
+
+
 def count_benefits(data, benefit, period):
     """Helper function to count benefits by period and AI role."""
     grouped_data = (
@@ -401,7 +885,7 @@ def generate_benefits_by_role_plot(usdf):
     ]
     ax.legend(handles=legend_elements, title=None)
 
-    plt.savefig(BENEFITS_BY_ROLE_DIR / "benefits_ai_role_keyword.png", bbox_inches="tight")
+    plt.savefig(BENEFITS_BY_ROLE_DIR / "figure2a_benefits_ai_role_keyword.png", bbox_inches="tight")
     # plt.show()
 
 
@@ -605,6 +1089,117 @@ def generate_combined_benefits_by_role_plot(usdf):
     print("Saved: benefits_all_ai_role.png")
 
 
+def generate_benefits_by_role_by_firm_category_plot(usdf):
+    """Replicate keyword benefit prevalence by AI-role status within each firm category."""
+    print("Generating benefits by role and firm category plot...")
+    category_df = usdf.dropna(subset=[FIRM_CATEGORY]).copy()
+    role_labels = {True: "AI Role", False: "Non-AI Role"}
+
+    fig, axes = plt.subplots(
+        nrows=1,
+        ncols=len(FIRM_CATEGORY_ORDER),
+        figsize=(18, 6),
+        sharey=True,
+        layout="constrained",
+    )
+    x = np.arange(len(benefits4))
+    width = 0.34
+
+    for ax, category in zip(axes, FIRM_CATEGORY_ORDER):
+        subset = category_df[category_df[FIRM_CATEGORY] == category]
+        percentages = subset.groupby("AI ROLE")[benefits4].mean().mul(100).reindex([True, False])
+        for i, role in enumerate([True, False]):
+            if role not in percentages.index:
+                continue
+            ax.bar(
+                x + (i - 0.5) * width,
+                percentages.loc[role, benefits4],
+                width,
+                color=[benefit_colors[benefit] for benefit in benefits4],
+                alpha=1.0 if role else 0.45,
+                label=role_labels[role],
+            )
+        ax.set_title(category, fontsize=13)
+        ax.set_xticks(x)
+        ax.set_xticklabels(
+            [
+                format_benefit_label(benefit, label)
+                for benefit, label in zip(benefits4, benefits4_labels)
+            ],
+            rotation=45,
+            ha="right",
+            fontsize=9,
+        )
+        ax.set_ylim(0, 45)
+        ax.grid(axis="y", alpha=0.2)
+
+    axes[0].set_ylabel("Percent of Jobs", fontsize=12)
+
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor="gray", alpha=1.0, label="AI Role"),
+        Patch(facecolor="gray", alpha=0.45, label="Non-AI Role"),
+    ]
+    axes[-1].legend(handles=legend_elements, title=None, fontsize=10, loc="upper right")
+
+    output = FIRM_CATEGORY_DIR / "benefits_ai_role_keyword_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def generate_benefit_gap_by_firm_category_plot(usdf):
+    """Bar chart of AI minus non-AI perk prevalence, grouped by firm category."""
+    print("Generating benefit gap by firm category plot...")
+    category_df = usdf.dropna(subset=[FIRM_CATEGORY]).copy()
+
+    gaps = []
+    for category in FIRM_CATEGORY_ORDER:
+        subset = category_df[category_df[FIRM_CATEGORY] == category]
+        pcts = subset.groupby("AI ROLE")[benefits4].mean().mul(100)
+        if True in pcts.index and False in pcts.index:
+            diff = pcts.loc[True] - pcts.loc[False]
+        else:
+            diff = pd.Series(0.0, index=benefits4)
+        diff.name = category
+        gaps.append(diff)
+    gap_df = pd.DataFrame(gaps)  # rows = categories, cols = benefits
+
+    x = np.arange(len(benefits4))
+    n_cats = len(FIRM_CATEGORY_ORDER)
+    width = 0.25
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    for i, category in enumerate(FIRM_CATEGORY_ORDER):
+        ax.bar(
+            x + (i - (n_cats - 1) / 2) * width,
+            gap_df.loc[category],
+            width,
+            label=category,
+            color=FIRM_CATEGORY_COLORS[category],
+            alpha=0.85,
+        )
+
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax.set_ylabel("Difference in % Jobs with Benefit\n(AI Role − Non-AI Role)", fontsize=13)
+    ax.set_title("AI Perk Premium by Firm Category", fontsize=15)
+    ax.set_xticks(x)
+    ax.set_xticklabels(
+        [format_benefit_label(b, benefits_labels_map[b]) for b in benefits4],
+        rotation=30,
+        ha="right",
+        fontsize=12,
+    )
+    ax.legend(title=None, fontsize=11)
+    ax.grid(axis="y", alpha=0.2)
+
+    plt.tight_layout()
+    output = FIRM_CATEGORY_DIR / "benefit_gap_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
 def generate_combined_benefit_differences_plot(usdf):
     """Difference in percent jobs with benefit (AI − non-AI) over time — all benefits."""
     print("Generating combined benefit differences over time plot...")
@@ -667,6 +1262,12 @@ def main(include_structured=False):
 
     # Figure 1: % AI roles over time
     generate_ai_roles_over_time_plot(usdf)
+    save_firm_category_descriptive_stats(usdf)
+    premium_df = estimate_pooled_ai_wage_premium_by_firm_category(usdf)
+    plot_ai_wage_premium_by_firm_category(premium_df)
+    annual_df = estimate_annual_ai_wage_premium_by_firm_category(usdf)
+    plot_annual_ai_wage_premium_by_firm_category(annual_df)
+    generate_ai_roles_over_time_by_firm_category_plot(usdf)
 
     # Figure 2: Difference in percent jobs with benefit
     generate_benefit_differences_plot(usdf)
@@ -679,6 +1280,9 @@ def main(include_structured=False):
 
     # Figure 5: Benefits by occupation
     generate_benefits_by_occupation_plots(usdf)
+
+    generate_benefits_by_role_by_firm_category_plot(usdf)
+    generate_benefit_gap_by_firm_category_plot(usdf)
 
     if include_structured:
         print("\nGenerating combined figures (keyword + structured benefits)...")

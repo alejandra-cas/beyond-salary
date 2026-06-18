@@ -25,15 +25,13 @@ MIN_INTERACTION_CELL_POSTINGS = 3
 
 SAMPLE_FILTERS = {
     "Full sample": lambda df: pd.Series(True, index=df.index),
-    "Small firms": lambda df: df["firm_size_bucket"] == "Small (<=2)",
-    "Medium firms": lambda df: df["firm_size_bucket"] == "Medium (3-9)",
-    "Large firms": lambda df: df["firm_size_bucket"] == "Large (>=10)",
+    "SMEs": lambda df: (~df["sp500"]) & (df["firm_posting_count"] < 10),
+    "Large firms": lambda df: (~df["sp500"]) & (df["firm_posting_count"] >= 10),
     "S&P 500 firms": lambda df: df["sp500"],
 }
 SAMPLE_COLORS = {
     "Full sample": "#9467bd",
-    "Small firms": "#1f77b4",
-    "Medium firms": "#ff7f0e",
+    "SMEs": "#1f77b4",
     "Large firms": "#2ca02c",
     "S&P 500 firms": "#d62728",
 }
@@ -50,6 +48,7 @@ def load_data():
         "NAICS_2022_3_DIGIT",
         "STATE_NAME",
         "YEAR",
+        "FIRM_POSTING_COUNT",
         "FIRM_SIZE_BUCKET",
         "SP500",
     ] + benefits4
@@ -65,6 +64,7 @@ def load_data():
         "NAICS_2022_3_DIGIT": "naics3",
         "STATE_NAME": "state",
         "YEAR": "year",
+        "FIRM_POSTING_COUNT": "firm_posting_count",
         "FIRM_SIZE_BUCKET": "firm_size_bucket",
         "SP500": "sp500",
     }
@@ -75,6 +75,7 @@ def load_data():
     ).copy()
     data["ai_role"] = data["ai_role"].astype(int)
     data["sp500"] = data["sp500"].astype(bool)
+    data["firm_posting_count"] = pd.to_numeric(data["firm_posting_count"], errors="coerce")
     return data
 
 
@@ -95,11 +96,19 @@ def status_row(sample, period, perk, data, status, detail=""):
         "beta2_perk": np.nan,
         "beta2_se": np.nan,
         "beta2_pvalue": np.nan,
+        "beta_perk_for_ai_role": np.nan,
+        "beta_perk_for_ai_role_se": np.nan,
+        "beta_perk_for_ai_role_lower_ci": np.nan,
+        "beta_perk_for_ai_role_upper_ci": np.nan,
         "beta3_interaction": np.nan,
         "beta3_se": np.nan,
         "beta3_pvalue": np.nan,
         "beta3_lower_ci": np.nan,
         "beta3_upper_ci": np.nan,
+        "beta_ai_role_with_perk": np.nan,
+        "beta_ai_role_with_perk_se": np.nan,
+        "beta_ai_role_with_perk_lower_ci": np.nan,
+        "beta_ai_role_with_perk_upper_ci": np.nan,
         "r_squared": np.nan,
     }
 
@@ -131,8 +140,19 @@ def fit_interaction_model(data, sample, period, perk, include_year_fe):
 
     try:
         model = smf.ols(formula, data=model_data).fit(cov_type="HC1")
+        beta1 = model.params["ai_role"]
+        beta1_se = model.bse["ai_role"]
+        beta2 = model.params["perk"]
+        beta2_se = model.bse["perk"]
         beta3 = model.params["ai_role:perk"]
         beta3_se = model.bse["ai_role:perk"]
+        cov_params = model.cov_params()
+        beta1_beta3_cov = cov_params.loc["ai_role", "ai_role:perk"]
+        beta2_beta3_cov = cov_params.loc["perk", "ai_role:perk"]
+        beta_ai_with_perk = beta1 + beta3
+        beta_ai_with_perk_se = np.sqrt(beta1_se**2 + beta3_se**2 + 2 * beta1_beta3_cov)
+        beta_perk_for_ai_role = beta2 + beta3
+        beta_perk_for_ai_role_se = np.sqrt(beta2_se**2 + beta3_se**2 + 2 * beta2_beta3_cov)
         return {
             "sample": sample,
             "period": period,
@@ -142,17 +162,25 @@ def fit_interaction_model(data, sample, period, perk, include_year_fe):
             "detail": "",
             "nobs": int(model.nobs),
             "ai_wage_postings": int(model_data["ai_role"].sum()),
-            "beta1_ai_role": model.params["ai_role"],
-            "beta1_se": model.bse["ai_role"],
+            "beta1_ai_role": beta1,
+            "beta1_se": beta1_se,
             "beta1_pvalue": model.pvalues["ai_role"],
-            "beta2_perk": model.params["perk"],
-            "beta2_se": model.bse["perk"],
+            "beta2_perk": beta2,
+            "beta2_se": beta2_se,
             "beta2_pvalue": model.pvalues["perk"],
+            "beta_perk_for_ai_role": beta_perk_for_ai_role,
+            "beta_perk_for_ai_role_se": beta_perk_for_ai_role_se,
+            "beta_perk_for_ai_role_lower_ci": beta_perk_for_ai_role - 1.96 * beta_perk_for_ai_role_se,
+            "beta_perk_for_ai_role_upper_ci": beta_perk_for_ai_role + 1.96 * beta_perk_for_ai_role_se,
             "beta3_interaction": beta3,
             "beta3_se": beta3_se,
             "beta3_pvalue": model.pvalues["ai_role:perk"],
             "beta3_lower_ci": beta3 - 1.96 * beta3_se,
             "beta3_upper_ci": beta3 + 1.96 * beta3_se,
+            "beta_ai_role_with_perk": beta_ai_with_perk,
+            "beta_ai_role_with_perk_se": beta_ai_with_perk_se,
+            "beta_ai_role_with_perk_lower_ci": beta_ai_with_perk - 1.96 * beta_ai_with_perk_se,
+            "beta_ai_role_with_perk_upper_ci": beta_ai_with_perk + 1.96 * beta_ai_with_perk_se,
             "r_squared": model.rsquared,
         }
     except Exception as error:
@@ -242,6 +270,188 @@ def plot_yearly_results(results):
     print(f"Saved: {output}")
 
 
+def plot_ai_role_premium_pooled(results):
+    """Plot pooled AI-role wage coefficients from the interaction models."""
+    pooled = results[(results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=False)
+    axes = axes.flatten()
+    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+
+    for ax, perk in zip(axes, benefits4):
+        subset = (
+            pooled[pooled["perk"] == perk]
+            .set_index("sample")
+            .reindex(sample_order)
+            .dropna(subset=["beta1_ai_role"])
+        )
+        positions = np.arange(len(subset))
+        ax.errorbar(
+            subset["beta1_ai_role"],
+            positions,
+            xerr=[
+                1.96 * subset["beta1_se"],
+                1.96 * subset["beta1_se"],
+            ],
+            fmt="o",
+            capsize=4,
+            color="#0072B2",
+        )
+        ax.axvline(0, color="gray", linewidth=0.8, linestyle="--")
+        ax.set_yticks(positions)
+        ax.set_yticklabels(subset.index)
+        ax.set_title(benefits_labels_map[perk])
+        ax.set_xlabel("AI-Role Wage Coefficient (log points)")
+        ax.grid(alpha=0.2)
+
+    fig.suptitle(
+        "Pooled AI-Role Wage Premium by Firm Category\n"
+        "Interaction model coefficient: AI role, evaluated when perk = 0",
+        fontsize=14,
+    )
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "ai_role_wage_premium_beta1_pooled_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def plot_ai_role_premium_yearly(results):
+    """Plot yearly AI-role wage coefficients from the interaction models."""
+    yearly = results[(results["period"] != "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    yearly["year"] = yearly["period"].astype(int)
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=True)
+    axes = axes.flatten()
+    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+
+    for ax, perk in zip(axes, benefits4):
+        subset = yearly[yearly["perk"] == perk]
+        for sample in sample_order:
+            line = subset[subset["sample"] == sample].sort_values("year")
+            if line.empty:
+                continue
+            color = SAMPLE_COLORS[sample]
+            lower = line["beta1_ai_role"] - 1.96 * line["beta1_se"]
+            upper = line["beta1_ai_role"] + 1.96 * line["beta1_se"]
+            ax.fill_between(line["year"], lower, upper, alpha=0.10, color=color)
+            ax.plot(
+                line["year"],
+                line["beta1_ai_role"],
+                marker="o",
+                label=sample,
+                color=color,
+                linewidth=1.6,
+            )
+        ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        ax.set_title(benefits_labels_map[perk])
+        ax.set_ylabel("AI-Role Wage Coefficient")
+        ax.grid(alpha=0.2)
+
+    axes[-1].legend(loc="upper left", bbox_to_anchor=(1.02, 1))
+    fig.suptitle(
+        "Yearly AI-Role Wage Premium by Firm Category\n"
+        "Interaction model coefficient: AI role, evaluated when perk = 0",
+        fontsize=14,
+    )
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "ai_role_wage_premium_beta1_yearly_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def plot_perk_wage_coefficient_pooled(results):
+    """Plot pooled perk wage coefficients from the interaction models."""
+    pooled = results[(results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=False)
+    axes = axes.flatten()
+    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+
+    for ax, perk in zip(axes, benefits4):
+        subset = (
+            pooled[pooled["perk"] == perk]
+            .set_index("sample")
+            .reindex(sample_order)
+            .dropna(subset=["beta2_perk"])
+        )
+        positions = np.arange(len(subset))
+        ax.errorbar(
+            subset["beta2_perk"],
+            positions,
+            xerr=[
+                1.96 * subset["beta2_se"],
+                1.96 * subset["beta2_se"],
+            ],
+            fmt="o",
+            capsize=4,
+            color="#009E73",
+        )
+        ax.axvline(0, color="gray", linewidth=0.8, linestyle="--")
+        ax.set_yticks(positions)
+        ax.set_yticklabels(subset.index)
+        ax.set_title(benefits_labels_map[perk])
+        ax.set_xlabel("Perk Wage Coefficient (log points)")
+        ax.grid(alpha=0.2)
+
+    fig.suptitle(
+        "Pooled Perk Wage Coefficient by Firm Category\n"
+        "Interaction model coefficient: perk, evaluated when AI role = 0",
+        fontsize=14,
+    )
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "perk_wage_coefficient_beta2_pooled_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def plot_perk_wage_coefficient_yearly(results):
+    """Plot yearly perk wage coefficients from the interaction models."""
+    yearly = results[(results["period"] != "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    yearly["year"] = yearly["period"].astype(int)
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=True)
+    axes = axes.flatten()
+    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+
+    for ax, perk in zip(axes, benefits4):
+        subset = yearly[yearly["perk"] == perk]
+        for sample in sample_order:
+            line = subset[subset["sample"] == sample].sort_values("year")
+            if line.empty:
+                continue
+            color = SAMPLE_COLORS[sample]
+            lower = line["beta2_perk"] - 1.96 * line["beta2_se"]
+            upper = line["beta2_perk"] + 1.96 * line["beta2_se"]
+            ax.fill_between(line["year"], lower, upper, alpha=0.10, color=color)
+            ax.plot(
+                line["year"],
+                line["beta2_perk"],
+                marker="o",
+                label=sample,
+                color=color,
+                linewidth=1.6,
+            )
+        ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        ax.set_title(benefits_labels_map[perk])
+        ax.set_ylabel("Perk Wage Coefficient")
+        ax.grid(alpha=0.2)
+
+    axes[-1].legend(loc="upper left", bbox_to_anchor=(1.02, 1))
+    fig.suptitle(
+        "Yearly Perk Wage Coefficient by Firm Category\n"
+        "Interaction model coefficient: perk, evaluated when AI role = 0",
+        fontsize=14,
+    )
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "perk_wage_coefficient_beta2_yearly_by_firm_category.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
 def plot_heatmap(results):
     """Plot a heatmap of pooled beta3 coefficients: perks (rows) × firm type (cols)."""
     pooled = results[
@@ -250,8 +460,8 @@ def plot_heatmap(results):
 
     perk_order = list(benefits4)
     perk_labels = [benefits_labels_map[p] for p in perk_order]
-    sample_order = ["Small firms", "Medium firms", "Large firms", "S&P 500 firms"]
-    sample_labels = ["Small", "Medium", "Large", "S&P 500"]
+    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_labels = ["SMEs", "Large", "S&P 500"]
 
     matrix = np.full((len(perk_order), len(sample_order)), np.nan)
     pval_matrix = np.full_like(matrix, np.nan)
@@ -317,7 +527,7 @@ def plot_yearly_single_perk(results, perk="REMOTE_KW"):
     ].copy()
     yearly["year"] = yearly["period"].astype(int)
 
-    sample_order = ["Small firms", "Medium firms", "Large firms", "S&P 500 firms"]
+    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
     fig, ax = plt.subplots(figsize=(9, 5.5))
 
     for sample in sample_order:
@@ -372,6 +582,10 @@ def main():
     results.to_csv(output, index=False)
     print(f"Saved: {output}")
     print(results.groupby(["period", "status"]).size().to_string())
+    plot_ai_role_premium_pooled(results)
+    plot_ai_role_premium_yearly(results)
+    plot_perk_wage_coefficient_pooled(results)
+    plot_perk_wage_coefficient_yearly(results)
     plot_pooled_results(results)
     plot_yearly_results(results)
     plot_heatmap(results)

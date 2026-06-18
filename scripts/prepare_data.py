@@ -131,8 +131,8 @@ def add_firm_size(df):
     df["FIRM_POSTING_COUNT"] = df["COMPANY"].map(firm_counts).astype("Int64")
     df["FIRM_SIZE_BUCKET"] = pd.cut(
         df["FIRM_POSTING_COUNT"],
-        bins=[0, 2, 9, np.inf],
-        labels=["Small (<=2)", "Medium (3-9)", "Large (>=10)"],
+        bins=[0, 9, np.inf],
+        labels=["SMEs (<10)", "Large firms (>=10)"],
     )
 
     print("Firm size bucket distribution:")
@@ -161,6 +161,9 @@ def merge_sp500_snapshot(df, snapshot_path, audit_path):
 
     sp500_ids = set(snapshot["COMPANY"])
     df["SP500"] = df["COMPANY"].isin(sp500_ids) & (df["COMPANY"] != 0)
+    if "FIRM_SIZE_BUCKET" in df.columns:
+        df["FIRM_SIZE_BUCKET"] = df["FIRM_SIZE_BUCKET"].astype("object")
+        df.loc[df["SP500"], "FIRM_SIZE_BUCKET"] = "S&P 500 firms"
 
     audit_columns = ["COMPANY"]
     if "COMPANY_NAME" in snapshot.columns:
