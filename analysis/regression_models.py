@@ -43,6 +43,7 @@ TABLES_DIR = RESULTS_DIR / "tables_2026"
 MODEL_CACHE_DIR = TABLES_DIR / "model_cache"
 CACHE_VERSION = "v4_preferred_sp500_no_firm_fe"
 CACHE_FORMAT = "compact_results_only"
+FIRM_CATEGORY_LOGIT_DIR = TABLES_DIR / "firm_category_logit"
 
 # Field mappings
 region = 'STATE_NAME'
@@ -59,6 +60,33 @@ benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
+firm_category_colors = {
+    "SMEs": "#1f77b4",
+    "Large firms": "#2ca02c",
+    "S&P 500 firms": "#d62728",
+}
+
+
+def add_firm_category(data):
+    """Add mutually exclusive SME, large, and S&P 500 firm categories."""
+    data = data.copy()
+    sp500 = data["SP500"].fillna(False).astype(bool) if "SP500" in data else pd.Series(False, index=data.index)
+    firm_posting_count = (
+        pd.to_numeric(data["FIRM_POSTING_COUNT"], errors="coerce")
+        if "FIRM_POSTING_COUNT" in data
+        else pd.Series(np.nan, index=data.index)
+    )
+
+    data["FIRM_CATEGORY"] = pd.NA
+    data.loc[(~sp500) & (firm_posting_count < 10), "FIRM_CATEGORY"] = "SMEs"
+    data.loc[(~sp500) & (firm_posting_count >= 10), "FIRM_CATEGORY"] = "Large firms"
+    data.loc[sp500, "FIRM_CATEGORY"] = "S&P 500 firms"
+    data["FIRM_CATEGORY"] = pd.Categorical(
+        data["FIRM_CATEGORY"],
+        categories=["SMEs", "Large firms", "S&P 500 firms"],
+        ordered=True,
+    )
+    return data
 
 
 def collapse_sparse_fixed_effects(data, dependent, require_salary=False, min_outcomes=5):
@@ -410,6 +438,149 @@ def run_2024_models(data):
         benefit_models_industry_3,
         benefit_models_sp500_4,
     ]
+
+
+def extract_single_model_row(model, firm_category, benefit, benefit_label):
+    """Extract the AI-role log-odds coefficient from one fitted logit model."""
+    if isinstance(model, str):
+        return {
+            "firm_category": firm_category,
+            "benefit": benefit,
+            "benefit_label": benefit_label,
+            "status": "error",
+            "ai_role_coef": np.nan,
+            "ai_role_se": np.nan,
+            "ai_role_pvalue": np.nan,
+            "lower_ci": np.nan,
+            "upper_ci": np.nan,
+            "nobs": np.nan,
+            "pseudo_r2": np.nan,
+            "converged": False,
+            "specification": "",
+        }
+
+    coef = model.params.get("AI ROLE", np.nan)
+    se = model.bse.get("AI ROLE", np.nan)
+    return {
+        "firm_category": firm_category,
+        "benefit": benefit,
+        "benefit_label": benefit_label,
+        "status": "ok",
+        "ai_role_coef": coef,
+        "ai_role_se": se,
+        "ai_role_pvalue": model.pvalues.get("AI ROLE", np.nan),
+        "lower_ci": coef - 1.96 * se,
+        "upper_ci": coef + 1.96 * se,
+        "nobs": model.nobs,
+        "pseudo_r2": model.prsquared,
+        "converged": model.converged,
+        "specification": getattr(model, "firm_category_specification", ""),
+    }
+
+
+def fit_firm_category_logit_model(category_data, firm_category, benefit):
+    """Fit a common comparable firm-category logit specification."""
+    specification = "year_naics3_state_education_experience_salary"
+    model_data = collapse_sparse_fixed_effects(
+        category_data,
+        benefit,
+        require_salary=True,
+    )
+    model = run_logit_model(
+        model_data,
+        dependent=benefit,
+        predictor="AI ROLE",
+        cat_controls=[year, industry, region, education, experience],
+        cont_controls=["LOG_SALARY"],
+        ref_category={
+            education: "No Education Listed",
+            experience: "None Listed",
+        },
+        get_vif=False,
+    )
+    if not isinstance(model, str):
+        model.firm_category_specification = specification
+    return model
+
+
+def run_firm_category_logit_models(data):
+    """
+    Run preferred benefit logit models separately for SMEs, large firms, and S&P 500 firms.
+
+    The coefficient of interest is AI ROLE: the log-odds difference in benefit
+    prevalence for AI roles within each firm category.
+    """
+    print("\n" + "=" * 50)
+    print("FIRM-CATEGORY LOGIT MODELS")
+    print("=" * 50)
+
+    data = add_firm_category(data)
+    firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
+    rows = []
+
+    for firm_category in firm_categories:
+        category_data = data[data["FIRM_CATEGORY"] == firm_category].copy()
+        print(f"\n{firm_category}: {len(category_data):,} postings")
+        for benefit, benefit_label in zip(benefits4, benefits4_labels):
+            print(f"  {benefit}")
+            model = fit_firm_category_logit_model(category_data, firm_category, benefit)
+            rows.append(extract_single_model_row(model, firm_category, benefit, benefit_label))
+
+    results = pd.DataFrame(rows)
+    os.makedirs(FIRM_CATEGORY_LOGIT_DIR, exist_ok=True)
+    output = FIRM_CATEGORY_LOGIT_DIR / "firm_category_ai_role_logit_results.csv"
+    results.to_csv(output, index=False)
+    print(f"Firm-category logit results saved: {output}")
+    return results
+
+
+def plot_firm_category_logit_results(results):
+    """Plot AI-role log-odds coefficients from firm-category logit models."""
+    plot_df = results[results["status"] == "ok"].copy()
+    if plot_df.empty:
+        print("No firm-category logit results to plot.")
+        return
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
+    x_base = np.arange(len(benefits4))
+    offsets = np.linspace(-0.22, 0.22, len(firm_categories))
+
+    for offset, firm_category in zip(offsets, firm_categories):
+        subset = (
+            plot_df[plot_df["firm_category"] == firm_category]
+            .set_index("benefit")
+            .reindex(benefits4)
+        )
+        x = x_base + offset
+        ax.errorbar(
+            x,
+            subset["ai_role_coef"],
+            yerr=[
+                subset["ai_role_coef"] - subset["lower_ci"],
+                subset["upper_ci"] - subset["ai_role_coef"],
+            ],
+            fmt="o",
+            capsize=4,
+            label=firm_category,
+            color=firm_category_colors[firm_category],
+        )
+
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax.set_xticks(x_base)
+    ax.set_xticklabels(benefits4_labels, rotation=45, ha="right")
+    ax.set_ylabel("AI-Role Log-Odds Coefficient (95% CI)")
+    ax.set_xlabel(None)
+    ax.legend(title="Firm Category", fontsize=10, title_fontsize=10)
+    ax.grid(axis="y", alpha=0.2)
+    plt.tight_layout()
+
+    output_dir = RESULTS_DIR / "figures_2026" / "regression"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / "firm_category_ai_role_logit_coefficients.png"
+    plt.savefig(output, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Firm-category logit plot saved: {output}")
 
 def extract_model_results(models_2024):
     """Extract coefficients, standard errors, p-values, and model statistics."""
@@ -1213,6 +1384,10 @@ def main():
         save_cached_models(cache_path, models_2024)
     else:
         print("Using cached model results; pass --refresh-cache to refit all models.")
+        data = load_and_prepare_data()
+        if data is None:
+            print("Error: Could not load data. Please check the data path.")
+            return
     
     # Extract results
     results_df = extract_model_results(models_2024)
@@ -1225,6 +1400,8 @@ def main():
     generate_individual_tables(models_2024[:3])
     generate_wide_table(models_2024[:3])
     generate_panel_summaries(models_2024)
+    firm_category_results = run_firm_category_logit_models(data)
+    plot_firm_category_logit_results(firm_category_results)
     
     print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
@@ -1234,6 +1411,7 @@ def main():
     print("3. Wide table: results/tables_2026/complete_wide_table.html")
     print("4. Panel summaries: results/tables_2026/model_panels_ai_role_long.csv")
     print("5. Panel summaries (wide): results/tables_2026/model_panels_ai_role_coef_wide.csv")
+    print("6. Firm-category logits: results/tables_2026/firm_category_logit/firm_category_ai_role_logit_results.csv")
     print("=" * 80)
 
 if __name__ == "__main__":
