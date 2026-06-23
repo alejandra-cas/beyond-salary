@@ -65,6 +65,12 @@ firm_category_colors = {
     "Large firms": "#2ca02c",
     "S&P 500 firms": "#d62728",
 }
+firm_category_markers = {
+    "SMEs": "^",
+    "Large firms": "s",
+    "S&P 500 firms": "o",
+}
+GENAI_CUTOFF_YEAR = 2022.875
 
 
 def add_firm_category(data):
@@ -140,6 +146,14 @@ def parse_args():
         type=Path,
         default=None,
         help="Optional path for the model-results cache file.",
+    )
+    parser.add_argument(
+        "--yearly-period-fallback",
+        action="store_true",
+        help=(
+            "If any yearly Model 1 coefficient fails, also run two period-pooled "
+            "Model 1 specifications: through 2022 and post-2022."
+        ),
     )
     return parser.parse_args()
 
@@ -478,26 +492,33 @@ def extract_single_model_row(model, firm_category, benefit, benefit_label):
     }
 
 
-def fit_firm_category_logit_model(category_data, firm_category, benefit):
+def fit_firm_category_logit_model(category_data, firm_category, benefit, include_year_fe=True):
     """Fit a common comparable firm-category logit specification."""
-    specification = "year_naics3_state_education_experience_salary"
+    cat_controls = [industry, region, education, experience]
+    specification = "naics3_state_education_experience_salary"
+    if include_year_fe:
+        cat_controls = [year] + cat_controls
+        specification = "year_" + specification
     model_data = collapse_sparse_fixed_effects(
         category_data,
         benefit,
         require_salary=True,
     )
-    model = run_logit_model(
-        model_data,
-        dependent=benefit,
-        predictor="AI ROLE",
-        cat_controls=[year, industry, region, education, experience],
-        cont_controls=["LOG_SALARY"],
-        ref_category={
-            education: "No Education Listed",
-            experience: "None Listed",
-        },
-        get_vif=False,
-    )
+    try:
+        model = run_logit_model(
+            model_data,
+            dependent=benefit,
+            predictor="AI ROLE",
+            cat_controls=cat_controls,
+            cont_controls=["LOG_SALARY"],
+            ref_category={
+                education: "No Education Listed",
+                experience: "None Listed",
+            },
+            get_vif=False,
+        )
+    except Exception as error:
+        return f"error: {error}"
     if not isinstance(model, str):
         model.firm_category_specification = specification
     return model
@@ -560,7 +581,7 @@ def plot_firm_category_logit_results(results):
                 subset["ai_role_coef"] - subset["lower_ci"],
                 subset["upper_ci"] - subset["ai_role_coef"],
             ],
-            fmt="o",
+            fmt=firm_category_markers[firm_category],
             capsize=4,
             label=firm_category,
             color=firm_category_colors[firm_category],
@@ -581,6 +602,451 @@ def plot_firm_category_logit_results(results):
     plt.savefig(output, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"Firm-category logit plot saved: {output}")
+
+
+def extract_firm_category_time_row(model, firm_category, period, benefit, benefit_label, specification):
+    """Extract a firm-category AI-role coefficient for a year or period model."""
+    row = extract_single_model_row(model, firm_category, benefit, benefit_label)
+    row["period"] = period
+    row["specification"] = specification
+    return row
+
+
+def run_firm_category_yearly_logit_models(data):
+    """Run preferred firm-category benefit logits separately by firm category and year."""
+    print("\n" + "=" * 50)
+    print("YEARLY FIRM-CATEGORY LOGIT MODELS")
+    print("=" * 50)
+
+    data = add_firm_category(data)
+    firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
+    rows = []
+    specification = "yearly_naics3_state_education_experience_salary"
+
+    for firm_category in firm_categories:
+        category_data = data[data["FIRM_CATEGORY"] == firm_category].copy()
+        print(f"\n{firm_category}: {len(category_data):,} postings")
+        for model_year in sorted(category_data[year].dropna().unique()):
+            year_data = category_data[category_data[year] == model_year].copy()
+            print(f"  {int(model_year)}: {len(year_data):,} postings")
+            for benefit, benefit_label in zip(benefits4, benefits4_labels):
+                print(f"    {benefit}")
+                model = fit_firm_category_logit_model(
+                    year_data,
+                    firm_category,
+                    benefit,
+                    include_year_fe=False,
+                )
+                rows.append(
+                    extract_firm_category_time_row(
+                        model,
+                        firm_category,
+                        int(model_year),
+                        benefit,
+                        benefit_label,
+                        specification,
+                    )
+                )
+
+    results = pd.DataFrame(rows)
+    os.makedirs(FIRM_CATEGORY_LOGIT_DIR, exist_ok=True)
+    output = FIRM_CATEGORY_LOGIT_DIR / "firm_category_yearly_ai_role_logit_results.csv"
+    results.to_csv(output, index=False)
+    print(f"Yearly firm-category logit results saved: {output}")
+    return results
+
+
+def firm_category_yearly_needs_period_fallback(results):
+    """Return True when any expected firm-category yearly coefficient is missing."""
+    expected_rows = (
+        results["firm_category"].nunique()
+        * results["period"].nunique()
+        * len(benefits4)
+    )
+    ok_rows = results[
+        (results["status"] == "ok")
+        & results["ai_role_coef"].notna()
+        & results["ai_role_se"].notna()
+    ]
+    return len(ok_rows) < expected_rows
+
+
+def run_firm_category_period_logit_models(data):
+    """Run firm-category benefit logits through 2022 and post-2022."""
+    print("\n" + "=" * 50)
+    print("PERIOD FIRM-CATEGORY LOGIT MODELS")
+    print("=" * 50)
+
+    data = add_firm_category(data)
+    firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
+    periods = [
+        ("Through 2022", lambda df: df[year] <= 2022),
+        ("Post-2022", lambda df: df[year] > 2022),
+    ]
+    rows = []
+    specification = "period_year_naics3_state_education_experience_salary"
+
+    for firm_category in firm_categories:
+        category_data = data[data["FIRM_CATEGORY"] == firm_category].copy()
+        print(f"\n{firm_category}: {len(category_data):,} postings")
+        for period_label, period_filter in periods:
+            period_data = category_data[period_filter(category_data)].copy()
+            print(f"  {period_label}: {len(period_data):,} postings")
+            for benefit, benefit_label in zip(benefits4, benefits4_labels):
+                print(f"    {benefit}")
+                model = fit_firm_category_logit_model(
+                    period_data,
+                    firm_category,
+                    benefit,
+                    include_year_fe=True,
+                )
+                rows.append(
+                    extract_firm_category_time_row(
+                        model,
+                        firm_category,
+                        period_label,
+                        benefit,
+                        benefit_label,
+                        specification,
+                    )
+                )
+
+    results = pd.DataFrame(rows)
+    os.makedirs(FIRM_CATEGORY_LOGIT_DIR, exist_ok=True)
+    output = FIRM_CATEGORY_LOGIT_DIR / "firm_category_period_ai_role_logit_results.csv"
+    results.to_csv(output, index=False)
+    print(f"Period firm-category logit results saved: {output}")
+    return results
+
+
+def plot_firm_category_time_logit_results(results, output_name, title, period_order=None):
+    """Plot firm-category coefficients over time with shaded confidence bands."""
+    plot_df = results[results["status"] == "ok"].copy()
+    if plot_df.empty:
+        print(f"No firm-category time results to plot for {output_name}.")
+        return
+
+    if period_order is None:
+        period_order = sorted(plot_df["period"].unique())
+    x_map = {period: idx for idx, period in enumerate(period_order)}
+
+    fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=True)
+    axes = axes.flatten()
+    firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
+
+    for ax, benefit in zip(axes, benefits4):
+        subset = plot_df[plot_df["benefit"] == benefit].copy()
+        for firm_category in firm_categories:
+            line = (
+                subset[subset["firm_category"] == firm_category]
+                .set_index("period")
+                .reindex(period_order)
+                .dropna(subset=["ai_role_coef"])
+                .reset_index()
+            )
+            if line.empty:
+                continue
+            x = line["period"].map(x_map).astype(float)
+            color = firm_category_colors[firm_category]
+            ax.fill_between(
+                x,
+                line["lower_ci"].astype(float),
+                line["upper_ci"].astype(float),
+                color=color,
+                alpha=0.12,
+                linewidth=0,
+            )
+            ax.plot(
+                x,
+                line["ai_role_coef"].astype(float),
+                marker=firm_category_markers[firm_category],
+                markersize=4,
+                linewidth=1.6,
+                color=color,
+                label=firm_category,
+            )
+
+        ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        if all(isinstance(period, (int, np.integer)) for period in period_order):
+            cutoff_x = np.interp(GENAI_CUTOFF_YEAR, period_order, list(range(len(period_order))))
+            ax.axvline(cutoff_x, color="black", linewidth=1.0, linestyle=":", alpha=0.75)
+        ax.set_title(benefit_label_for_plot(benefit), fontsize=12)
+        ax.set_ylabel("AI-Role Log-Odds Coef.")
+        ax.grid(alpha=0.2)
+
+    axes[-1].legend(title="Firm Category", fontsize=9, title_fontsize=10, loc="upper left", bbox_to_anchor=(1.02, 1))
+    for ax in axes:
+        ax.set_xticks(range(len(period_order)))
+        ax.set_xticklabels([str(period) for period in period_order], rotation=45, ha="right")
+
+    fig.suptitle(title, fontsize=14)
+    plt.tight_layout()
+    output_dir = RESULTS_DIR / "figures_2026" / "regression"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / output_name
+    plt.savefig(output, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Firm-category time plot saved: {output}")
+
+
+def extract_ai_role_logit_row(model, period, benefit, benefit_label, specification):
+    """Extract one AI-role coefficient row from a fitted logit model."""
+    row = {
+        "period": period,
+        "benefit": benefit,
+        "benefit_label": benefit_label,
+        "specification": specification,
+        "status": "ok",
+        "ai_role_coef": np.nan,
+        "ai_role_se": np.nan,
+        "ai_role_pvalue": np.nan,
+        "lower_ci": np.nan,
+        "upper_ci": np.nan,
+        "nobs": np.nan,
+        "pseudo_r2": np.nan,
+        "converged": False,
+    }
+    if isinstance(model, str):
+        row["status"] = "error"
+        row["detail"] = model
+        return row
+
+    coef = model.params.get("AI ROLE", np.nan)
+    se = model.bse.get("AI ROLE", np.nan)
+    row.update({
+        "ai_role_coef": coef,
+        "ai_role_se": se,
+        "ai_role_pvalue": model.pvalues.get("AI ROLE", np.nan),
+        "lower_ci": coef - 1.96 * se,
+        "upper_ci": coef + 1.96 * se,
+        "nobs": model.nobs,
+        "pseudo_r2": model.prsquared,
+        "converged": model.converged,
+    })
+    return row
+
+
+def run_yearly_model1_ai_role_coefficients(data):
+    """
+    Run the first H1 regression separately by year.
+
+    The pooled Model 1 is benefit ~ AI ROLE + year FE + NAICS3 FE. Within each
+    calendar year, the comparable yearly model drops the year FE and keeps NAICS3 FE.
+    """
+    print("\n" + "=" * 50)
+    print("YEARLY MODEL 1 AI-ROLE COEFFICIENTS")
+    print("=" * 50)
+    rows = []
+    specification = "yearly_model1_ai_role_naics3_fe"
+
+    for model_year in sorted(data[year].dropna().unique()):
+        year_data = data[data[year] == model_year].copy()
+        print(f"\n{int(model_year)}: {len(year_data):,} postings")
+        for benefit, benefit_label in zip(benefits4, benefits4_labels):
+            print(f"  {benefit}")
+            model_data = collapse_sparse_fixed_effects(year_data, benefit)
+            model = run_logit_model(
+                model_data,
+                dependent=benefit,
+                predictor="AI ROLE",
+                cat_controls=[industry],
+                get_vif=False,
+            )
+            rows.append(
+                extract_ai_role_logit_row(
+                    model,
+                    int(model_year),
+                    benefit,
+                    benefit_label,
+                    specification,
+                )
+            )
+
+    results = pd.DataFrame(rows)
+    output = TABLES_DIR / "yearly_model1_ai_role_coefficients.csv"
+    os.makedirs(TABLES_DIR, exist_ok=True)
+    results.to_csv(output, index=False)
+    print(f"Yearly Model 1 coefficients saved: {output}")
+    return results
+
+
+def plot_yearly_model1_ai_role_coefficients(results):
+    """Plot yearly Model 1 AI-role log-odds coefficients by benefit."""
+    plot_df = results[results["status"] == "ok"].copy()
+    if plot_df.empty:
+        print("No yearly Model 1 results to plot.")
+        return
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+    for i, benefit in enumerate(benefits4):
+        line = plot_df[plot_df["benefit"] == benefit].sort_values("period")
+        if line.empty:
+            continue
+        color = colors[i % len(colors)]
+        ax.fill_between(
+            line["period"],
+            line["lower_ci"],
+            line["upper_ci"],
+            color=color,
+            alpha=0.12,
+            linewidth=0,
+        )
+        ax.plot(
+            line["period"],
+            line["ai_role_coef"],
+            marker="o",
+            markersize=4,
+            linewidth=1.7,
+            color=color,
+            label=benefit_label_for_plot(benefit),
+        )
+
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax.axvline(GENAI_CUTOFF_YEAR, color="black", linewidth=1.0, linestyle=":", alpha=0.75)
+    ax.text(
+        GENAI_CUTOFF_YEAR + 0.03,
+        ax.get_ylim()[1],
+        "Nov. 2022",
+        ha="left",
+        va="top",
+        fontsize=9,
+        color="black",
+    )
+    ax.set_xlabel("Year")
+    ax.set_ylabel("AI-Role Log-Odds Coefficient")
+    ax.set_title("Yearly Model 1 AI-Role Coefficients")
+    ax.set_xticks(sorted(plot_df["period"].unique()))
+    ax.legend(title=None, fontsize=9, ncols=2)
+    ax.grid(alpha=0.2)
+
+    plt.tight_layout()
+    output_dir = RESULTS_DIR / "figures_2026" / "regression"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / "yearly_model1_ai_role_coefficients.png"
+    plt.savefig(output, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Yearly Model 1 coefficient plot saved: {output}")
+
+
+def yearly_model1_needs_period_fallback(results):
+    """Return True when a yearly Model 1 coefficient is missing or failed."""
+    expected_rows = len(benefits4) * results["period"].nunique()
+    ok_rows = results[
+        (results["status"] == "ok")
+        & results["ai_role_coef"].notna()
+        & results["ai_role_se"].notna()
+    ]
+    return len(ok_rows) < expected_rows
+
+
+def run_period_model1_ai_role_coefficients(data):
+    """
+    Run Model 1 in two pooled periods when yearly models are too sparse.
+
+    Each model uses benefit ~ AI ROLE + year FE + NAICS3 FE, matching the pooled
+    baseline structure while splitting the sample at the end of 2022.
+    """
+    print("\n" + "=" * 50)
+    print("PERIOD MODEL 1 AI-ROLE COEFFICIENTS")
+    print("=" * 50)
+    periods = [
+        ("Through 2022", data[data[year] <= 2022].copy()),
+        ("Post-2022", data[data[year] > 2022].copy()),
+    ]
+    rows = []
+    specification = "period_model1_ai_role_year_naics3_fe"
+
+    for period_label, period_data in periods:
+        print(f"\n{period_label}: {len(period_data):,} postings")
+        for benefit, benefit_label in zip(benefits4, benefits4_labels):
+            print(f"  {benefit}")
+            model_data = collapse_sparse_fixed_effects(period_data, benefit)
+            model = run_logit_model(
+                model_data,
+                dependent=benefit,
+                predictor="AI ROLE",
+                cat_controls=[year, industry],
+                get_vif=False,
+            )
+            rows.append(
+                extract_ai_role_logit_row(
+                    model,
+                    period_label,
+                    benefit,
+                    benefit_label,
+                    specification,
+                )
+            )
+
+    results = pd.DataFrame(rows)
+    output = TABLES_DIR / "period_model1_ai_role_coefficients.csv"
+    os.makedirs(TABLES_DIR, exist_ok=True)
+    results.to_csv(output, index=False)
+    print(f"Period Model 1 coefficients saved: {output}")
+    return results
+
+
+def plot_period_model1_ai_role_coefficients(results):
+    """Plot two-period Model 1 AI-role coefficients by benefit."""
+    plot_df = results[results["status"] == "ok"].copy()
+    if plot_df.empty:
+        print("No period Model 1 results to plot.")
+        return
+
+    period_order = ["Through 2022", "Post-2022"]
+    x_map = {period: idx for idx, period in enumerate(period_order)}
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+
+    for i, benefit in enumerate(benefits4):
+        line = (
+            plot_df[plot_df["benefit"] == benefit]
+            .set_index("period")
+            .reindex(period_order)
+            .dropna(subset=["ai_role_coef"])
+            .reset_index()
+        )
+        if line.empty:
+            continue
+        x = line["period"].map(x_map).astype(float)
+        color = colors[i % len(colors)]
+        ax.fill_between(
+            x,
+            line["lower_ci"].astype(float),
+            line["upper_ci"].astype(float),
+            color=color,
+            alpha=0.12,
+            linewidth=0,
+        )
+        ax.plot(
+            x,
+            line["ai_role_coef"].astype(float),
+            marker="o",
+            linewidth=1.6,
+            markersize=5,
+            color=color,
+            label=benefit_label_for_plot(benefit),
+        )
+
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax.set_xticks(range(len(period_order)))
+    ax.set_xticklabels(period_order)
+    ax.set_ylabel("AI-Role Log-Odds Coefficient (95% CI)")
+    ax.set_title("Period Model 1 AI-Role Coefficients")
+    ax.legend(title=None, fontsize=9, ncols=2)
+    ax.grid(axis="y", alpha=0.2)
+
+    plt.tight_layout()
+    output_dir = RESULTS_DIR / "figures_2026" / "regression"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / "period_model1_ai_role_coefficients.png"
+    plt.savefig(output, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Period Model 1 coefficient plot saved: {output}")
+
+
+def benefit_label_for_plot(benefit):
+    """Return the display label for a benefit key."""
+    return benefits4_labels[benefits4.index(benefit)]
 
 def extract_model_results(models_2024):
     """Extract coefficients, standard errors, p-values, and model statistics."""
@@ -1400,6 +1866,15 @@ def main():
     generate_individual_tables(models_2024[:3])
     generate_wide_table(models_2024[:3])
     generate_panel_summaries(models_2024)
+    yearly_model1_results = run_yearly_model1_ai_role_coefficients(data)
+    plot_yearly_model1_ai_role_coefficients(yearly_model1_results)
+    period_model1_results = None
+    if args.yearly_period_fallback:
+        if yearly_model1_needs_period_fallback(yearly_model1_results):
+            period_model1_results = run_period_model1_ai_role_coefficients(data)
+            plot_period_model1_ai_role_coefficients(period_model1_results)
+        else:
+            print("Yearly Model 1 coefficients are complete; period fallback not needed.")
     firm_category_results = run_firm_category_logit_models(data)
     plot_firm_category_logit_results(firm_category_results)
     
@@ -1411,7 +1886,14 @@ def main():
     print("3. Wide table: results/tables_2026/complete_wide_table.html")
     print("4. Panel summaries: results/tables_2026/model_panels_ai_role_long.csv")
     print("5. Panel summaries (wide): results/tables_2026/model_panels_ai_role_coef_wide.csv")
-    print("6. Firm-category logits: results/tables_2026/firm_category_logit/firm_category_ai_role_logit_results.csv")
+    print("6. Yearly Model 1 coefficients: results/tables_2026/yearly_model1_ai_role_coefficients.csv")
+    print("7. Yearly Model 1 plot: results/figures_2026/regression/yearly_model1_ai_role_coefficients.png")
+    if period_model1_results is not None:
+        print("8. Period Model 1 coefficients: results/tables_2026/period_model1_ai_role_coefficients.csv")
+        print("9. Period Model 1 plot: results/figures_2026/regression/period_model1_ai_role_coefficients.png")
+        print("10. Firm-category logits: results/tables_2026/firm_category_logit/firm_category_ai_role_logit_results.csv")
+    else:
+        print("8. Firm-category logits: results/tables_2026/firm_category_logit/firm_category_ai_role_logit_results.csv")
     print("=" * 80)
 
 if __name__ == "__main__":
