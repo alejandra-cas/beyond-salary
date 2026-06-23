@@ -7,7 +7,8 @@ For each cutoff, this script:
   2. draws a random firm sample from each predicted class;
   3. optionally asks an OpenAI model whether each sampled firm is
      truly an SME or a large firm;
-  4. reports false-positive, false-negative, and sensitivity scores.
+  4. reports false-positive, false-negative, sensitivity scores, and
+     95% confidence intervals for recall.
 
 Examples
 --------
@@ -539,6 +540,12 @@ def score_cutoffs(labeled_samples: pd.DataFrame) -> pd.DataFrame:
         fn = int((~sub["proxy_sme"] & sub["truth_sme"]).sum())
         tn = int((~sub["proxy_sme"] & sub["truth_large"]).sum())
         n = tp + fp + fn + tn
+        sme_recall = safe_divide(tp, tp + fn)
+        large_recall = safe_divide(tn, tn + fp)
+        sme_recall_ci_low, sme_recall_ci_high = binomial_wilson_interval(tp, tp + fn)
+        large_recall_ci_low, large_recall_ci_high = binomial_wilson_interval(
+            tn, tn + fp
+        )
         rows.append(
             {
                 "cutoff": cutoff,
@@ -549,18 +556,38 @@ def score_cutoffs(labeled_samples: pd.DataFrame) -> pd.DataFrame:
                 "false_negative_count": fn,
                 "false_positive_rate": safe_divide(fp, fp + tn),
                 "false_negative_rate": safe_divide(fn, fn + tp),
-                "sme_sensitivity": safe_divide(tp, tp + fn),
+                "sme_sensitivity": sme_recall,
+                "sme_recall_95ci_lower": sme_recall_ci_low,
+                "sme_recall_95ci_upper": sme_recall_ci_high,
                 "sme_precision": safe_divide(tp, tp + fp),
-                "large_sensitivity": safe_divide(tn, tn + fp),
+                "large_sensitivity": large_recall,
+                "large_recall_95ci_lower": large_recall_ci_low,
+                "large_recall_95ci_upper": large_recall_ci_high,
                 "accuracy": safe_divide(tp + tn, n),
                 # Balanced accuracy gives equal weight to SME and large-firm
                 # recall, useful when the sampled classes are not perfectly even.
-                "balanced_accuracy": np.nanmean(
-                    [safe_divide(tp, tp + fn), safe_divide(tn, tn + fp)]
-                ),
+                "balanced_accuracy": np.nanmean([sme_recall, large_recall]),
             }
         )
     return pd.DataFrame(rows).sort_values("cutoff")
+
+
+def binomial_wilson_interval(successes: int, trials: int) -> tuple[float, float]:
+    """Return a 95% Wilson score confidence interval for a binomial rate."""
+    if trials == 0:
+        return np.nan, np.nan
+
+    z = 1.959963984540054
+    proportion = successes / trials
+    z2 = z**2
+    denominator = 1 + z2 / trials
+    center = (proportion + z2 / (2 * trials)) / denominator
+    margin = (
+        z
+        * np.sqrt((proportion * (1 - proportion) + z2 / (4 * trials)) / trials)
+        / denominator
+    )
+    return max(0.0, center - margin), min(1.0, center + margin)
 
 
 def safe_divide(num: int, den: int) -> float:
@@ -578,20 +605,44 @@ def plot_cutoff_metrics(metrics: pd.DataFrame, output_path: Path) -> None:
     # Plot both class-specific recalls so the chosen cutoff is not optimized for
     # SMEs at the expense of missing large firms, or vice versa.
     fig, ax = plt.subplots(figsize=(10, 5.8))
-    ax.plot(
+    sme_line = ax.plot(
         metrics["cutoff"],
         metrics["sme_sensitivity"],
         marker="o",
         linewidth=2,
         label="SME recall",
-    )
-    ax.plot(
+    )[0]
+    large_line = ax.plot(
         metrics["cutoff"],
         metrics["large_sensitivity"],
         marker="o",
         linewidth=2,
         label="Large firm recall",
-    )
+    )[0]
+    if {
+        "sme_recall_95ci_lower",
+        "sme_recall_95ci_upper",
+        "large_recall_95ci_lower",
+        "large_recall_95ci_upper",
+    }.issubset(metrics.columns):
+        ax.fill_between(
+            metrics["cutoff"].to_numpy(),
+            metrics["sme_recall_95ci_lower"].to_numpy(),
+            metrics["sme_recall_95ci_upper"].to_numpy(),
+            color=sme_line.get_color(),
+            alpha=0.16,
+            linewidth=0,
+            label="SME recall 95% CI",
+        )
+        ax.fill_between(
+            metrics["cutoff"].to_numpy(),
+            metrics["large_recall_95ci_lower"].to_numpy(),
+            metrics["large_recall_95ci_upper"].to_numpy(),
+            color=large_line.get_color(),
+            alpha=0.16,
+            linewidth=0,
+            label="Large firm recall 95% CI",
+        )
     ax.plot(
         metrics["cutoff"],
         metrics["accuracy"],
@@ -616,7 +667,7 @@ def plot_cutoff_metrics(metrics: pd.DataFrame, output_path: Path) -> None:
     ax.set_ylabel("Score")
     ax.set_ylim(0, 1.05)
     ax.grid(True, alpha=0.3)
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.28), ncol=4, frameon=False)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=3, frameon=False)
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
