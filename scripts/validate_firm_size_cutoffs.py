@@ -22,17 +22,18 @@ Run LLM labels and metrics:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import os
 import sys
-import time
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
-from openai import OpenAI, OpenAIError
+from openai import AsyncOpenAI, OpenAIError
+from tqdm.auto import tqdm
 
 # Allow the script to reuse the repo's shared config helpers when run directly
 # from the command line, e.g. `uv run python scripts/...`.
@@ -235,10 +236,12 @@ def load_label_cache(path: Path) -> dict[str, dict[str, Any]]:
     """Load previously completed LLM labels keyed by COMPANY."""
     if not path.exists():
         return {}
-    cache_df = pd.read_csv(path)
+    cache_df = pd.read_csv(path, keep_default_na=False)
     cache = {}
     for _, row in cache_df.iterrows():
-        cache[str(row["COMPANY"])] = row.dropna().to_dict()
+        item = row.dropna().to_dict()
+        item["COMPANY"] = str(item["COMPANY"])
+        cache[item["COMPANY"]] = item
     return cache
 
 
@@ -247,7 +250,33 @@ def save_label_cache(cache: dict[str, dict[str, Any]], path: Path) -> None:
     if not cache:
         return
     rows = list(cache.values())
-    pd.DataFrame(rows).sort_values("COMPANY").to_csv(path, index=False)
+    frame = pd.DataFrame(rows)
+    frame["COMPANY"] = frame["COMPANY"].astype(str)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    frame.sort_values("COMPANY").to_csv(tmp_path, index=False)
+    tmp_path.replace(path)
+
+
+def build_label_cache_entry(
+    company_key: str,
+    row: pd.Series,
+    model: str,
+    label: str,
+    confidence: Any = "",
+    error: str = "",
+) -> dict[str, Any]:
+    """Build one cached LLM-label row, including N/A rows for failures."""
+    entry = {
+        "COMPANY": company_key,
+        "COMPANY_NAME": row.get("COMPANY_NAME", ""),
+        "llm_label": label,
+        "llm_confidence": confidence,
+        "llm_model": model,
+        "labeled_at": pd.Timestamp.utcnow().isoformat(),
+    }
+    if error:
+        entry["llm_error"] = error
+    return entry
 
 
 def classify_samples_with_llm(
@@ -257,42 +286,125 @@ def classify_samples_with_llm(
     base_url: str,
     sleep_seconds: float,
     max_retries: int,
+    concurrency: int,
 ) -> pd.DataFrame:
     """Add LLM firm labels to sampled rows, using a COMPANY-level cache."""
+    return asyncio.run(
+        classify_samples_with_llm_async(
+            samples,
+            cache_path,
+            model,
+            base_url,
+            sleep_seconds,
+            max_retries,
+            concurrency,
+        )
+    )
+
+
+async def classify_samples_with_llm_async(
+    samples: pd.DataFrame,
+    cache_path: Path,
+    model: str,
+    base_url: str,
+    sleep_seconds: float,
+    max_retries: int,
+    concurrency: int,
+) -> pd.DataFrame:
+    """Add LLM firm labels to sampled rows concurrently, using a cache."""
     api_key = os.environ.get("OPENAI_API_KEY")
     # print last 4 characters of the key for debugging, but do not print the whole key.
     # print(f"Using OpenAI API key ending with: {api_key[-4:] if api_key else 'None'}")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is required when --llm is set.")
+    if concurrency < 1:
+        raise ValueError("--llm-concurrency must be at least 1.")
 
     cache = load_label_cache(cache_path)
     # Label each unique firm once, then merge labels back to every cutoff sample
     # row that used that firm.
     unique_firms = samples.drop_duplicates("COMPANY").copy()
+    pending_rows: list[tuple[str, pd.Series]] = []
 
-    for i, row in unique_firms.iterrows():
+    for _, row in unique_firms.iterrows():
         company_key = str(row["COMPANY"])
         # The same firm can be sampled at many cutoffs; cache by COMPANY so
         # reruns and overlapping thresholds do not spend tokens twice.
-        if company_key in cache:
+        if company_key in cache and cache[company_key].get("llm_label"):
             continue
+        pending_rows.append((company_key, row))
 
-        print(
-            f"Classifying {len(cache) + 1:,}/{len(unique_firms):,}: "
-            f"{row.get('COMPANY_NAME', '')} ({company_key})"
+    workers_count = min(concurrency, len(pending_rows)) if pending_rows else 0
+    if pending_rows:
+        client_kwargs = {"api_key": api_key}
+        if base_url.rstrip("/") != "https://api.openai.com/v1":
+            client_kwargs["base_url"] = base_url.rstrip("/")
+        client = AsyncOpenAI(**client_kwargs)
+
+        queue: asyncio.Queue[tuple[str, pd.Series] | None] = asyncio.Queue()
+        for item in pending_rows:
+            queue.put_nowait(item)
+        for _ in range(workers_count):
+            queue.put_nowait(None)
+
+        cache_lock = asyncio.Lock()
+        failed_count = 0
+        progress = tqdm(
+            total=len(pending_rows),
+            desc=f"Classifying firms ({workers_count} workers)",
+            unit="firm",
         )
-        result = classify_one_firm(row, model, base_url, api_key, max_retries)
-        cache[company_key] = {
-            "COMPANY": company_key,
-            "COMPANY_NAME": row.get("COMPANY_NAME", ""),
-            "llm_label": result["label"],
-            "llm_confidence": result.get("confidence"),
-            "llm_model": model,
-            "labeled_at": pd.Timestamp.utcnow().isoformat(),
-        }
-        save_label_cache(cache, cache_path)
-        if sleep_seconds > 0:
-            time.sleep(sleep_seconds)
+
+        async def worker(worker_id: int) -> None:
+            nonlocal failed_count
+            while True:
+                item = await queue.get()
+                try:
+                    if item is None:
+                        return
+                    company_key, row = item
+                    result = await classify_one_firm_async(
+                        row, model, client, max_retries
+                    )
+                    async with cache_lock:
+                        cache[company_key] = build_label_cache_entry(
+                            company_key,
+                            row,
+                            model,
+                            result["label"],
+                            result.get("confidence", ""),
+                        )
+                        save_label_cache(cache, cache_path)
+                    if sleep_seconds > 0:
+                        await asyncio.sleep(sleep_seconds)
+                except Exception as exc:
+                    if item is not None:
+                        company_key, row = item
+                        failed_count += 1
+                        error = f"{type(exc).__name__}: {exc}"
+                        async with cache_lock:
+                            cache[company_key] = build_label_cache_entry(
+                                company_key,
+                                row,
+                                model,
+                                "N/A",
+                                error=error[:500],
+                            )
+                            save_label_cache(cache, cache_path)
+                        progress.set_postfix(failed=failed_count)
+                finally:
+                    if item is not None:
+                        progress.update(1)
+                    queue.task_done()
+
+        try:
+            tasks = [asyncio.create_task(worker(i + 1)) for i in range(workers_count)]
+            await queue.join()
+            for task in tasks:
+                await task
+        finally:
+            progress.close()
+            await client.close()
 
     labels = pd.DataFrame(list(cache.values()))
     labels["COMPANY"] = labels["COMPANY"].astype(str)
@@ -303,11 +415,10 @@ def classify_samples_with_llm(
     return out.merge(labels, on="COMPANY", how="left", suffixes=("", "_cache"))
 
 
-def classify_one_firm(
+async def classify_one_firm_async(
     row: pd.Series,
     model: str,
-    base_url: str,
-    api_key: str,
+    client: AsyncOpenAI,
     max_retries: int,
 ) -> dict[str, Any]:
     """Call the OpenAI Responses API for one firm."""
@@ -366,18 +477,10 @@ def classify_one_firm(
         },
     }
 
-    if base_url.rstrip("/") == "https://api.openai.com/v1":
-        # Default OpenAI path: read OPENAI_API_KEY from the environment loaded
-        # above by dotenv.
-        client = OpenAI()
-    else:
-        # Optional escape hatch for OpenAI-compatible gateways or proxies.
-        client = OpenAI(base_url=base_url.rstrip("/"))
-
     last_error = None
     for attempt in range(max_retries + 1):
         try:
-            response = client.responses.create(
+            response = await client.responses.create(
                 model=model,
                 input=[
                     {"role": "developer", "content": instructions},
@@ -395,7 +498,7 @@ def classify_one_firm(
             # Retry transient API/network/JSON issues with exponential backoff.
             last_error = exc
             if attempt < max_retries:
-                time.sleep(2**attempt)
+                await asyncio.sleep(2**attempt)
 
     raise RuntimeError(f"LLM classification failed for {company_name}: {last_error}")
 
@@ -564,6 +667,12 @@ def main() -> None:
     )
     parser.add_argument("--sleep-seconds", type=float, default=0.1)
     parser.add_argument("--max-retries", type=int, default=2)
+    parser.add_argument(
+        "--llm-concurrency",
+        type=int,
+        default=10,
+        help="Number of concurrent OpenAI classification workers. Default: 10.",
+    )
     args = parser.parse_args()
 
     # Define all output paths once so the filenames stay consistent across dry
@@ -602,6 +711,7 @@ def main() -> None:
         args.base_url,
         args.sleep_seconds,
         args.max_retries,
+        args.llm_concurrency,
     )
     labeled.to_csv(labeled_path, index=False)
     print(f"Saved labeled samples: {labeled_path}")
