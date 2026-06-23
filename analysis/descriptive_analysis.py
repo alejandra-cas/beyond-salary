@@ -94,6 +94,13 @@ FIRM_CATEGORY_COLORS = {
     "Large firms": "#2ca02c",
     "S&P 500 firms": "#d62728",
 }
+FIRM_CATEGORY_MARKERS = {
+    "SMEs": "^",
+    "Large firms": "s",
+    "S&P 500 firms": "o",
+}
+GENAI_CUTOFF = pd.Period("2022Q4", freq="Q")
+GENAI_CUTOFF_YEAR = 2022.875
 
 
 def format_benefit_label(benefit_key, label):
@@ -106,6 +113,47 @@ def format_benefit_label(benefit_key, label):
 def benefit_slug(benefit_key):
     """Filename-safe benefit key."""
     return benefit_key.lower().replace(" ", "_")
+
+
+def add_genai_quarter_line(ax, period_index, label="Nov. 2022"):
+    """Mark the public GenAI inflection point on quarter-indexed plots."""
+    if GENAI_CUTOFF not in period_index:
+        return None
+    cutoff_x = list(period_index).index(GENAI_CUTOFF) + 2 / 3
+    return ax.axvline(
+        cutoff_x,
+        color="black",
+        linewidth=1.0,
+        linestyle=":",
+        alpha=0.75,
+        label=label,
+    )
+
+
+def add_genai_year_line(ax, label="Nov. 2022"):
+    """Mark the public GenAI inflection point on calendar-year plots."""
+    return ax.axvline(
+        GENAI_CUTOFF_YEAR,
+        color="black",
+        linewidth=1.0,
+        linestyle=":",
+        alpha=0.75,
+        label=label,
+    )
+
+
+def set_tight_symmetric_ylim(ax, values, lower_values=None, upper_values=None, pad=0.08, floor=0.02):
+    """Use a tighter symmetric y-axis around zero for coefficient plots."""
+    pieces = [pd.Series(values).dropna()]
+    if lower_values is not None:
+        pieces.append(pd.Series(lower_values).dropna())
+    if upper_values is not None:
+        pieces.append(pd.Series(upper_values).dropna())
+    combined = pd.concat(pieces, ignore_index=True)
+    if combined.empty:
+        return
+    limit = max(float(combined.abs().max()) * (1 + pad), floor)
+    ax.set_ylim(-limit, limit)
 
 
 def load_data():
@@ -214,6 +262,90 @@ def estimate_quarterly_ai_wage_betas(usdf, min_ai_wage_postings=10):
     return pd.DataFrame(results).sort_values("QUARTER")
 
 
+def estimate_period_ai_wage_betas(usdf, min_ai_wage_postings=10):
+    """Estimate adjusted AI wage premiums before and after the GenAI inflection."""
+    controls = [
+        "MIN_EDULEVELS_NAME",
+        "EXPERIENCE_BUCKET",
+        "NAICS_2022_3_DIGIT",
+        "STATE_NAME",
+        "YEAR",
+    ]
+    required = ["YEAR", "LOG_SALARY", "AI ROLE"] + controls
+    wage_df = usdf.replace([np.inf, -np.inf], np.nan).dropna(subset=required).copy()
+    wage_df["GENAI_PERIOD"] = np.where(wage_df["YEAR"] <= 2022, "Before GenAI", "After GenAI")
+
+    rows = []
+    for period, group in wage_df.groupby("GENAI_PERIOD", sort=False):
+        ai_wage_postings = int(group["AI ROLE"].sum())
+        row = {
+            "period": period,
+            "wage_postings": len(group),
+            "ai_wage_postings": ai_wage_postings,
+            "ai_role_beta": np.nan,
+            "ai_role_se": np.nan,
+            "lower_ci": np.nan,
+            "upper_ci": np.nan,
+            "status": "suppressed_sparse_ai_wage_postings",
+        }
+        if ai_wage_postings < min_ai_wage_postings:
+            rows.append(row)
+            continue
+
+        X = group[["AI ROLE"]].astype(float)
+        for control in controls:
+            dummies = pd.get_dummies(group[control], prefix=control, drop_first=True, dtype=float)
+            X = pd.concat([X, dummies], axis=1)
+        X = sm.add_constant(X, has_constant="add")
+
+        try:
+            model = sm.OLS(group["LOG_SALARY"].astype(float), X.astype(float)).fit(cov_type="HC1")
+            beta = model.params["AI ROLE"]
+            se = model.bse["AI ROLE"]
+            row.update({
+                "ai_role_beta": beta,
+                "ai_role_se": se,
+                "lower_ci": beta - 1.96 * se,
+                "upper_ci": beta + 1.96 * se,
+                "status": "ok",
+            })
+        except Exception as error:
+            row["status"] = f"error: {error}"
+        rows.append(row)
+
+    result = pd.DataFrame(rows)
+    period_order = ["Before GenAI", "After GenAI"]
+    result["period"] = pd.Categorical(result["period"], period_order, ordered=True)
+    return result.sort_values("period")
+
+
+def add_genai_period_inset(ax, period_betas):
+    """Add a compact before/after GenAI wage premium bar chart inside a wage plot."""
+    ok = period_betas[period_betas["status"] == "ok"].copy()
+    if ok.empty:
+        return
+    inset = ax.inset_axes([0.58, 0.10, 0.38, 0.34])
+    x = np.arange(len(ok))
+    inset.bar(
+        x,
+        ok["ai_role_beta"],
+        yerr=[
+            ok["ai_role_beta"] - ok["lower_ci"],
+            ok["upper_ci"] - ok["ai_role_beta"],
+        ],
+        color=["#7f7f7f", "#0072B2"][: len(ok)],
+        alpha=0.85,
+        capsize=3,
+        width=0.58,
+    )
+    inset.axhline(0, color="gray", linewidth=0.7, linestyle="--")
+    inset.set_xticks(x)
+    inset.set_xticklabels(["Before", "After"][: len(ok)], fontsize=8)
+    inset.set_title("Before/After GenAI", fontsize=9)
+    inset.tick_params(axis="y", labelsize=8)
+    inset.grid(axis="y", alpha=0.18)
+
+
 def generate_ai_roles_over_time_plot(usdf):
     """
     Generate Figure 1: quarterly AI demand and adjusted AI log-wage coefficients.
@@ -257,6 +389,8 @@ def generate_ai_roles_over_time_plot(usdf):
         tables_dir / "quarterly_ai_wage_betas.csv",
         index=False,
     )
+    period_betas = estimate_period_ai_wage_betas(usdf)
+    period_betas.to_csv(tables_dir / "genai_period_ai_wage_betas.csv", index=False)
 
     # Create plot
     fig, (demand_ax, wage_ax) = plt.subplots(
@@ -290,26 +424,44 @@ def generate_ai_roles_over_time_plot(usdf):
     demand_ax.set_xlabel(None)
     demand_ax.set_ylabel("% AI Roles", fontsize=15)
     demand_ax.set_title("Demand for AI Skills", fontsize=15)
+    add_genai_quarter_line(demand_ax, pct_df_all.index)
     demand_ax.grid(alpha=0.25)
 
     plotted = wage_betas[wage_betas["status"] == "ok"].copy()
     quarter_position_map = {quarter: idx for idx, quarter in enumerate(pct_df_all.index)}
     plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
+    post_2021 = plotted["QUARTER"] >= pd.Period("2022Q1", freq="Q")
     wage_ax.errorbar(
-        plotted["x"],
-        plotted["ai_role_beta"],
+        plotted.loc[post_2021, "x"],
+        plotted.loc[post_2021, "ai_role_beta"],
         yerr=[
-            plotted["ai_role_beta"] - plotted["lower_ci"],
-            plotted["upper_ci"] - plotted["ai_role_beta"],
+            plotted.loc[post_2021, "ai_role_beta"] - plotted.loc[post_2021, "lower_ci"],
+            plotted.loc[post_2021, "upper_ci"] - plotted.loc[post_2021, "ai_role_beta"],
         ],
-        fmt="o-",
+        fmt="none",
         color="#0072B2",
         capsize=3,
-        linewidth=1.5,
+        linewidth=1.0,
+        alpha=0.65,
+    )
+    wage_ax.plot(
+        plotted["x"],
+        plotted["ai_role_beta"],
+        marker="o",
+        color="#0072B2",
+        linewidth=1.7,
         markersize=4,
     )
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
-    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=13)
+    add_genai_quarter_line(wage_ax, pct_df_all.index)
+    set_tight_symmetric_ylim(
+        wage_ax,
+        plotted["ai_role_beta"],
+        plotted.loc[post_2021, "lower_ci"],
+        plotted.loc[post_2021, "upper_ci"],
+    )
+    add_genai_period_inset(wage_ax, period_betas)
+    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium", fontsize=15)
     wage_ax.grid(alpha=0.25)
 
@@ -692,13 +844,14 @@ def plot_annual_ai_wage_premium_by_firm_category(annual_df):
             ax.plot(
                 line["year"],
                 line["ai_role_beta"],
-                marker="o",
+                marker=FIRM_CATEGORY_MARKERS[category],
                 markersize=5,
                 label=category,
                 color=color,
                 linewidth=1.8,
             )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        add_genai_year_line(ax)
         ax.set_xlabel("Year", fontsize=12)
         ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=12)
         ax.set_title("Annual AI Wage Premium by Firm Category", fontsize=14)
@@ -795,7 +948,7 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
         demand_ax.plot(
             quarter_positions,
             demand_wide[category],
-            marker="o",
+            marker=FIRM_CATEGORY_MARKERS[category],
             markersize=3,
             linewidth=1.6,
             label=category,
@@ -804,6 +957,7 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
 
     demand_ax.set_ylabel("% AI Roles", fontsize=15)
     demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
+    add_genai_quarter_line(demand_ax, demand_wide.index)
     demand_ax.legend(title=None, fontsize=11)
     demand_ax.grid(alpha=0.25)
 
@@ -813,23 +967,40 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
         line = plotted[plotted[FIRM_CATEGORY] == category].sort_values("QUARTER")
         if line.empty:
             continue
+        post_2021 = line["QUARTER"] >= pd.Period("2022Q1", freq="Q")
         wage_ax.errorbar(
+            line.loc[post_2021, "x"],
+            line.loc[post_2021, "ai_role_beta"],
+            yerr=[
+                line.loc[post_2021, "ai_role_beta"] - line.loc[post_2021, "lower_ci"],
+                line.loc[post_2021, "upper_ci"] - line.loc[post_2021, "ai_role_beta"],
+            ],
+            fmt="none",
+            capsize=3,
+            linewidth=1.0,
+            alpha=0.55,
+            color=FIRM_CATEGORY_COLORS[category],
+        )
+        wage_ax.plot(
             line["x"],
             line["ai_role_beta"],
-            yerr=[
-                line["ai_role_beta"] - line["lower_ci"],
-                line["upper_ci"] - line["ai_role_beta"],
-            ],
-            fmt="o-",
-            capsize=3,
-            linewidth=1.5,
+            marker=FIRM_CATEGORY_MARKERS[category],
             markersize=4,
+            linewidth=1.5,
             label=category,
             color=FIRM_CATEGORY_COLORS[category],
         )
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
-    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points, 95% CI)", fontsize=13)
+    add_genai_quarter_line(wage_ax, demand_wide.index)
+    post_ci = plotted[plotted["QUARTER"] >= pd.Period("2022Q1", freq="Q")]
+    set_tight_symmetric_ylim(
+        wage_ax,
+        plotted["ai_role_beta"],
+        post_ci["lower_ci"],
+        post_ci["upper_ci"],
+    )
+    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
     wage_ax.grid(alpha=0.25)
     wage_ax.legend(title=None, fontsize=11)
@@ -904,11 +1075,15 @@ def generate_benefit_differences_plot(usdf):
 
     # Create plot
     fig, ax = plt.subplots(figsize=(10, 6))
-    pct_diff_df.plot(
-        ax=ax,
-        color=list(benefit_colors.values())[:4]
-        + [benefit_colors["CULTURE"], benefit_colors["REMOTE_KW"]],
-    )
+    quarter_positions = np.arange(len(pct_diff_df.index))
+    for benefit in benefits4:
+        ax.plot(
+            quarter_positions,
+            pct_diff_df[benefit],
+            label=format_benefit_label(benefit, benefits_labels_map[benefit]),
+            color=benefit_colors[benefit],
+            linewidth=1.6,
+        )
 
     # Set x-ticks to show quarters at regular intervals
     # ax.set_xticks(range(0, len(pct_diff_df), 4))
@@ -916,9 +1091,11 @@ def generate_benefit_differences_plot(usdf):
 
     ax.set_xlabel(None)
     ax.set_ylabel("Difference in Percent Jobs with Benefit, AI - Non-AI")
-    ax.legend(
-        [format_benefit_label(benefit, benefits_labels_map[benefit]) for benefit in benefits4]
-    )
+    add_genai_quarter_line(ax, pct_diff_df.index)
+    tick_positions = list(range(0, len(pct_diff_df.index), 4))
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels([str(pct_diff_df.index[idx]) for idx in tick_positions], rotation=45)
+    ax.legend()
 
     plt.tight_layout()
     plt.savefig(BENEFITS_OVER_TIME_DIR / "benefit_diffs_time_keyword.png")
@@ -990,9 +1167,21 @@ def plot_benefits_over_time(merged_data, benefit, period, colors_dict=None, labe
     ]
 
     fig, ax = plt.subplots(figsize=(10, 6))
-    pivot_data.plot(ax=ax, color=colors_dict[benefit])
+    quarter_positions = np.arange(len(pivot_data.index))
+    for column, color in zip(pivot_data.columns, colors_dict[benefit]):
+        ax.plot(
+            quarter_positions,
+            pivot_data[column],
+            label=column,
+            color=color,
+            linewidth=1.7,
+        )
     ax.set_xlabel(None)
     ax.set_ylabel("Percent Jobs with Benefit")
+    add_genai_quarter_line(ax, pivot_data.index)
+    tick_positions = list(range(0, len(pivot_data.index), 4))
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels([str(pivot_data.index[idx]) for idx in tick_positions], rotation=45)
     ax.legend(title="AI Role", labels=["Yes", "No"])
     ax.set_title(format_benefit_label(benefit, labels_dict[benefit]))
     ax.set_ylim(0, 50)
@@ -1305,16 +1494,23 @@ def generate_combined_benefit_differences_plot(usdf):
     pct_diff_df.sort_index(inplace=True)
 
     fig, ax = plt.subplots(figsize=(12, 7))
-    color_list = [all_colors[b] for b in benefits6]
-    pct_diff_df.plot(ax=ax, color=color_list)
+    quarter_positions = np.arange(len(pct_diff_df.index))
+    for benefit, label in zip(benefits6, benefits6_labels):
+        ax.plot(
+            quarter_positions,
+            pct_diff_df[benefit],
+            label=format_benefit_label(benefit, label),
+            color=all_colors[benefit],
+            linewidth=1.5,
+        )
 
     ax.set_xlabel(None)
     ax.set_ylabel("Difference in Percent Jobs with Benefit, AI - Non-AI", fontsize=12)
-    ax.legend(
-        [format_benefit_label(benefit, label) for benefit, label in zip(benefits6, benefits6_labels)],
-        fontsize=9,
-        loc="upper left",
-    )
+    add_genai_quarter_line(ax, pct_diff_df.index)
+    tick_positions = list(range(0, len(pct_diff_df.index), 4))
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels([str(pct_diff_df.index[idx]) for idx in tick_positions], rotation=45)
+    ax.legend(fontsize=9, loc="upper left")
 
     plt.tight_layout()
     plt.savefig(BENEFITS_OVER_TIME_DIR / "benefit_diffs_time_all.png", bbox_inches="tight", dpi=150)
