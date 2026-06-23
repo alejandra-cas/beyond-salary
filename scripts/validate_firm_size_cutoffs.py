@@ -283,7 +283,6 @@ def classify_samples_with_llm(
             "COMPANY_NAME": row.get("COMPANY_NAME", ""),
             "llm_label": result["label"],
             "llm_confidence": result.get("confidence"),
-            "llm_reason": result.get("reason", ""),
             "llm_model": model,
             "labeled_at": pd.Timestamp.utcnow().isoformat(),
         }
@@ -309,9 +308,7 @@ def classify_one_firm(
 ) -> dict[str, Any]:
     """Call the OpenAI Responses API for one firm."""
     company_name = row.get("COMPANY_NAME", "") or row.get("COMPANY_RAW", "")
-    # Keep the LLM blind to FIRM_POSTING_COUNT. The whole point of this audit is
-    # to test whether posting count is a good proxy, so passing it to the judge
-    # would risk anchoring the model on the variable we are validating.
+
     prompt = {
         "company_id": str(row["COMPANY"]),
         "company_name": company_name,
@@ -325,8 +322,7 @@ def classify_one_firm(
         "the employer's real-world scale.\n\n"
         "Return only strict JSON with keys:\n"
         '- label: one of "sme", "large", or "unknown"\n'
-        "- confidence: number from 0 to 1\n"
-        "- reason: short English-only explanation\n\n"
+        "- confidence: number from 0 to 1\n\n"
         "Definitions:\n"
         'Use "large" for employers that are likely large enterprises, including '
         "national or multinational corporations, public companies, subsidiaries "
@@ -348,7 +344,7 @@ def classify_one_firm(
     )
     user_input = (
         "Classify this firm. Return JSON with keys: "
-        "label ('sme', 'large', or 'unknown'), confidence (0-1), reason.\n\n"
+        "label ('sme', 'large', or 'unknown') and confidence (0-1).\n\n"
         f"{json.dumps(prompt, ensure_ascii=True)}"
     )
     json_schema = {
@@ -361,9 +357,8 @@ def classify_one_firm(
             "properties": {
                 "label": {"type": "string", "enum": ["sme", "large", "unknown"]},
                 "confidence": {"type": "number", "minimum": 0, "maximum": 1},
-                "reason": {"type": "string"},
             },
-            "required": ["label", "confidence", "reason"],
+            "required": ["label", "confidence"],
         },
     }
 
@@ -391,7 +386,6 @@ def classify_one_firm(
             return {
                 "label": label,
                 "confidence": result.get("confidence"),
-                "reason": result.get("reason", ""),
             }
         except (OpenAIError, TimeoutError, json.JSONDecodeError, KeyError) as exc:
             # Retry transient API/network/JSON issues with exponential backoff.
