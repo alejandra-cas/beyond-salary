@@ -12,8 +12,8 @@ offering perks to everyone, not by specifically rewarding AI roles.
 Outputs:
 - results/figures_2026/high_ai_firms/within_firm_perk_diff.png
 - results/figures_2026/high_ai_firms/perk_prevalence_by_firm_tier.png
-- results/tables_2026/high_ai_firm_summary.csv
-- results/tables_2026/within_firm_perk_diff.csv
+- results/tables_2026/high_ai_firm/high_ai_firm_summary.csv
+- results/tables_2026/high_ai_firm/within_firm_perk_diff.csv
 """
 
 import pandas as pd
@@ -39,7 +39,7 @@ plt.rcParams.update({"font.size": 14})
 REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 OUTPUT_FIGS = REPO_ROOT / "results" / "figures_2026" / "high_ai_firms"
-OUTPUT_TABLES = REPO_ROOT / "results" / "tables_2026"
+OUTPUT_TABLES = REPO_ROOT / "results" / "tables_2026" / "high_ai_firm"
 
 
 def load_data():

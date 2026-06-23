@@ -48,7 +48,11 @@ load_dotenv(override=True)
 # All generated validation artifacts live together so Matthew can review the
 # sampled firms, cached LLM labels, metrics table, and plot side by side.
 DEFAULT_OUTPUT_DIR = (
-    get_repo_root() / "results" / "tables_2026" / "firm_size_cutoff_validation"
+    get_repo_root()
+    / "results"
+    / "tables_2026"
+    / "validation"
+    / "firm_size_cutoff_validation"
 )
 
 # Optional industry context for the LLM. We use industry names rather than job

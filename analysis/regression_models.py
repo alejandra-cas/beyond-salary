@@ -39,11 +39,11 @@ plt.rcParams.update({'font.size': 14})
 REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 RESULTS_DIR = REPO_ROOT / "results"
-TABLES_DIR = RESULTS_DIR / "tables_2026"
+TABLES_DIR = RESULTS_DIR / "tables_2026" / "regression"
 MODEL_CACHE_DIR = TABLES_DIR / "model_cache"
 CACHE_VERSION = "v4_preferred_sp500_no_firm_fe"
 CACHE_FORMAT = "compact_results_only"
-FIRM_CATEGORY_LOGIT_DIR = TABLES_DIR / "firm_category_logit"
+FIRM_CATEGORY_LOGIT_DIR = RESULTS_DIR / "tables_2026" / "firm_category_logit"
 
 # Field mappings
 region = 'STATE_NAME'
@@ -1882,14 +1882,14 @@ def main():
     print("ANALYSIS COMPLETE")
     print("Generated outputs:")
     print("1. Model coefficients plot: results/figures_2026/regression/model_coefficients_plot_industry_converged.png")
-    print("2. Individual regression tables: results/tables_2026/job_level_model/")
-    print("3. Wide table: results/tables_2026/complete_wide_table.html")
-    print("4. Panel summaries: results/tables_2026/model_panels_ai_role_long.csv")
-    print("5. Panel summaries (wide): results/tables_2026/model_panels_ai_role_coef_wide.csv")
-    print("6. Yearly Model 1 coefficients: results/tables_2026/yearly_model1_ai_role_coefficients.csv")
+    print("2. Individual regression tables: results/tables_2026/regression/job_level_model/")
+    print("3. Wide table: results/tables_2026/regression/complete_wide_table.html")
+    print("4. Panel summaries: results/tables_2026/regression/model_panels_ai_role_long.csv")
+    print("5. Panel summaries (wide): results/tables_2026/regression/model_panels_ai_role_coef_wide.csv")
+    print("6. Yearly Model 1 coefficients: results/tables_2026/regression/yearly_model1_ai_role_coefficients.csv")
     print("7. Yearly Model 1 plot: results/figures_2026/regression/yearly_model1_ai_role_coefficients.png")
     if period_model1_results is not None:
-        print("8. Period Model 1 coefficients: results/tables_2026/period_model1_ai_role_coefficients.csv")
+        print("8. Period Model 1 coefficients: results/tables_2026/regression/period_model1_ai_role_coefficients.csv")
         print("9. Period Model 1 plot: results/figures_2026/regression/period_model1_ai_role_coefficients.png")
         print("10. Firm-category logits: results/tables_2026/firm_category_logit/firm_category_ai_role_logit_results.csv")
     else:

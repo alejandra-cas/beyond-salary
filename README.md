@@ -18,6 +18,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   ├── salary_analysis.py                     # Salary premium analysis
 │   ├── scatterplot_analysis.py                # Correlation and scatterplot analysis
 │   ├── structured_benefits_regression.py      # Structured benefit regression models
+│   ├── wage_info_analysis.py                  # Wage-information prevalence by benefit and AI role
 │   ├── wage_perk_interaction_analysis.py      # H2 wage-perk interaction models
 │   ├── join_remote_kw.ipynb                   # Remote keyword joining exploration
 │   ├── keyword_vs_structured_benefits.ipynb   # Keyword label validation against structured fields
@@ -64,16 +65,18 @@ This repository contains the reproducible code and analysis for the paper Beyond
 │   │   ├── salary/                          # Salary analysis figures
 │   │   └── scatterplots/                    # Correlation analyses
 │   ├── tables/                              # Original tables (prior runs)
-│   └── tables_2026/    # Updated regression tables and robustness outputs
-│       ├── job_level_model/                 # Individual benefit regression tables
-│       ├── job_level_model_2026/            # Individual benefit regression tables
-│       ├── robustness/                      # Robustness check outputs
-│       ├── within_firm_perk_diff.csv        # Within-firm AI−Non-AI perk gap by firm tier
-│       ├── high_ai_firm_summary.csv         # Firm counts and median AI share per tier
-│       ├── ai_threshold_robustness.csv      # AI ROLE coefficients across 1+/2+/3+ thresholds
-│       ├── perk_positioning_results.csv     # OLS coefficients: AI ROLE on perk prominence score
-│       ├── model_panels_ai_role_coef_wide.csv # Job-level model summary, wide format
-│       └── model_panels_ai_role_long.csv    # Job-level model summary, long format
+│   └── tables_2026/    # Updated tables, grouped by analysis into subfolders
+│       ├── descriptive/                     # Descriptive stats and AI wage betas (incl. by firm category)
+│       ├── regression/                      # Job-level models, wide table, panel summaries
+│       │   └── job_level_model/             # Individual benefit regression tables
+│       ├── firm_category_logit/             # Firm-category AI-role logit results
+│       ├── structured_benefits/             # Structured-benefit regression outputs
+│       ├── wage_perk_interactions/          # Wage×perk interaction results
+│       ├── industry_year/                   # Industry-year wage/perk AI-role betas
+│       ├── high_ai_firm/                    # Within-firm perk gap and tier summaries
+│       ├── positioning/                     # OLS: AI ROLE on perk prominence score
+│       ├── robustness/                      # AI-threshold robustness check outputs
+│       └── validation/                      # Firm-size cutoff validation artifacts
 ├── config.example.yaml # Template for local data path config (tracked)
 ├── config.yaml         # Local data path config (gitignored)
 ├── pyproject.toml      # Project dependencies (uv)
@@ -163,7 +166,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - **label_benefits_remote.py**: Labels remote work benefits using keyword matching; merges `REMOTE_KW` and `REMOTE_KW_POSITION` directly into `labeled_v1.parquet`
 - **occ_year_analysis.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
 - **export_samples.py**: Creates balanced samples for regression analysis
-- **validate_firm_size_cutoffs.py**: Iterates posting-count cutoffs (default `5, 10, ..., 100`), excludes S&P 500 firms when `SP500` is available, draws stratified random firm samples at each threshold, optionally labels sampled firms with the OpenAI Responses API as true SMEs or large firms, and writes false-positive, false-negative, SME sensitivity, large-firm sensitivity, precision, accuracy, and recall-plot outputs to `results/tables_2026/firm_size_cutoff_validation/`.
+- **validate_firm_size_cutoffs.py**: Iterates posting-count cutoffs (default `5, 10, ..., 100`), excludes S&P 500 firms when `SP500` is available, draws stratified random firm samples at each threshold, optionally labels sampled firms with the OpenAI Responses API as true SMEs or large firms, and writes false-positive, false-negative, SME sensitivity, large-firm sensitivity, precision, accuracy, and recall-plot outputs to `results/tables_2026/validation/firm_size_cutoff_validation/`.
 
 ### Core Analysis (`analysis/`)
 - **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis. Figure 1 combines quarterly AI demand with quarterly adjusted `AI ROLE` log-wage coefficients and 95% confidence intervals. Quarterly wage models control for education, experience, NAICS 3-digit industry, and state fixed effects; quarters with fewer than 10 AI wage postings are suppressed. Also generates firm-category analyses: sample composition, AI demand over time, pooled and annual/period-group AI wage premiums, benefit gap (AI minus non-AI perk prevalence), and benefit prevalence by role type — all broken out by SMEs, Large firms, and S&P 500 firms.
@@ -175,7 +178,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
    3. **M3 (+ Salary):** M2 + Log Salary
    4. **M4 (+ S&P 500):** M3 + S&P 500 indicator. This is the preferred specification.
 - **firm_category_yearly_regression.py**: Runs the preferred firm-category H1 logit specification separately by firm category and calendar year, then also runs the same firm-category split for `Through 2022` (`YEAR <= 2022`) and `Post-2022` (`YEAR >= 2023`) period groups. Yearly models omit year fixed effects; period-group models include year fixed effects. The default run produces both yearly and period-group outputs. Use `--yearly-only` or `--period-only` for narrower reruns. Sparse or singular cells are recorded as errors rather than changing controls or reference categories.
-- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample, SMEs, Large firms, and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Firm-split charts show only SMEs, Large firms, and S&P 500 firms. Outputs include pooled and yearly AI-role wage premium (β₁) by firm category, β₃ heatmaps across all perks and firm types for pooled/through-2022/post-2022 models, and per-perk time-series plots with 95% CI ribbons.
+- **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample, SMEs, Large firms, and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Firm-split charts show only SMEs, Large firms, and S&P 500 firms. Outputs include pooled and yearly AI-role wage premium (β₁) by firm category, β₃ heatmaps across all perks and firm types for pooled/through-2022/post-2022 models, and per-perk time-series plots with 95% CI ribbons. Use `--plot-only` to regenerate all plots from the existing results CSV without re-running models.
 - **occupation_year_prevalence_analysis.py**: OLS regressions on AI benefit prevalence at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
 - **scatterplot_analysis.py**: Creates correlation plots and scatter analyses at occupation-year level
@@ -186,6 +189,7 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - **keyword_vs_structured_benefits.ipynb**: Validates keyword-based benefit labels against the structured `BENEFIT_NAME` / `BENEFIT_SUBCATEGORY_NAME` / `BENEFIT_CATEGORIES_NAME` fields. Reports precision, recall, and F1 per benefit, with disagreement inspection.
 - **structured_benefits_regression.py**: Runs P1 M2 logit models for structured categories (`S_FLEX_WORK`, `S_PROF_DEV`, `S_HEALTH_WELLNESS`, `S_REMOTE`) and outputs a coefficient table + plot. Current takeaway: no notable positive structured-benefit premium for AI postings; coefficients are lower/near-zero for most structured benefits, except remote work which is positive.
 - **new_data_exploration.ipynb**: Exploratory analysis notebook for the MAY26 subsample data
+- **wage_info_analysis.py**: Plots wage-information prevalence by benefit type and AI-role status, producing per-benefit bar charts showing the share of postings with salary data
 - **wage_info.ipynb**: Wage distribution analysis
 
 ### Supporting Modules (`src/package_files/`)
@@ -242,9 +246,9 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 ## Generated Outputs
 
 ### Regression Tables
-- **Individual benefit tables**: `results/tables_2026/job_level_model_2026/{benefit}_table.html`
-- **Combined wide table**: `results/tables_2026/complete_wide_table_2026_corrected.html`
-- **LaTeX versions**: `results/tables_2026/complete_wide_table_2026.tex`
+- **Individual benefit tables**: `results/tables_2026/regression/job_level_model/{benefit}_table.html`
+- **Combined wide table**: `results/tables_2026/regression/complete_wide_table.html`
+- **LaTeX versions**: `results/tables_2026/regression/complete_wide_table.tex`
 - **Occupation-year differences**: `results/tables/occ_year_models/difference_regression_table_combined.html`
 
 ### Key Figures

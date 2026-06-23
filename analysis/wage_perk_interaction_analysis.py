@@ -17,7 +17,7 @@ from package_files.config_utils import get_processed_dir, get_repo_root
 REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 DATA_PATH = PROCESSED_DIR / "labeled_v2.parquet"
-TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "wage_perk_interactions"
 FIGURES_DIR = REPO_ROOT / "results" / "figures_2026" / "wage_perk_interactions"
 
 MIN_AI_WAGE_POSTINGS = 10
@@ -273,12 +273,23 @@ def plot_yearly_results(results):
             line_data = subset[subset["sample"] == sample].sort_values("year")
             if line_data.empty:
                 continue
+            color = SAMPLE_COLORS[sample]
+            ax.fill_between(
+                line_data["year"],
+                line_data["beta3_lower_ci"],
+                line_data["beta3_upper_ci"],
+                color=color,
+                alpha=0.12,
+                linewidth=0,
+            )
             ax.plot(
                 line_data["year"],
                 line_data["beta3_interaction"],
                 marker=SAMPLE_MARKERS[sample],
+                markersize=4,
+                linewidth=1.6,
                 label=sample,
-                color=SAMPLE_COLORS[sample],
+                color=color,
             )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
         add_genai_year_line(ax)
@@ -621,15 +632,8 @@ def plot_yearly_single_perk(results, perk="REMOTE_KW"):
     print(f"Saved: {output}")
 
 
-def main():
-    TABLES_DIR.mkdir(parents=True, exist_ok=True)
-    data = load_data()
-    print(f"Wage sample rows: {len(data):,}")
-    results = run_models(data)
-    output = TABLES_DIR / "wage_perk_interaction_results.csv"
-    results.to_csv(output, index=False)
-    print(f"Saved: {output}")
-    print(results.groupby(["period", "status"]).size().to_string())
+def plot_all(results):
+    """Generate all plots from a results DataFrame."""
     plot_ai_role_premium_pooled(results)
     plot_ai_role_premium_yearly(results)
     plot_perk_wage_coefficient_pooled(results)
@@ -639,6 +643,37 @@ def main():
     plot_heatmap(results)
     plot_period_comparison_heatmaps(results)
     plot_yearly_single_perk(results, perk="REMOTE_KW")
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--plot-only",
+        action="store_true",
+        help="Skip model fitting; regenerate plots from existing results CSV.",
+    )
+    args = parser.parse_args()
+
+    TABLES_DIR.mkdir(parents=True, exist_ok=True)
+    output = TABLES_DIR / "wage_perk_interaction_results.csv"
+
+    if args.plot_only:
+        if not output.exists():
+            raise FileNotFoundError(f"Results CSV not found: {output}")
+        results = pd.read_csv(output)
+        print(f"Loaded {len(results)} rows from {output}")
+        plot_all(results)
+        return
+
+    data = load_data()
+    print(f"Wage sample rows: {len(data):,}")
+    results = run_models(data)
+    results.to_csv(output, index=False)
+    print(f"Saved: {output}")
+    print(results.groupby(["period", "status"]).size().to_string())
+    plot_all(results)
 
 
 if __name__ == "__main__":

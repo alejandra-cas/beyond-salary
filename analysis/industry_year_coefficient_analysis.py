@@ -40,7 +40,7 @@ OUTLIER_BETA_CAP = 5    # Drop perk betas with |beta| > this (quasi-separation a
 PROCESSED_DIR = get_processed_dir()
 REPO_ROOT = get_repo_root()
 RESULTS_DIR = REPO_ROOT / "results" / "figures_2026" / "industry_year"
-TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "industry_year"
 
 
 # ─── Data Loading ───────────────────────────────────────────────────────────────
