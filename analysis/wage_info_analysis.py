@@ -17,7 +17,7 @@ REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 DATA_PATH = PROCESSED_DIR / "labeled_v2.parquet"
 FIGURES_DIR = REPO_ROOT / "results" / "figures_2026" / "descriptive" / "wage_info"
-TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "descriptive"
 
 
 def benefit_slug(benefit):

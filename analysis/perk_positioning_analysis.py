@@ -12,7 +12,7 @@ otherwise).
 Model: OLS — POSITION ~ AI_ROLE + Year FE + Industry FE + Education FE + Experience FE
 
 Outputs:
-- results/tables_2026/perk_positioning_results.csv
+- results/tables_2026/positioning/perk_positioning_results.csv
 - results/figures_2026/perk_positioning/perk_positioning_ai_coef.png
 """
 
@@ -53,7 +53,7 @@ plt.rcParams.update({"font.size": 13})
 REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 OUTPUT_FIGS = REPO_ROOT / "results" / "figures_2026" / "perk_positioning"
-OUTPUT_TABLES = REPO_ROOT / "results" / "tables_2026"
+OUTPUT_TABLES = REPO_ROOT / "results" / "tables_2026" / "positioning"
 
 POSITION_COLS = {
     "EDU_ASSISTANCE":    "EDU_ASSISTANCE_POSITION",

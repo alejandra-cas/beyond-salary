@@ -27,7 +27,7 @@ from package_files.benefits_defns import (
     experience,
 )
 
-OUTPUT_TABLES = Path("results/tables_2026")
+OUTPUT_TABLES = Path("results/tables_2026/structured_benefits")
 OUTPUT_FIGS = Path("results/figures_2026/regression")
 
 STRUCTURED_BENEFITS = {

@@ -17,11 +17,16 @@ from package_files.config_utils import get_processed_dir, get_repo_root
 REPO_ROOT = get_repo_root()
 PROCESSED_DIR = get_processed_dir()
 DATA_PATH = PROCESSED_DIR / "labeled_v2.parquet"
-TABLES_DIR = REPO_ROOT / "results" / "tables_2026"
+TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "wage_perk_interactions"
 FIGURES_DIR = REPO_ROOT / "results" / "figures_2026" / "wage_perk_interactions"
 
 MIN_AI_WAGE_POSTINGS = 10
 MIN_INTERACTION_CELL_POSTINGS = 3
+POOLED_PERIOD = "Pooled 2018-2025"
+PERIOD_COMPARISON_FILTERS = {
+    "Through 2022": lambda df: df["year"] <= 2022,
+    "Post-2022": lambda df: df["year"] > 2022,
+}
 
 SAMPLE_FILTERS = {
     "Full sample": lambda df: pd.Series(True, index=df.index),
@@ -35,6 +40,19 @@ SAMPLE_COLORS = {
     "Large firms": "#2ca02c",
     "S&P 500 firms": "#d62728",
 }
+SAMPLE_MARKERS = {
+    "Full sample": "D",
+    "SMEs": "^",
+    "Large firms": "s",
+    "S&P 500 firms": "o",
+}
+FIRM_TYPE_SAMPLES = ["SMEs", "Large firms", "S&P 500 firms"]
+GENAI_CUTOFF_YEAR = 2022.875
+
+
+def add_genai_year_line(ax):
+    """Mark the public GenAI inflection point on yearly plots."""
+    ax.axvline(GENAI_CUTOFF_YEAR, color="black", linewidth=1.0, linestyle=":", alpha=0.75)
 
 
 def load_data():
@@ -193,7 +211,11 @@ def run_models(data):
     for sample, sample_filter in SAMPLE_FILTERS.items():
         sample_data = data[sample_filter(data)].copy()
         for perk in benefits4:
-            rows.append(fit_interaction_model(sample_data, sample, "Pooled 2018-2025", perk, True))
+            rows.append(fit_interaction_model(sample_data, sample, POOLED_PERIOD, perk, True))
+        for period, period_filter in PERIOD_COMPARISON_FILTERS.items():
+            period_data = sample_data[period_filter(sample_data)]
+            for perk in benefits4:
+                rows.append(fit_interaction_model(period_data, sample, period, perk, True))
         for year in sorted(data["year"].unique()):
             year_data = sample_data[sample_data["year"] == year]
             for perk in benefits4:
@@ -203,10 +225,10 @@ def run_models(data):
 
 def plot_pooled_results(results):
     """Plot pooled beta3 interaction coefficients by sample and perk."""
-    pooled = results[(results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    pooled = results[(results["period"] == POOLED_PERIOD) & (results["status"] == "ok")].copy()
     fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=False)
     axes = axes.flatten()
-    sample_order = list(SAMPLE_FILTERS)
+    sample_order = FIRM_TYPE_SAMPLES
 
     for ax, perk in zip(axes, benefits4):
         subset = pooled[pooled["perk"] == perk].set_index("sample").reindex(sample_order).dropna(subset=["beta3_interaction"])
@@ -238,25 +260,39 @@ def plot_pooled_results(results):
 
 def plot_yearly_results(results):
     """Plot yearly beta3 interaction coefficients for estimable models."""
-    yearly = results[(results["period"] != "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    yearly = results[
+        results["period"].astype(str).str.match(r"^\d{4}$") & (results["status"] == "ok")
+    ].copy()
     yearly["year"] = yearly["period"].astype(int)
     fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=True)
     axes = axes.flatten()
 
     for ax, perk in zip(axes, benefits4):
         subset = yearly[yearly["perk"] == perk]
-        for sample in SAMPLE_FILTERS:
+        for sample in FIRM_TYPE_SAMPLES:
             line_data = subset[subset["sample"] == sample].sort_values("year")
             if line_data.empty:
                 continue
+            color = SAMPLE_COLORS[sample]
+            ax.fill_between(
+                line_data["year"],
+                line_data["beta3_lower_ci"],
+                line_data["beta3_upper_ci"],
+                color=color,
+                alpha=0.12,
+                linewidth=0,
+            )
             ax.plot(
                 line_data["year"],
                 line_data["beta3_interaction"],
-                marker="o",
+                marker=SAMPLE_MARKERS[sample],
+                markersize=4,
+                linewidth=1.6,
                 label=sample,
-                color=SAMPLE_COLORS[sample],
+                color=color,
             )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        add_genai_year_line(ax)
         ax.set_title(benefits_labels_map[perk])
         ax.set_ylabel("AI Role × Perk Coefficient")
         ax.grid(alpha=0.2)
@@ -272,10 +308,10 @@ def plot_yearly_results(results):
 
 def plot_ai_role_premium_pooled(results):
     """Plot pooled AI-role wage coefficients from the interaction models."""
-    pooled = results[(results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    pooled = results[(results["period"] == POOLED_PERIOD) & (results["status"] == "ok")].copy()
     fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=False)
     axes = axes.flatten()
-    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_order = FIRM_TYPE_SAMPLES
 
     for ax, perk in zip(axes, benefits4):
         subset = (
@@ -318,11 +354,13 @@ def plot_ai_role_premium_pooled(results):
 
 def plot_ai_role_premium_yearly(results):
     """Plot yearly AI-role wage coefficients from the interaction models."""
-    yearly = results[(results["period"] != "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    yearly = results[
+        results["period"].astype(str).str.match(r"^\d{4}$") & (results["status"] == "ok")
+    ].copy()
     yearly["year"] = yearly["period"].astype(int)
     fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=True)
     axes = axes.flatten()
-    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_order = FIRM_TYPE_SAMPLES
 
     for ax, perk in zip(axes, benefits4):
         subset = yearly[yearly["perk"] == perk]
@@ -337,12 +375,13 @@ def plot_ai_role_premium_yearly(results):
             ax.plot(
                 line["year"],
                 line["beta1_ai_role"],
-                marker="o",
+                marker=SAMPLE_MARKERS[sample],
                 label=sample,
                 color=color,
                 linewidth=1.6,
             )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        add_genai_year_line(ax)
         ax.set_title(benefits_labels_map[perk])
         ax.set_ylabel("AI-Role Wage Coefficient")
         ax.grid(alpha=0.2)
@@ -363,10 +402,10 @@ def plot_ai_role_premium_yearly(results):
 
 def plot_perk_wage_coefficient_pooled(results):
     """Plot pooled perk wage coefficients from the interaction models."""
-    pooled = results[(results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    pooled = results[(results["period"] == POOLED_PERIOD) & (results["status"] == "ok")].copy()
     fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=False)
     axes = axes.flatten()
-    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_order = FIRM_TYPE_SAMPLES
 
     for ax, perk in zip(axes, benefits4):
         subset = (
@@ -409,11 +448,13 @@ def plot_perk_wage_coefficient_pooled(results):
 
 def plot_perk_wage_coefficient_yearly(results):
     """Plot yearly perk wage coefficients from the interaction models."""
-    yearly = results[(results["period"] != "Pooled 2018-2025") & (results["status"] == "ok")].copy()
+    yearly = results[
+        results["period"].astype(str).str.match(r"^\d{4}$") & (results["status"] == "ok")
+    ].copy()
     yearly["year"] = yearly["period"].astype(int)
     fig, axes = plt.subplots(2, 3, figsize=(16, 9), sharex=True)
     axes = axes.flatten()
-    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_order = FIRM_TYPE_SAMPLES
 
     for ax, perk in zip(axes, benefits4):
         subset = yearly[yearly["perk"] == perk]
@@ -428,12 +469,13 @@ def plot_perk_wage_coefficient_yearly(results):
             ax.plot(
                 line["year"],
                 line["beta2_perk"],
-                marker="o",
+                marker=SAMPLE_MARKERS[sample],
                 label=sample,
                 color=color,
                 linewidth=1.6,
             )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        add_genai_year_line(ax)
         ax.set_title(benefits_labels_map[perk])
         ax.set_ylabel("Perk Wage Coefficient")
         ax.grid(alpha=0.2)
@@ -452,15 +494,15 @@ def plot_perk_wage_coefficient_yearly(results):
     print(f"Saved: {output}")
 
 
-def plot_heatmap(results):
-    """Plot a heatmap of pooled beta3 coefficients: perks (rows) × firm type (cols)."""
+def plot_heatmap(results, period=POOLED_PERIOD, output_name="wage_perk_interaction_beta3_heatmap.png"):
+    """Plot a heatmap of beta3 coefficients for one pooled period."""
     pooled = results[
-        (results["period"] == "Pooled 2018-2025") & (results["status"] == "ok")
+        (results["period"] == period) & (results["status"] == "ok")
     ].copy()
 
     perk_order = list(benefits4)
     perk_labels = [benefits_labels_map[p] for p in perk_order]
-    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_order = FIRM_TYPE_SAMPLES
     sample_labels = ["SMEs", "Large", "S&P 500"]
 
     matrix = np.full((len(perk_order), len(sample_order)), np.nan)
@@ -472,7 +514,13 @@ def plot_heatmap(results):
                 matrix[i, j] = row["beta3_interaction"].values[0]
                 pval_matrix[i, j] = row["beta3_pvalue"].values[0]
 
+    if np.isnan(matrix).all():
+        print(f"No estimable heatmap results for {period}.")
+        return
+
     vmax = np.nanmax(np.abs(matrix)) * 1.05
+    if not np.isfinite(vmax) or vmax == 0:
+        vmax = 0.01
 
     fig, ax = plt.subplots(figsize=(8, 5.5))
     im = ax.imshow(matrix, cmap="viridis", aspect="auto", vmin=-vmax, vmax=vmax)
@@ -505,29 +553,39 @@ def plot_heatmap(results):
     cbar.set_label(r"$\beta_3$: AI Role × Perk Interaction (log points)", fontsize=10)
 
     ax.set_title(
-        r"Interaction Coefficient $\beta_3$ by Perk and Firm Type"
+        rf"Interaction Coefficient $\beta_3$ by Perk and Firm Type: {period}"
         "\nPositive = complementarity, Negative = substitution",
         fontsize=12,
     )
 
     plt.tight_layout()
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    output = FIGURES_DIR / "wage_perk_interaction_beta3_heatmap.png"
+    output = FIGURES_DIR / output_name
     plt.savefig(output, bbox_inches="tight", dpi=300)
     plt.close()
     print(f"Saved: {output}")
 
 
+def plot_period_comparison_heatmaps(results):
+    """Save heatmaps for models through 2022 and after 2022."""
+    period_outputs = {
+        "Through 2022": "wage_perk_interaction_beta3_heatmap_through_2022.png",
+        "Post-2022": "wage_perk_interaction_beta3_heatmap_post_2022.png",
+    }
+    for period, output_name in period_outputs.items():
+        plot_heatmap(results, period=period, output_name=output_name)
+
+
 def plot_yearly_single_perk(results, perk="REMOTE_KW"):
     """Plot a single-perk time series of beta3 by firm type with confidence ribbons."""
     yearly = results[
-        (results["period"] != "Pooled 2018-2025")
+        results["period"].astype(str).str.match(r"^\d{4}$")
         & (results["status"] == "ok")
         & (results["perk"] == perk)
     ].copy()
     yearly["year"] = yearly["period"].astype(int)
 
-    sample_order = ["SMEs", "Large firms", "S&P 500 firms"]
+    sample_order = FIRM_TYPE_SAMPLES
     fig, ax = plt.subplots(figsize=(9, 5.5))
 
     for sample in sample_order:
@@ -545,7 +603,7 @@ def plot_yearly_single_perk(results, perk="REMOTE_KW"):
         ax.plot(
             line["year"],
             line["beta3_interaction"],
-            marker="o",
+            marker=SAMPLE_MARKERS[sample],
             markersize=5,
             label=sample.replace(" firms", ""),
             color=color,
@@ -553,6 +611,7 @@ def plot_yearly_single_perk(results, perk="REMOTE_KW"):
         )
 
     ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    add_genai_year_line(ax)
     ax.set_xlabel("Year", fontsize=11)
     ax.set_ylabel(r"$\beta_3$ Interaction Coefficient", fontsize=11)
     perk_label = benefits_labels_map[perk]
@@ -573,15 +632,8 @@ def plot_yearly_single_perk(results, perk="REMOTE_KW"):
     print(f"Saved: {output}")
 
 
-def main():
-    TABLES_DIR.mkdir(parents=True, exist_ok=True)
-    data = load_data()
-    print(f"Wage sample rows: {len(data):,}")
-    results = run_models(data)
-    output = TABLES_DIR / "wage_perk_interaction_results.csv"
-    results.to_csv(output, index=False)
-    print(f"Saved: {output}")
-    print(results.groupby(["period", "status"]).size().to_string())
+def plot_all(results):
+    """Generate all plots from a results DataFrame."""
     plot_ai_role_premium_pooled(results)
     plot_ai_role_premium_yearly(results)
     plot_perk_wage_coefficient_pooled(results)
@@ -589,7 +641,39 @@ def main():
     plot_pooled_results(results)
     plot_yearly_results(results)
     plot_heatmap(results)
+    plot_period_comparison_heatmaps(results)
     plot_yearly_single_perk(results, perk="REMOTE_KW")
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--plot-only",
+        action="store_true",
+        help="Skip model fitting; regenerate plots from existing results CSV.",
+    )
+    args = parser.parse_args()
+
+    TABLES_DIR.mkdir(parents=True, exist_ok=True)
+    output = TABLES_DIR / "wage_perk_interaction_results.csv"
+
+    if args.plot_only:
+        if not output.exists():
+            raise FileNotFoundError(f"Results CSV not found: {output}")
+        results = pd.read_csv(output)
+        print(f"Loaded {len(results)} rows from {output}")
+        plot_all(results)
+        return
+
+    data = load_data()
+    print(f"Wage sample rows: {len(data):,}")
+    results = run_models(data)
+    results.to_csv(output, index=False)
+    print(f"Saved: {output}")
+    print(results.groupby(["period", "status"]).size().to_string())
+    plot_all(results)
 
 
 if __name__ == "__main__":
