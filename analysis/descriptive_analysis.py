@@ -431,18 +431,13 @@ def generate_ai_roles_over_time_plot(usdf):
     quarter_position_map = {quarter: idx for idx, quarter in enumerate(pct_df_all.index)}
     plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
     post_2021 = plotted["QUARTER"] >= pd.Period("2022Q1", freq="Q")
-    wage_ax.errorbar(
+    wage_ax.fill_between(
         plotted.loc[post_2021, "x"],
-        plotted.loc[post_2021, "ai_role_beta"],
-        yerr=[
-            plotted.loc[post_2021, "ai_role_beta"] - plotted.loc[post_2021, "lower_ci"],
-            plotted.loc[post_2021, "upper_ci"] - plotted.loc[post_2021, "ai_role_beta"],
-        ],
-        fmt="none",
+        plotted.loc[post_2021, "lower_ci"],
+        plotted.loc[post_2021, "upper_ci"],
         color="#0072B2",
-        capsize=3,
-        linewidth=1.0,
-        alpha=0.65,
+        alpha=0.14,
+        linewidth=0,
     )
     wage_ax.plot(
         plotted["x"],
@@ -968,18 +963,13 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
         if line.empty:
             continue
         post_2021 = line["QUARTER"] >= pd.Period("2022Q1", freq="Q")
-        wage_ax.errorbar(
+        wage_ax.fill_between(
             line.loc[post_2021, "x"],
-            line.loc[post_2021, "ai_role_beta"],
-            yerr=[
-                line.loc[post_2021, "ai_role_beta"] - line.loc[post_2021, "lower_ci"],
-                line.loc[post_2021, "upper_ci"] - line.loc[post_2021, "ai_role_beta"],
-            ],
-            fmt="none",
-            capsize=3,
-            linewidth=1.0,
-            alpha=0.55,
+            line.loc[post_2021, "lower_ci"],
+            line.loc[post_2021, "upper_ci"],
             color=FIRM_CATEGORY_COLORS[category],
+            alpha=0.12,
+            linewidth=0,
         )
         wage_ax.plot(
             line["x"],
