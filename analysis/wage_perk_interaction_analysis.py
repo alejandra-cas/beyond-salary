@@ -30,8 +30,8 @@ PERIOD_COMPARISON_FILTERS = {
 
 SAMPLE_FILTERS = {
     "Full sample": lambda df: pd.Series(True, index=df.index),
-    "SMEs": lambda df: (~df["sp500"]) & (df["firm_posting_count"] < 10),
-    "Large firms": lambda df: (~df["sp500"]) & (df["firm_posting_count"] >= 10),
+    "SMEs": lambda df: (~df["sp500"]) & (df["firm_posting_count"] < 50),
+    "Large firms": lambda df: (~df["sp500"]) & (df["firm_posting_count"] >= 50),
     "S&P 500 firms": lambda df: df["sp500"],
 }
 SAMPLE_COLORS = {
