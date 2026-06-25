@@ -41,18 +41,24 @@ all_data = pd.read_parquet(paths["input_path"])
 
 print("finished loading data")
 
+
+def sample_up_to(df, n=10000, random_state=42):
+    """Sample up to n rows without replacement."""
+    sample_size = min(n, len(df))
+    return df.sample(n=sample_size, random_state=random_state)
+
 ## Random Sample with Salary
 
 salary_data = all_data[all_data['SALARY'].notnull()]
 # salary_wham_data = salary_data[salary_data['wfh_wham'].notnull()]
-len(salary_data)
 salary_ai = salary_data[salary_data['AI ROLE'] == True]
 salary_no_ai = salary_data[salary_data['AI ROLE'] == False]
-salary_ai_sample = salary_ai.sample(n=10000, random_state=42)
-salary_no_ai_sample = salary_no_ai.sample(n=10000, random_state=42)
+print(f"Salary sample pool: {len(salary_ai):,} AI rows, {len(salary_no_ai):,} non-AI rows")
+salary_ai_sample = sample_up_to(salary_ai)
+salary_no_ai_sample = sample_up_to(salary_no_ai)
 salary_sample_all = pd.concat([salary_ai_sample, salary_no_ai_sample])
 # salary_sample_all = salary_sample_all.merge(body, left_on='ID', right_on='ID', how='left')
-len(salary_sample_all)
+print(f"Writing salary sample with {len(salary_sample_all):,} rows to {paths['salary_output_path']}")
 salary_sample_all.to_parquet(paths["salary_output_path"], compression='gzip')
 
 
@@ -60,10 +66,12 @@ salary_sample_all.to_parquet(paths["salary_output_path"], compression='gzip')
 # all_data_wham = all_data[all_data['wfh_wham'].notnull()]
 all_data_ai = all_data[all_data['AI ROLE'] == True]
 all_data_no_ai = all_data[all_data['AI ROLE'] == False]
-all_data_ai_sample = all_data_ai.sample(n=10000, random_state=42)
-all_data_no_ai_sample = all_data_no_ai.sample(n=10000, random_state=42)
+print(f"No-salary sample pool: {len(all_data_ai):,} AI rows, {len(all_data_no_ai):,} non-AI rows")
+all_data_ai_sample = sample_up_to(all_data_ai)
+all_data_no_ai_sample = sample_up_to(all_data_no_ai)
 all_data_sample_all = pd.concat([all_data_ai_sample, all_data_no_ai_sample])
 # all_data_sample_all = all_data_sample_all.merge(body, left_on='ID', right_on='ID', how='left')
+print(f"Writing no-salary sample with {len(all_data_sample_all):,} rows to {paths['nosalary_output_path']}")
 all_data_sample_all.to_parquet(paths["nosalary_output_path"], compression='gzip')
 # print("saving just benefits all data")
 # all_data.drop(columns=['BODY']).to_parquet('data/us_10m_nointernship_ai_skills_benefits.parquet.gzip', compression='gzip')
