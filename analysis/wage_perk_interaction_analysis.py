@@ -274,14 +274,6 @@ def plot_yearly_results(results):
             if line_data.empty:
                 continue
             color = SAMPLE_COLORS[sample]
-            ax.fill_between(
-                line_data["year"],
-                line_data["beta3_lower_ci"],
-                line_data["beta3_upper_ci"],
-                color=color,
-                alpha=0.12,
-                linewidth=0,
-            )
             ax.plot(
                 line_data["year"],
                 line_data["beta3_interaction"],
@@ -293,6 +285,7 @@ def plot_yearly_results(results):
             )
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
         add_genai_year_line(ax)
+        ax.set_ylim(-0.2, 0.2)
         ax.set_title(benefits_labels_map[perk])
         ax.set_ylabel("AI Role × Perk Coefficient")
         ax.grid(alpha=0.2)
@@ -523,7 +516,9 @@ def plot_heatmap(results, period=POOLED_PERIOD, output_name="wage_perk_interacti
         vmax = 0.01
 
     fig, ax = plt.subplots(figsize=(8, 5.5))
-    im = ax.imshow(matrix, cmap="viridis", aspect="auto", vmin=-vmax, vmax=vmax)
+    # Diverging scale centered on zero: negative estimates are red, zero is
+    # white, and positive estimates are blue.
+    im = ax.imshow(matrix, cmap="RdBu", aspect="auto", vmin=-vmax, vmax=vmax)
 
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
@@ -567,13 +562,89 @@ def plot_heatmap(results, period=POOLED_PERIOD, output_name="wage_perk_interacti
 
 
 def plot_period_comparison_heatmaps(results):
-    """Save heatmaps for models through 2022 and after 2022."""
-    period_outputs = {
-        "Through 2022": "wage_perk_interaction_beta3_heatmap_through_2022.png",
-        "Post-2022": "wage_perk_interaction_beta3_heatmap_post_2022.png",
-    }
-    for period, output_name in period_outputs.items():
-        plot_heatmap(results, period=period, output_name=output_name)
+    """Plot pre- and post-2022 beta3 heatmaps in one shared figure."""
+    periods = ["Through 2022", "Post-2022"]
+    perk_order = list(benefits4)
+    perk_labels = [benefits_labels_map[p] for p in perk_order]
+    sample_order = FIRM_TYPE_SAMPLES
+    sample_labels = ["SMEs", "Large", "S&P 500"]
+    matrices = []
+    pval_matrices = []
+
+    for period in periods:
+        subset = results[
+            (results["period"] == period) & (results["status"] == "ok")
+        ]
+        matrix = np.full((len(perk_order), len(sample_order)), np.nan)
+        pval_matrix = np.full_like(matrix, np.nan)
+        for i, perk in enumerate(perk_order):
+            for j, sample in enumerate(sample_order):
+                row = subset[
+                    (subset["perk"] == perk) & (subset["sample"] == sample)
+                ]
+                if not row.empty:
+                    matrix[i, j] = row["beta3_interaction"].iloc[0]
+                    pval_matrix[i, j] = row["beta3_pvalue"].iloc[0]
+        matrices.append(matrix)
+        pval_matrices.append(pval_matrix)
+
+    vmax = max(np.nanmax(np.abs(matrix)) for matrix in matrices) * 1.05
+    if not np.isfinite(vmax) or vmax == 0:
+        vmax = 0.01
+
+    fig, axes = plt.subplots(
+        1, 2, figsize=(13, 6), sharey=True, constrained_layout=True
+    )
+    for ax, period, matrix, pval_matrix in zip(
+        axes, periods, matrices, pval_matrices
+    ):
+        im = ax.imshow(
+            matrix, cmap="RdBu", aspect="auto", vmin=-vmax, vmax=vmax
+        )
+        for i in range(matrix.shape[0]):
+            for j in range(matrix.shape[1]):
+                val = matrix[i, j]
+                pval = pval_matrix[i, j]
+                if np.isnan(val):
+                    continue
+                stars = ""
+                if pval < 0.01:
+                    stars = "***"
+                elif pval < 0.05:
+                    stars = "**"
+                elif pval < 0.1:
+                    stars = "*"
+                color = "white" if abs(val) > vmax * 0.55 else "black"
+                ax.text(
+                    j,
+                    i,
+                    f"{val:+.3f}{stars}",
+                    ha="center",
+                    va="center",
+                    fontsize=9,
+                    color=color,
+                )
+        ax.set_xticks(range(len(sample_labels)))
+        ax.set_xticklabels(sample_labels)
+        ax.set_title(period, fontsize=12)
+
+    axes[0].set_yticks(range(len(perk_labels)))
+    axes[0].set_yticklabels(perk_labels)
+    axes[0].set_ylabel("Perk", fontsize=11)
+    fig.supxlabel("Firm Type", fontsize=11)
+    fig.suptitle(
+        r"AI Role $\times$ Perk Interaction Coefficient ($\beta_3$)"
+        "\nPositive = complementarity, Negative = substitution",
+        fontsize=13,
+    )
+    cbar = fig.colorbar(im, ax=axes, shrink=0.85, pad=0.02)
+    cbar.set_label(r"$\beta_3$ (log points)", fontsize=10)
+
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "wage_perk_interaction_beta3_heatmap_period_comparison.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
 
 
 def plot_yearly_single_perk(results, perk="REMOTE_KW"):
