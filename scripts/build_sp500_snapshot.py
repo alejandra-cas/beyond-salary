@@ -77,6 +77,62 @@ REVIEWED_ALIASES = {
 }
 
 
+# Manual ticker -> posting-system COMPANY id overrides for constituents the
+# conservative name matcher leaves unmatched or ambiguous. Each id was confirmed
+# by inspecting the dominant posting-system company for that constituent in the
+# full posts CSV (e.g. UPS posts as "UPS", Charter as "Spectrum", GE as
+# "GE Aerospace", US Bancorp as "US Bank"). Tickers not listed here fall back to
+# normal name matching.
+SYMBOL_COMPANY_OVERRIDES = {
+    # Unmatched: real firm posts under a different name than the constituent name
+    "LLY": 40425754,   # Eli Lilly -> "Lilly"
+    "AMD": 9175501,    # Advanced Micro Devices -> "AMD"
+    "GE": 76540,       # General Electric -> "GE Aerospace"
+    "DIS": 89628099,   # Walt Disney -> "Disney"
+    "DE": 3580599,     # Deere -> "John Deere"
+    "USB": 37723136,   # US Bancorp -> "US Bank"
+    "UPS": 12330310,   # United Parcel Service -> "UPS"
+    "ADP": 7897782,    # Automatic Data Processing -> "ADP"
+    "ORLY": 42049638,  # O'Reilly Automotive -> "O'Reilly Auto Parts"
+    "AIG": 105502207,  # American International Group -> "AIG"
+    "CCL": 99461686,   # Carnival -> "Carnival Cruise Lines"
+    "EL": 89628126,    # Estee Lauder -> "The Estée Lauder Companies"
+    "KEY": 36031738,   # KeyCorp -> "KeyBank"
+    "SMCI": 37448805,  # Super Micro Computer -> "Supermicro"
+    "CHTR": 41110818,  # Charter Communications -> "Spectrum"
+    "HOOD": 36254093,  # Robinhood Markets -> "Robinhood"
+    # Ambiguous: multiple posting-system names normalized alike; pick the
+    # dominant real firm by posting volume
+    "LIN": 8821559,    # Linde
+    "SCHW": 89628114,  # Charles Schwab
+    "BX": 5227848,     # Blackstone -> "The Blackstone Group"
+    "DHR": 36926534,   # Danaher
+    "PGR": 38522287,   # Progressive
+    "COF": 38360945,   # Capital One
+    "LOW": 37662275,   # Lowe's
+    "SYK": 4855312,    # Stryker
+    "SO": 36798433,    # Southern -> "Southern Company"
+    "WMB": 7749595,    # Williams
+    "AON": 4241295,    # Aon -> "AON"
+    "LITE": 39930333,  # Lumentum -> "Lumentum Holdings"
+    "FLEX": 61624047,  # Flex
+    "XYZ": 7968440,    # Block
+    "VTR": 99459648,   # Ventas
+    "WAT": 3125543,    # Waters
+    "SYF": 10106637,   # Synchrony
+    "DOW": 62009627,   # Dow -> "Dow Chemical"
+    "ALB": 404315,     # Albemarle
+    "CDW": 2463641,    # CDW
+    "EG": 40621853,    # Everest -> "The Everest Group"
+    "CSGP": 41418228,  # CoStar -> "CoStar Group"
+    "SJM": 40363361,   # J M Smucker -> "The J M Smucker Company"
+    "AES": 41501248,   # AES -> "The AES Corporation"
+    "FOX": 2859385,    # Fox
+    "FOXA": 2859385,   # Fox (class A) -> same posting-system company
+    "MOS": 9469562,    # Mosaic
+}
+
+
 def normalize_company_name(value):
     """Normalize a company name for deterministic matching."""
     tokens = re.sub(r"[^a-z0-9]+", " ", str(value).lower()).split()
@@ -118,9 +174,32 @@ def build_snapshot(constituents, companies, snapshot_date):
     available_names = set(companies["NORMALIZED_NAME"])
     rows = []
 
+    companies_by_id = companies.drop_duplicates("COMPANY").set_index("COMPANY")
     for company_name, group in constituents.groupby("SP500_COMPANY_NAME", sort=False):
         normalized_name = normalize_company_name(company_name)
         normalized_name = REVIEWED_ALIASES.get(normalized_name, normalized_name)
+
+        # Manual ticker override takes precedence over name matching so confirmed
+        # firms (e.g. UPS, Charter/Spectrum, GE/GE Aerospace) resolve directly to
+        # their posting-system COMPANY id.
+        override_id = next(
+            (SYMBOL_COMPANY_OVERRIDES[s] for s in group["SYMBOL"]
+             if s in SYMBOL_COMPANY_OVERRIDES),
+            None,
+        )
+        if override_id is not None and override_id in companies_by_id.index:
+            rows.append({
+                "COMPANY": override_id,
+                "COMPANY_NAME": companies_by_id.loc[override_id, "COMPANY_NAME"],
+                "SP500_COMPANY_NAME": company_name,
+                "SYMBOLS": ",".join(group["SYMBOL"]),
+                "SNAPSHOT_DATE": snapshot_date,
+                "MATCH_STATUS": "matched",
+                "NORMALIZED_NAME": normalized_name,
+                "SUGGESTED_NORMALIZED_NAMES": "",
+            })
+            continue
+
         matches = company_groups.get_group(normalized_name) if normalized_name in company_groups.groups else companies.iloc[0:0]
         if matches.empty:
             compact_name = normalized_name.replace(" ", "")
