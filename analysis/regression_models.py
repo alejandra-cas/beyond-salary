@@ -84,8 +84,8 @@ def add_firm_category(data):
     )
 
     data["FIRM_CATEGORY"] = pd.NA
-    data.loc[(~sp500) & (firm_posting_count < 10), "FIRM_CATEGORY"] = "SMEs"
-    data.loc[(~sp500) & (firm_posting_count >= 10), "FIRM_CATEGORY"] = "Large firms"
+    data.loc[(~sp500) & (firm_posting_count < 50), "FIRM_CATEGORY"] = "SMEs"
+    data.loc[(~sp500) & (firm_posting_count >= 50), "FIRM_CATEGORY"] = "Large firms"
     data.loc[sp500, "FIRM_CATEGORY"] = "S&P 500 firms"
     data["FIRM_CATEGORY"] = pd.Categorical(
         data["FIRM_CATEGORY"],
