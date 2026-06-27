@@ -148,6 +148,7 @@ This repository contains the reproducible code and analysis for the paper Beyond
    # Core analyses
    uv run python analysis/descriptive_analysis.py
    uv run python analysis/descriptive_analysis.py --include-structured
+   uv run python analysis/descriptive_analysis.py --use-existing-betas
    uv run python analysis/regression_models.py
    uv run python analysis/firm_category_yearly_regression.py
    uv run python analysis/wage_perk_interaction_analysis.py
@@ -170,8 +171,9 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 
 ### Core Analysis (`analysis/`)
 - **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis. Figure 1 combines quarterly AI demand with quarterly adjusted `AI ROLE` log-wage coefficients and 95% confidence intervals. Quarterly wage models control for education, experience, NAICS 3-digit industry, and state fixed effects; quarters with fewer than 10 AI wage postings are suppressed. Also generates firm-category analyses: sample composition, AI demand over time, pooled and annual/period-group AI wage premiums, benefit gap (AI minus non-AI perk prevalence), and benefit prevalence by role type — all broken out by SMEs, Large firms, and S&P 500 firms.
-  - Default run outputs keyword-benefit figures and all firm-category figures.
+  - Default run outputs keyword-benefit figures and all firm-category figures, re-estimating the quarterly wage betas and overwriting `results/tables_2026/descriptive/quarterly_ai_wage_betas.csv`.
   - Add `--include-structured` to also output combined keyword+structured figures.
+  - Add `--use-existing-betas` to plot Figure 1 from the saved `quarterly_ai_wage_betas.csv` instead of re-estimating (leaves the table untouched).
 - **regression_models.py**: Runs H1 job-level logit models for each benefit with `AI ROLE` as the key predictor.
    1. **M1 (Baseline):** Year FE + NAICS 3-digit FE
    2. **M2 (+ Individual/State Controls):** M1 + State FE + Education FE + Experience FE

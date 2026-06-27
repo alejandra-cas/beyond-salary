@@ -2,9 +2,11 @@
 """Apply the fixed S&P 500 snapshot to existing processed parquet files."""
 
 import argparse
+from collections import Counter
 from pathlib import Path
 
 import pandas as pd
+import pyarrow.csv as pacsv
 import yaml
 
 

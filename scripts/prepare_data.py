@@ -131,8 +131,8 @@ def add_firm_size(df):
     df["FIRM_POSTING_COUNT"] = df["COMPANY"].map(firm_counts).astype("Int64")
     df["FIRM_SIZE_BUCKET"] = pd.cut(
         df["FIRM_POSTING_COUNT"],
-        bins=[0, 9, np.inf],
-        labels=["SMEs (<10)", "Large firms (>=10)"],
+        bins=[0, 49, np.inf],
+        labels=["SMEs (<50)", "Large firms (>=50)"],
     )
 
     print("Firm size bucket distribution:")

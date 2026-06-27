@@ -195,12 +195,12 @@ def add_firm_category(usdf):
     if firm_posting_count.isna().all() and "FIRM_SIZE_BUCKET" in usdf.columns:
         old_bucket = usdf["FIRM_SIZE_BUCKET"].astype("string")
         firm_posting_count = pd.Series(np.nan, index=usdf.index)
-        firm_posting_count.loc[old_bucket.isin(["Small (<=2)", "Medium (3-9)", "SMEs (<10)"])] = 1
-        firm_posting_count.loc[old_bucket.isin(["Large (>=10)", "Large firms (>=10)"])] = 10
+        firm_posting_count.loc[old_bucket.isin(["Small (<=2)", "Medium (3-9)", "SMEs (<10)", "SMEs (<50)"])] = 1
+        firm_posting_count.loc[old_bucket.isin(["Large (>=10)", "Large firms (>=10)", "Large firms (>=50)"])] = 50
 
     usdf[FIRM_CATEGORY] = pd.NA
-    usdf.loc[firm_posting_count < 10, FIRM_CATEGORY] = "SMEs"
-    usdf.loc[firm_posting_count >= 10, FIRM_CATEGORY] = "Large firms"
+    usdf.loc[firm_posting_count < 50, FIRM_CATEGORY] = "SMEs"
+    usdf.loc[firm_posting_count >= 50, FIRM_CATEGORY] = "Large firms"
     usdf.loc[sp500, FIRM_CATEGORY] = "S&P 500 firms"
     usdf[FIRM_CATEGORY] = pd.Categorical(
         usdf[FIRM_CATEGORY],
@@ -451,9 +451,13 @@ def add_firm_category_wage_inset(ax, usdf):
     )
 
 
-def generate_ai_roles_over_time_plot(usdf):
+def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
     """
     Generate Figure 1: quarterly AI demand and adjusted AI log-wage coefficients.
+
+    If ``wage_betas`` is provided (e.g. loaded from the saved table), those
+    deterministic coefficients are plotted as-is and no re-estimation or CSV
+    overwrite is performed. Otherwise the betas are estimated from ``usdf``.
     """
     print("Generating Figure 1: AI demand and adjusted AI wage coefficients...")
 
@@ -487,15 +491,19 @@ def generate_ai_roles_over_time_plot(usdf):
     #     pct_df_all.index[-1], inplace=True
     # )  # Remove last incomplete quarter
 
-    wage_betas = estimate_quarterly_ai_wage_betas(usdf)
-    tables_dir = Path("results/tables_2026/descriptive")
-    tables_dir.mkdir(parents=True, exist_ok=True)
-    wage_betas.assign(QUARTER=wage_betas["QUARTER"].astype(str)).to_csv(
-        tables_dir / "quarterly_ai_wage_betas.csv",
-        index=False,
-    )
-    period_betas = estimate_period_ai_wage_betas(usdf)
-    period_betas.to_csv(tables_dir / "genai_period_ai_wage_betas.csv", index=False)
+    if wage_betas is None:
+        wage_betas = estimate_quarterly_ai_wage_betas(usdf)
+        tables_dir = Path("results/tables_2026/descriptive")
+        tables_dir.mkdir(parents=True, exist_ok=True)
+        wage_betas.assign(QUARTER=wage_betas["QUARTER"].astype(str)).to_csv(
+            tables_dir / "quarterly_ai_wage_betas.csv",
+            index=False,
+        )
+        period_betas = estimate_period_ai_wage_betas(usdf)
+        period_betas.to_csv(tables_dir / "genai_period_ai_wage_betas.csv", index=False)
+    else:
+        wage_betas = wage_betas.copy()
+        wage_betas["QUARTER"] = pd.PeriodIndex(wage_betas["QUARTER"].astype(str), freq="Q")
 
     # Create plot
     fig, (demand_ax, wage_ax) = plt.subplots(
@@ -1645,7 +1653,7 @@ def generate_combined_benefits_over_time_plots(usdf):
                                 colors_dict=all_colors_2, labels_dict=all_labels_map)
 
 
-def main(include_structured=False):
+def main(include_structured=False, use_existing_betas=False):
     """Main function to generate all figures."""
     print("Loading data...")
     usdf = load_data()
@@ -1656,7 +1664,16 @@ def main(include_structured=False):
     print("Generating key figures...")
 
     # Figure 1: % AI roles over time
-    generate_ai_roles_over_time_plot(usdf)
+    existing_betas = None
+    if use_existing_betas:
+        betas_path = Path("results/tables_2026/descriptive/quarterly_ai_wage_betas.csv")
+        if not betas_path.exists():
+            raise FileNotFoundError(
+                f"--use-existing-betas requested but {betas_path} not found"
+            )
+        existing_betas = pd.read_csv(betas_path)
+        print(f"Using existing wage betas from {betas_path} ({len(existing_betas)} rows)")
+    generate_ai_roles_over_time_plot(usdf, wage_betas=existing_betas)
     save_firm_category_descriptive_stats(usdf)
     plot_firm_category_sample_sizes(usdf)
     premium_df = estimate_pooled_ai_wage_premium_by_firm_category(usdf)
@@ -1698,5 +1715,14 @@ if __name__ == "__main__":
         default=False,
         help="Also generate combined figures with structured-field benefits",
     )
+    parser.add_argument(
+        "--use-existing-betas",
+        action="store_true",
+        default=False,
+        help="Plot Figure 1 using saved quarterly_ai_wage_betas.csv instead of re-estimating",
+    )
     args = parser.parse_args()
-    main(include_structured=args.include_structured)
+    main(
+        include_structured=args.include_structured,
+        use_existing_betas=args.use_existing_betas,
+    )

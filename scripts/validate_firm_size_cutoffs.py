@@ -556,13 +556,16 @@ def score_cutoffs(labeled_samples: pd.DataFrame) -> pd.DataFrame:
                 "false_negative_count": fn,
                 "false_positive_rate": safe_divide(fp, fp + tn),
                 "false_negative_rate": safe_divide(fn, fn + tp),
-                "sme_sensitivity": sme_recall,
-                "sme_recall_95ci_lower": sme_recall_ci_low,
-                "sme_recall_95ci_upper": sme_recall_ci_high,
+                "sme_sensitivity": safe_divide(tp, tp + fn),
+                # SME precision falls as the cutoff rises: a higher threshold
+                # pulls more truly-large firms into the predicted-SME bucket.
                 "sme_precision": safe_divide(tp, tp + fp),
-                "large_sensitivity": large_recall,
-                "large_recall_95ci_lower": large_recall_ci_low,
-                "large_recall_95ci_upper": large_recall_ci_high,
+                "large_sensitivity": safe_divide(tn, tn + fp),
+                # Large-firm precision is TN/(TN+FN): of firms predicted large,
+                # how many the LLM agrees are large. This is the mirror of SME
+                # precision and should erode as the cutoff rises, because a high
+                # threshold leaves only the very largest firms predicted large.
+                "large_precision": safe_divide(tn, tn + fn),
                 "accuracy": safe_divide(tp + tn, n),
                 # Balanced accuracy gives equal weight to SME and large-firm
                 # recall, useful when the sampled classes are not perfectly even.
@@ -618,31 +621,26 @@ def plot_cutoff_metrics(metrics: pd.DataFrame, output_path: Path) -> None:
         marker="o",
         linewidth=2,
         label="Large firm recall",
-    )[0]
-    if {
-        "sme_recall_95ci_lower",
-        "sme_recall_95ci_upper",
-        "large_recall_95ci_lower",
-        "large_recall_95ci_upper",
-    }.issubset(metrics.columns):
-        ax.fill_between(
-            metrics["cutoff"].to_numpy(),
-            metrics["sme_recall_95ci_lower"].to_numpy(),
-            metrics["sme_recall_95ci_upper"].to_numpy(),
-            color=sme_line.get_color(),
-            alpha=0.16,
-            linewidth=0,
-            label="SME recall 95% CI",
-        )
-        ax.fill_between(
-            metrics["cutoff"].to_numpy(),
-            metrics["large_recall_95ci_lower"].to_numpy(),
-            metrics["large_recall_95ci_upper"].to_numpy(),
-            color=large_line.get_color(),
-            alpha=0.16,
-            linewidth=0,
-            label="Large firm recall 95% CI",
-        )
+    )
+    # Plot both precisions too: SME precision should fall and large-firm
+    # precision should erode as the cutoff rises, which is the trade-off the
+    # cutoff search is meant to expose.
+    ax.plot(
+        metrics["cutoff"],
+        metrics["sme_precision"],
+        marker="^",
+        linewidth=1.6,
+        linestyle=":",
+        label="SME precision",
+    )
+    ax.plot(
+        metrics["cutoff"],
+        metrics["large_precision"],
+        marker="^",
+        linewidth=1.6,
+        linestyle=":",
+        label="Large firm precision",
+    )
     ax.plot(
         metrics["cutoff"],
         metrics["accuracy"],
@@ -667,7 +665,7 @@ def plot_cutoff_metrics(metrics: pd.DataFrame, output_path: Path) -> None:
     ax.set_ylabel("Score")
     ax.set_ylim(0, 1.05)
     ax.grid(True, alpha=0.3)
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=3, frameon=False)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.28), ncol=3, frameon=False)
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -733,7 +731,13 @@ def main() -> None:
     label_cache_path = args.output_dir / "firm_size_llm_labels_cache.csv"
     labeled_path = args.output_dir / "firm_size_cutoff_labeled_samples.csv"
     metrics_path = args.output_dir / "firm_size_cutoff_metrics.csv"
-    plot_path = args.output_dir / "firm_size_cutoff_recall_plot.png"
+    plot_path = (
+        get_repo_root()
+        / "results"
+        / "figures_2026"
+        / "validation"
+        / "firm_size_cutoff_recall_plot.png"
+    )
 
     df = load_data(args.input_path)
     if not args.include_sp500:
