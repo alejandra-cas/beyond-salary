@@ -71,6 +71,66 @@ firm_category_markers = {
     "S&P 500 firms": "o",
 }
 GENAI_CUTOFF_YEAR = 2022.875
+ROBUST_CI_WIDTH_MULTIPLIER = 6
+ROBUST_CI_WIDTH_FLOOR = 2.0
+ROBUST_Y_PADDING = 0.12
+
+
+def set_robust_logit_ylim(ax, plot_rows, panel_label):
+    """Set subplot y-limits without letting extreme confidence intervals dominate."""
+    if not plot_rows:
+        return
+
+    panel = pd.concat(plot_rows, ignore_index=True)
+    for column in ["ai_role_coef", "lower_ci", "upper_ci"]:
+        panel[column] = pd.to_numeric(panel[column], errors="coerce")
+    finite = np.isfinite(panel[["ai_role_coef", "lower_ci", "upper_ci"]]).all(axis=1)
+    panel = panel[finite].dropna(subset=["ai_role_coef", "lower_ci", "upper_ci"])
+    if panel.empty:
+        return
+
+    ci_width = panel["upper_ci"] - panel["lower_ci"]
+    finite_width = ci_width[np.isfinite(ci_width) & (ci_width >= 0)]
+    if finite_width.empty:
+        values = panel["ai_role_coef"].to_numpy(dtype=float)
+    else:
+        median_width = finite_width.median()
+        max_reasonable_width = max(
+            ROBUST_CI_WIDTH_FLOOR,
+            ROBUST_CI_WIDTH_MULTIPLIER * median_width,
+        )
+        reasonable = panel[ci_width <= max_reasonable_width]
+        if not reasonable.empty:
+            values = np.concatenate(
+                [
+                    reasonable["ai_role_coef"].to_numpy(dtype=float),
+                    reasonable["lower_ci"].to_numpy(dtype=float),
+                    reasonable["upper_ci"].to_numpy(dtype=float),
+                ]
+            )
+        else:
+            values = panel["ai_role_coef"].to_numpy(dtype=float)
+
+    values = values[np.isfinite(values)]
+    if len(values) == 0:
+        return
+
+    lower = min(values.min(), 0)
+    upper = max(values.max(), 0)
+    if np.isclose(lower, upper):
+        lower -= 0.5
+        upper += 0.5
+    padding = max((upper - lower) * ROBUST_Y_PADDING, 0.1)
+    lower -= padding
+    upper += padding
+
+    current_lower, current_upper = ax.get_ylim()
+    if lower > current_lower or upper < current_upper:
+        print(
+            f"Warning: clipped extreme confidence intervals in {panel_label} "
+            f"plot axis to [{lower:.2f}, {upper:.2f}]."
+        )
+    ax.set_ylim(lower, upper)
 
 
 def add_firm_category(data):
@@ -736,6 +796,7 @@ def plot_firm_category_time_logit_results(results, output_name, title, period_or
 
     for ax, benefit in zip(axes, benefits4):
         subset = plot_df[plot_df["benefit"] == benefit].copy()
+        plotted_rows = []
         for firm_category in firm_categories:
             line = (
                 subset[subset["firm_category"] == firm_category]
@@ -746,6 +807,7 @@ def plot_firm_category_time_logit_results(results, output_name, title, period_or
             )
             if line.empty:
                 continue
+            plotted_rows.append(line)
             x = line["period"].map(x_map).astype(float)
             color = firm_category_colors[firm_category]
             ax.fill_between(
@@ -773,6 +835,7 @@ def plot_firm_category_time_logit_results(results, output_name, title, period_or
         ax.set_title(benefit_label_for_plot(benefit), fontsize=12)
         ax.set_ylabel("AI-Role Log-Odds Coef.")
         ax.grid(alpha=0.2)
+        set_robust_logit_ylim(ax, plotted_rows, benefit_label_for_plot(benefit))
 
     axes[-1].legend(title="Firm Category", fontsize=9, title_fontsize=10, loc="upper left", bbox_to_anchor=(1.02, 1))
     for ax in axes:

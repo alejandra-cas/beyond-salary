@@ -324,6 +324,14 @@ def run_logit_model(
     X = X.astype(float)
     y = y.astype(float)
 
+    constant_cols = X.columns[X.nunique(dropna=False) <= 1].tolist()
+    if constant_cols:
+        print(
+            "Warning: dropping constant model columns after complete-case filtering: "
+            + ", ".join(constant_cols)
+        )
+        X = X.drop(columns=constant_cols)
+
     if fixed_effect_group is not None:
         groups = (
             model_data[fixed_effect_group]
