@@ -27,10 +27,10 @@ benefits_labels_map = {
     'PAID LEAVE': 'Paid Leave', 
     'HEALTH_WELLBEING': 'Health and Wellbeing', 
     'PARENTAL_LEAVE': 'Parental Leave', 
-    'CULTURE': 'Workplace Culture', 
+    'CULTURE': 'Inclusive Workplace', 
     'REMOTE_KW': 'Remote Work'
 }
-benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
+benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Inclusive Workplace', 'Remote Work']
 occupation = 'COUNTY_NAME'  # updated per-run in run_group_analysis()
 
 REPO_ROOT = get_repo_root()

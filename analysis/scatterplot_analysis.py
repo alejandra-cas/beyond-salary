@@ -32,11 +32,11 @@ except ImportError:
         'PAID LEAVE': 'Paid Leave', 
         'HEALTH_WELLBEING': 'Health and Wellbeing', 
         'PARENTAL_LEAVE': 'Parental Leave', 
-        'CULTURE': 'Workplace Culture', 
+        'CULTURE': 'Inclusive Workplace', 
         'REMOTE_KW': 'Remote Work'
     }
     
-    benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
+    benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Inclusive Workplace', 'Remote Work']
     
     benefit_colors = {
         'EDU_ASSISTANCE': '#41afaa',

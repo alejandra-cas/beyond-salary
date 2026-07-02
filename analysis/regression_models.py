@@ -56,7 +56,7 @@ experience = 'EXPERIENCE_BUCKET'
 
 # Benefits to analyze
 benefits4 = ['EDU_ASSISTANCE', 'PAID LEAVE', 'HEALTH_WELLBEING', 'PARENTAL_LEAVE', 'CULTURE', 'REMOTE_KW']
-benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
+benefits4_labels = ['Tuition Assistance', 'Paid Leave', 'Health and Wellbeing', 'Parental Leave', 'Inclusive Workplace', 'Remote Work']
 
 # Color scheme for plots
 colors = ['#E69F00', '#56B4E9', '#009E73', '#CC79A7', '#0072B2', '#D55E00', '#009E73']
@@ -73,6 +73,13 @@ firm_category_markers = {
 GENAI_CUTOFF_YEAR = 2022.875
 ROBUST_CI_WIDTH_MULTIPLIER = 6
 ROBUST_CI_WIDTH_FLOOR = 2.0
+
+
+def benefit_output_slug(benefit):
+    """Filename-safe benefit key for generated outputs."""
+    if benefit == "CULTURE":
+        return "inclusive_workplace"
+    return benefit.lower().replace(" ", "_")
 ROBUST_Y_PADDING = 0.12
 
 
@@ -1391,7 +1398,7 @@ def create_wide_table_all_benefits_reordered(models_2024, benefits_order):
     With High school or GED moved to first in education section
     """
     # Benefit names in the requested order
-    benefit_labels = ['Tuition Assistance', 'Paid Leave', 'Health & Wellbeing', 'Parental Leave', 'Workplace Culture', 'Remote Work']
+    benefit_labels = ['Tuition Assistance', 'Paid Leave', 'Health & Wellbeing', 'Parental Leave', 'Inclusive Workplace', 'Remote Work']
     
     # Start building the HTML table
     table_rows = []
@@ -1662,7 +1669,7 @@ def generate_individual_tables(models_2024):
         html_table = create_clean_formatted_table_updated(model_progression, benefit_label)
         
         # Save individual table
-        filename = output_dir / f"{benefit.lower()}_table.html"
+        filename = output_dir / f"{benefit_output_slug(benefit)}_table.html"
         with open(filename, 'w') as f:
             f.write(html_table)
         
@@ -1785,7 +1792,7 @@ def html_to_latex_table_dynamic(models_2024):
     latex_lines.append("\\toprule")
     
     # Header row
-    latex_lines.append(" & \\multicolumn{3}{c}{\\textbf{Tuition Assistance}} & \\multicolumn{3}{c}{\\textbf{Paid Leave}} & \\multicolumn{3}{c}{\\textbf{Health \\& Wellbeing}} & \\multicolumn{3}{c}{\\textbf{Parental Leave}} & \\multicolumn{3}{c}{\\textbf{Workplace Culture}} & \\multicolumn{3}{c}{\\textbf{Remote Work}} \\\\")
+    latex_lines.append(" & \\multicolumn{3}{c}{\\textbf{Tuition Assistance}} & \\multicolumn{3}{c}{\\textbf{Paid Leave}} & \\multicolumn{3}{c}{\\textbf{Health \\& Wellbeing}} & \\multicolumn{3}{c}{\\textbf{Parental Leave}} & \\multicolumn{3}{c}{\\textbf{Inclusive Workplace}} & \\multicolumn{3}{c}{\\textbf{Remote Work}} \\\\")
     latex_lines.append("\\cmidrule(lr){2-4} \\cmidrule(lr){5-7} \\cmidrule(lr){8-10} \\cmidrule(lr){11-13} \\cmidrule(lr){14-16} \\cmidrule(lr){17-19}")
     
     # Column numbers

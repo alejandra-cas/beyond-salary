@@ -37,7 +37,7 @@ benefits_labels_map = {
     "PAID LEAVE": "Paid Leave",
     "HEALTH_WELLBEING": "Health and Wellbeing",
     "PARENTAL_LEAVE": "Parental Leave",
-    "CULTURE": "Workplace Culture",
+    "CULTURE": "Inclusive Workplace",
     "wfh_wham": "Remote Work",
     "REMOTE_KW": "Remote Work",
 }
@@ -46,7 +46,7 @@ benefits4_labels = [
     "Paid Leave",
     "Health and Wellbeing",
     "Parental Leave",
-    "Workplace Culture",
+    "Inclusive Workplace",
     "Remote Work",
 ]
 
@@ -112,6 +112,8 @@ def format_benefit_label(benefit_key, label):
 
 def benefit_slug(benefit_key):
     """Filename-safe benefit key."""
+    if benefit_key == "CULTURE":
+        return "inclusive_workplace"
     return benefit_key.lower().replace(" ", "_")
 
 

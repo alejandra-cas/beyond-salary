@@ -27,7 +27,7 @@ benefits3_labels = [
     "Recognition",
     "Family",
     "Parental Leave",
-    "Culture",
+    "Inclusive Workplace",
 ]
 benefits4 = [
     "EDU_ASSISTANCE",
@@ -42,7 +42,7 @@ benefits_labels_map = {
     "PAID LEAVE": "Paid Leave",
     "HEALTH_WELLBEING": "Health and Wellbeing",
     "PARENTAL_LEAVE": "Parental Leave",
-    "CULTURE": "Workplace Culture",
+    "CULTURE": "Inclusive Workplace",
     "wfh_wham": "Remote Work",
     "REMOTE_KW": "Remote Work",
     "S_FLEX_WORK": "Flexible Work Schedules",
@@ -55,7 +55,7 @@ benefits4_labels = [
     "Paid Leave",
     "Health and Wellbeing",
     "Parental Leave",
-    "Workplace Culture",
+    "Inclusive Workplace",
     "Remote Work",
 ]
 benefits5 = [

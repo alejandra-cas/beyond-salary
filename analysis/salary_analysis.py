@@ -33,7 +33,7 @@ except ImportError:
         'PAID LEAVE': 'Paid Leave', 
         'HEALTH_WELLBEING': 'Health and Wellbeing', 
         'PARENTAL_LEAVE': 'Parental Leave', 
-        'CULTURE': 'Workplace Culture', 
+        'CULTURE': 'Inclusive Workplace', 
         'REMOTE_KW': 'Remote Work'
     }
     
