@@ -198,7 +198,7 @@ def split_context_values(value: Any) -> list[str]:
 def draw_validation_sample(
     firms: pd.DataFrame,
     sample_size: int,
-    seed: int,
+    seed: int | None,
 ) -> pd.DataFrame:
     """Draw one reproducible firm sample for validating every cutoff."""
     if sample_size < 1:
@@ -767,7 +767,12 @@ def main() -> None:
         default=None,
         help=argparse.SUPPRESS,
     )
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Optional random seed. Omit for a fresh sample on each run.",
+    )
     parser.add_argument(
         "--max-naics",
         type=int,
