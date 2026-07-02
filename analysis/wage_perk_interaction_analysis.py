@@ -2,7 +2,13 @@
 """Estimate wage-perk interaction models for AI and non-AI postings."""
 
 from pathlib import Path
+import os
 import sys
+
+if "MPLCONFIGDIR" not in os.environ:
+    mpl_config_dir = Path("/tmp") / f"matplotlib-{os.getuid()}"
+    mpl_config_dir.mkdir(parents=True, exist_ok=True)
+    os.environ["MPLCONFIGDIR"] = str(mpl_config_dir)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +16,7 @@ import pandas as pd
 import statsmodels.formula.api as smf
 
 sys.path.append(str(Path(__file__).parent.parent / "src"))
-from package_files.benefits_defns import benefits4, benefits_labels_map
+from package_files.benefits_defns import benefit_colors, benefits4, benefits_labels_map
 from package_files.config_utils import get_processed_dir, get_repo_root
 
 
@@ -294,6 +300,62 @@ def plot_yearly_results(results):
     plt.tight_layout()
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     output = FIGURES_DIR / "wage_perk_interaction_beta3_yearly.png"
+    plt.savefig(output, bbox_inches="tight", dpi=300)
+    plt.close()
+    print(f"Saved: {output}")
+
+
+def plot_yearly_full_sample_all_perks(results):
+    """Plot full-sample yearly beta3 interaction coefficients for every perk."""
+    yearly = results[
+        results["period"].astype(str).str.match(r"^\d{4}$")
+        & (results["status"] == "ok")
+        & (results["sample"] == "Full sample")
+    ].copy()
+    if yearly.empty:
+        print("No full-sample yearly beta3 results to plot.")
+        return
+
+    yearly["year"] = yearly["period"].astype(int)
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for perk in benefits4:
+        line = yearly[yearly["perk"] == perk].sort_values("year")
+        if line.empty:
+            continue
+        color = benefit_colors.get(perk)
+        ax.fill_between(
+            line["year"],
+            line["beta3_lower_ci"],
+            line["beta3_upper_ci"],
+            alpha=0.10,
+            color=color,
+            linewidth=0,
+        )
+        ax.plot(
+            line["year"],
+            line["beta3_interaction"],
+            marker="o",
+            markersize=4.5,
+            linewidth=1.9,
+            color=color,
+            label=benefits_labels_map[perk],
+        )
+
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    add_genai_year_line(ax)
+    ax.set_xlabel("Year", fontsize=11)
+    ax.set_ylabel(r"$\beta_3$ Interaction Coefficient", fontsize=11)
+    ax.set_title(
+        r"Yearly AI Role $\times$ Perk Interaction Coefficients, Full Sample",
+        fontsize=12,
+    )
+    ax.grid(alpha=0.2)
+    ax.legend(title="Benefit", fontsize=9, title_fontsize=10, loc="best")
+
+    plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    output = FIGURES_DIR / "wage_perk_interaction_beta3_yearly_full_sample_all_perks.png"
     plt.savefig(output, bbox_inches="tight", dpi=300)
     plt.close()
     print(f"Saved: {output}")
@@ -711,6 +773,7 @@ def plot_all(results):
     plot_perk_wage_coefficient_yearly(results)
     plot_pooled_results(results)
     plot_yearly_results(results)
+    plot_yearly_full_sample_all_perks(results)
     plot_heatmap(results)
     plot_period_comparison_heatmaps(results)
     plot_yearly_single_perk(results, perk="REMOTE_KW")
