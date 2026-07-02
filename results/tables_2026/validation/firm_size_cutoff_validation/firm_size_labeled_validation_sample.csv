@@ -1,0 +1,1001 @@
+COMPANY,FIRM_POSTING_COUNT,COMPANY_NAME,UNIQUE_NAICS_2022_6_NAMES,COMPANY_NAME_cache,llm_label,llm_confidence,llm_model,labeled_at
+75865808,1,Austin Granite Direct,Unclassified Industry,Austin Granite Direct,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:37.610646+00:00
+84021365,1,Hipchik,Clothing and Clothing Accessories Retailers,Hipchik,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:37.635047+00:00
+50236537,2,St Johns County Council On Aging,Services for the Elderly and Persons with Disabilities,St Johns County Council On Aging,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:37.658848+00:00
+64050826,2,Bippo's Place For Smiles,Offices of Dentists,Bippo's Place For Smiles,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:42.979288+00:00
+43331256,1,Farmer Case & Fedor,Offices of Lawyers,Farmer Case & Fedor,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:37.709017+00:00
+40094153,2,Texas Rose Investigations,Investigation and Personal Background Check Services,Texas Rose Investigations,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:37.756055+00:00
+96324528,1,Cleaning By Amanda,Janitorial Services,Cleaning By Amanda,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:37.811781+00:00
+36171134,58,North Idaho College,Junior Colleges,North Idaho College,large,0.98,gpt-5.4-mini,2026-07-02T22:01:37.685488+00:00
+38876382,1,Cecilia C Irvin,Unclassified Industry,Cecilia C Irvin,unknown,0.98,gpt-5.4-mini,2026-07-02T22:01:37.732449+00:00
+46952798,1,Arthur Trovei & Sons,Automobile and Other Motor Vehicle Merchant Wholesalers,Arthur Trovei & Sons,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:37.581675+00:00
+59979394,1,Gigi's Cupcakes at Sugar Land,Unclassified Industry,Gigi's Cupcakes at Sugar Land,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:39.203861+00:00
+99591690,2,M J Brunner,Unclassified Industry,M J Brunner,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:39.278817+00:00
+37033312,2,Scaffolding,Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers,Scaffolding,unknown,0.95,gpt-5.4-mini,2026-07-02T22:01:39.363112+00:00
+41076159,16,Erie Neighborhood House,Other Individual and Family Services,Erie Neighborhood House,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:38.658353+00:00
+80584542,4,"Hufft & Hufft, Aplc",Offices of Lawyers,"Hufft & Hufft, Aplc",sme,0.93,gpt-5.4-mini,2026-07-02T22:01:39.163092+00:00
+53808156,5,Kenrich Industrial,Power-Driven Handtool Manufacturing,Kenrich Industrial,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:38.957259+00:00
+95947841,1,The Canon Agency,Unclassified Industry,The Canon Agency,sme,0.83,gpt-5.4-mini,2026-07-02T22:01:38.791712+00:00
+18204861,2,Jml Design,Graphic Design Services,Jml Design,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:39.122048+00:00
+41187252,12,Prog Leasing,All Other Consumer Goods Rental,Prog Leasing,large,0.83,gpt-5.4-mini,2026-07-02T22:01:39.021266+00:00
+2197578,2301,Hogan,Footwear Manufacturing,Hogan,large,0.87,gpt-5.4-mini,2026-06-23T22:03:08.610769+00:00
+33349592,1,Bcm Services,Residential Property Managers,Bcm Services,sme,0.85,gpt-5.4-mini,2026-07-02T22:01:39.782403+00:00
+87214788,14,Argano,Unclassified Industry,Argano,large,0.86,gpt-5.4-mini,2026-07-02T22:01:40.181655+00:00
+75507199,1,Macarthur Justice Center,Unclassified Industry,Macarthur Justice Center,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:40.210594+00:00
+95470130,2,Nucor Steel South Carolina,Unclassified Industry,Nucor Steel South Carolina,large,0.99,gpt-5.4-mini,2026-07-02T22:01:40.369687+00:00
+104799573,26,Altmed Florida,Unclassified Industry,Altmed Florida,sme,0.72,gpt-5.4-mini,2026-07-02T22:01:40.260469+00:00
+56317517,1,Infrastructure Precast,Structural Steel and Precast Concrete Contractors,Infrastructure Precast,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:40.235736+00:00
+47667326,2,Ramar Steel Sales,Structural Steel and Precast Concrete Contractors,Ramar Steel Sales,sme,0.94,gpt-5.4-mini,2026-07-02T22:01:40.479170+00:00
+42709141,4,Ongaro And Sons,"Plumbing, Heating, and Air-Conditioning Contractors",Ongaro And Sons,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:40.566284+00:00
+36867227,5,One Day Roofing,Roofing Contractors,One Day Roofing,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:40.453693+00:00
+99482715,1,Groupe Clim,Unclassified Industry,Groupe Clim,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:41.075648+00:00
+99487138,2,Servo-Robot,Unclassified Industry,Servo-Robot,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:41.169243+00:00
+52553609,2,Metro Community Services,Employment Placement Agencies,Metro Community Services,sme,0.83,gpt-5.4-mini,2026-07-02T22:01:41.251174+00:00
+50940274,10,Ames Janitorial Services,Janitorial Services,Ames Janitorial Services,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:41.309389+00:00
+2256533,1,Mv Solutions,Custom Computer Programming Services,Mv Solutions,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:41.370022+00:00
+36238303,20,Arizona Christian University,"Colleges, Universities, and Professional Schools",Arizona Christian University,sme,0.78,gpt-5.4-mini,2026-07-02T22:01:41.409138+00:00
+105950450,3,Renuven Health Partners,Unclassified Industry,Renuven Health Partners,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:41.500174+00:00
+47969807,2,S. And S. Social Club,Unclassified Industry,S. And S. Social Club,sme,0.78,gpt-5.4-mini,2026-07-02T22:01:41.629951+00:00
+69644261,1,Minnesota Housing,Parole Offices and Probation Offices,Minnesota Housing,large,0.98,gpt-5.4-mini,2026-07-02T22:01:41.705359+00:00
+39972575,1,Max-Bone,Clothing and Clothing Accessories Retailers,Max-Bone,sme,0.78,gpt-5.4-mini,2026-07-02T22:01:42.115774+00:00
+81682269,7,The Jung Hotel & Residences,Hotels (except Casino Hotels) and Motels,The Jung Hotel & Residences,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:43.810330+00:00
+46714695,6,William R. Nash,"Plumbing, Heating, and Air-Conditioning Contractors",William R. Nash,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:42.245965+00:00
+80918825,19,The Hotel Covington,Hotels (except Casino Hotels) and Motels,The Hotel Covington,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:44.008992+00:00
+32714975,2,Energyn,Unclassified Industry,Energyn,sme,0.64,gpt-5.4-mini,2026-07-02T22:01:42.479414+00:00
+105704964,1,Luxury Affordable Photobooth,Unclassified Industry,Luxury Affordable Photobooth,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:42.525813+00:00
+40865899,69,Renaissance Learning,Software Publishers,Renaissance Learning,large,0.94,gpt-5.4-mini,2026-07-02T22:01:42.731765+00:00
+62497502,1,Redco Machine Shop,Machine Shops,Redco Machine Shop,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:42.700667+00:00
+98000327,1,Frenchmen Street,Unclassified Industry,Frenchmen Street,sme,0.38,gpt-5.4-mini,2026-07-02T22:01:42.791992+00:00
+1745481,2,Dyn,Drinking Places (Alcoholic Beverages),Dyn,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:43.310380+00:00
+51172570,8,Community Based Care Of Central Florida,Child and Youth Services,Community Based Care Of Central Florida,sme,0.89,gpt-5.4-mini,2026-07-02T22:01:43.340092+00:00
+48879393,7,Bednark Studio,All Other Specialty Trade Contractors,Bednark Studio,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:43.604603+00:00
+51164870,11,Zumbrota Health Services,Nursing Care Facilities (Skilled Nursing Facilities),Zumbrota Health Services,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:43.557248+00:00
+6684615,14,K&G,Supermarkets and Other Grocery Retailers (except Convenience Retailers),K&G,sme,0.74,gpt-5.4-mini,2026-07-02T22:01:43.783531+00:00
+51486037,1,Rowerdink,Automotive Parts and Accessories Retailers,Rowerdink,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:43.835065+00:00
+103352738,3,Marin Post Acute,Unclassified Industry,Marin Post Acute,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:44.037514+00:00
+49326234,5,Nassau/Suffolk Law Services Committee,Legal Counsel and Prosecution,Nassau/Suffolk Law Services Committee,sme,0.91,gpt-5.4-mini,2026-07-02T22:01:44.265997+00:00
+45257764,3,Performance Softech Solutions,Computer Systems Design Services,Performance Softech Solutions,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:44.313749+00:00
+42526796,7,Uni-Mart,Gasoline Stations with Convenience Stores,Uni-Mart,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:44.341057+00:00
+98032385,10,Select Specialty Hospital Jackson,Specialty (except Psychiatric and Substance Abuse) Hospitals,Select Specialty Hospital Jackson,large,0.94,gpt-5.4-mini,2026-07-02T22:01:44.656975+00:00
+36426769,4,Tlc Cleaning,Janitorial Services,Tlc Cleaning,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:44.686612+00:00
+5665319,3,Guesty,"Computing Infrastructure Providers, Data Processing, Web Hosting, and Related Services",Guesty,large,0.95,gpt-5.4-mini,2026-07-02T22:01:45.007572+00:00
+2264622,1,Sportsworks Int'L Ngo,Unclassified Industry,Sportsworks Int'L Ngo,sme,0.74,gpt-5.4-mini,2026-07-02T22:01:44.842618+00:00
+46922582,1,Core Labs,Electromedical and Electrotherapeutic Apparatus Manufacturing,Core Labs,large,0.84,gpt-5.4-mini,2026-07-02T22:01:46.960047+00:00
+63407077,1,Atlas Aircraft Center,Other Support Activities for Air Transportation,Atlas Aircraft Center,sme,0.91,gpt-5.4-mini,2026-07-02T22:01:45.115969+00:00
+1099796,1,Into,Elementary and Secondary Schools,Into,sme,0.85,gpt-5.4-mini,2026-07-02T22:01:45.180125+00:00
+64470073,2,Dentica,Offices of Dentists,Dentica,sme,0.92,gpt-5.4-mini,2026-07-02T22:01:45.508520+00:00
+105003136,16,Khon2,Unclassified Industry,Khon2,unknown,0.92,gpt-5.4-mini,2026-07-02T22:01:45.389204+00:00
+38309010,26,Hooker Furniture Corporation,Nonupholstered Wood Household Furniture Manufacturing,Hooker Furniture Corporation,large,0.96,gpt-5.4-mini,2026-07-02T22:01:45.622094+00:00
+12507854,11,Rational International Ltd.,Other Technical and Trade Schools,Rational International Ltd.,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:45.861343+00:00
+52052844,1,Mertens Hospitality,Full-Service Restaurants,Mertens Hospitality,sme,0.92,gpt-5.4-mini,2026-07-02T22:01:45.963996+00:00
+42695011,7,Simulmedia,All Other Personal Services,Simulmedia,sme,0.77,gpt-5.4-mini,2026-07-02T22:01:45.924378+00:00
+46336257,2,Rs Electric,Electrical Contractors and Other Wiring Installation Contractors,Rs Electric,sme,0.96,gpt-5.4-mini,2026-07-02T22:01:46.183082+00:00
+76158870,2,Jamesburg Veterinary Hospital,Veterinary Services,Jamesburg Veterinary Hospital,sme,0.99,gpt-5.4-mini,2026-07-02T22:01:46.242102+00:00
+105499180,8,Touch Gold,Unclassified Industry,Touch Gold,sme,0.71,gpt-5.4-mini,2026-07-02T22:01:46.767771+00:00
+79041211,6,Litigation Management,"All Other Professional, Scientific, and Technical Services",Litigation Management,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:46.880018+00:00
+84016282,1,"Wright Family Law Group, PC",Offices of Lawyers,"Wright Family Law Group, PC",sme,0.97,gpt-5.4-mini,2026-07-02T22:01:46.471246+00:00
+41739227,1,Quezada Pro Landscape,All Other Business Support Services,Quezada Pro Landscape,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:46.804635+00:00
+39825407,1,Riverbend Transportation,Unclassified Industry,Riverbend Transportation,sme,0.77,gpt-5.4-mini,2026-07-02T22:01:47.161115+00:00
+55599105,1,B.Q.T & Stone,Tile and Terrazzo Contractors,B.Q.T & Stone,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:48.830942+00:00
+100441931,4,Tulsa Welding School-Houston,Other Technical and Trade Schools,Tulsa Welding School-Houston,sme,0.94,gpt-5.4-mini,2026-07-02T22:01:49.332343+00:00
+84000488,1,Von Deylen Plumbing & Heating,All Other Specialty Trade Contractors,Von Deylen Plumbing & Heating,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:47.981385+00:00
+106183400,1,Sunlogic Power,Unclassified Industry,Sunlogic Power,sme,0.78,gpt-5.4-mini,2026-07-02T22:01:47.372254+00:00
+85545690,1,Patriot Family Dental,Offices of Dentists,Patriot Family Dental,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:49.057174+00:00
+38362919,4,Allstars Learning Center,Child Care Services,Allstars Learning Center,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:47.782896+00:00
+54804071,1,Jim Dhamer Plumbing & Sewer,"Plumbing, Heating, and Air-Conditioning Contractors",Jim Dhamer Plumbing & Sewer,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:47.944817+00:00
+33557906,5,Cato Networks,Computer Systems Design Services,Cato Networks,large,0.95,gpt-5.4-mini,2026-07-02T22:01:49.745695+00:00
+62131059,1,Preventive And Diagnostic Medical Center,Offices of Physicians (except Mental Health Specialists),Preventive And Diagnostic Medical Center,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:48.125731+00:00
+36474218,11,Vp Management,Other Management Consulting Services,Vp Management,sme,0.82,gpt-5.4-mini,2026-07-02T22:01:48.308573+00:00
+75663072,57,Kmg Hotels,Unclassified Industry,Kmg Hotels,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:48.546239+00:00
+36583651,1,Truebeauty Forever,"Cosmetics, Beauty Supplies, and Perfume Retailers",Truebeauty Forever,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:48.966577+00:00
+34417401,1,Insight Engineering Solutions,Custom Computer Programming Services,Insight Engineering Solutions,sme,0.89,gpt-5.4-mini,2026-07-02T22:01:49.002485+00:00
+73292191,1,BOULDER COUNTY WHOLESOME PIES  LLC,Unclassified Industry,BOULDER COUNTY WHOLESOME PIES  LLC,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:49.124511+00:00
+61459740,9,Diagnostic Clinic Medical Group,Offices of Physicians (except Mental Health Specialists),Diagnostic Clinic Medical Group,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:51.056380+00:00
+35056187,3,P1 Finance Company,All Other Business Support Services,P1 Finance Company,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:49.377172+00:00
+55958337,1,Carrier Logistics Of Olathe,"General Freight Trucking, Long-Distance, Truckload",Carrier Logistics Of Olathe,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:49.708168+00:00
+63764388,4,Vergent Products,Engineering Services,Vergent Products,sme,0.85,gpt-5.4-mini,2026-07-02T22:01:50.281994+00:00
+38888461,21,Moss Cape,Computer Facilities Management Services,Moss Cape,sme,0.87,gpt-5.4-mini,2026-07-02T22:01:50.181071+00:00
+57771332,1,Tumbl,Unclassified Industry,Tumbl,unknown,0.92,gpt-5.4-mini,2026-07-02T22:01:52.922593+00:00
+42148842,2,Steve Julius Construction,New Single-Family Housing Construction (except For-Sale Builders),Steve Julius Construction,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:50.315576+00:00
+41873159,3,Cassaday & Company,"Corporate, Subsidiary, and Regional Managing Offices",Cassaday & Company,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:50.246222+00:00
+32473281,1,Fashion Tech,Blind and Shade Manufacturing,Fashion Tech,sme,0.83,gpt-5.4-mini,2026-07-02T22:01:50.417279+00:00
+75428703,1,Bbc Research & Consulting,Marketing Consulting Services,Bbc Research & Consulting,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:50.456373+00:00
+41454058,1,Specialty Tapes,Adhesive Manufacturing,Specialty Tapes,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:50.816901+00:00
+51685102,1,Akcelita,Computer Systems Design Services,Akcelita,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:50.909639+00:00
+45301913,1,Autel Robotics,"All Other Professional, Scientific, and Technical Services",Autel Robotics,large,0.88,gpt-5.4-mini,2026-07-02T22:01:51.426838+00:00
+85906239,1,Abrazados,Unclassified Industry,Abrazados,sme,0.66,gpt-5.4-mini,2026-07-02T22:01:51.528930+00:00
+53299980,1,Superior Roofing of New Mexico,Unclassified Industry,Superior Roofing of New Mexico,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:51.389404+00:00
+49701262,1,Pacemate,"Corporate, Subsidiary, and Regional Managing Offices",Pacemate,unknown,0.75,gpt-5.4-mini,2026-07-02T22:01:51.566965+00:00
+39105616,1,Specialized Products Ltd,Hardware Retailers,Specialized Products Ltd,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:51.729409+00:00
+40608575,3,Reliable Home Health Services,Home Health Care Services,Reliable Home Health Services,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:51.685756+00:00
+43059792,2,Dumpster Rental,Solid Waste Landfill,Dumpster Rental,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:51.894875+00:00
+45089464,2,SK Donuts,Baked Goods Retailers,SK Donuts,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:52.090105+00:00
+37918270,11,Erie Indemnity Company,Direct Property and Casualty Insurance Carriers,Erie Indemnity Company,large,0.98,gpt-5.4-mini,2026-07-02T22:01:52.206138+00:00
+41167790,15,Triple Creek Retirement Community,Nursing Care Facilities (Skilled Nursing Facilities),Triple Creek Retirement Community,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:52.513501+00:00
+44123643,5,Mind Research Institute,Custom Computer Programming Services,Mind Research Institute,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:52.624455+00:00
+36054531,2,Shaw Enterprises,Automotive Parts and Accessories Retailers,Shaw Enterprises,sme,0.85,gpt-5.4-mini,2026-07-02T22:01:52.557134+00:00
+43031992,2,Avantgarde Senior Living of La Jolla,Assisted Living Facilities for the Elderly,Avantgarde Senior Living of La Jolla,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:52.663177+00:00
+62906241,5,City Of Havelock,Unclassified Industry,City Of Havelock,large,0.95,gpt-5.4-mini,2026-07-02T22:01:52.710721+00:00
+52302743,1,Carolina Small Business Development Fund,Consumer Lending,Carolina Small Business Development Fund,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:52.790525+00:00
+37821237,1,Texas Music Partners,Unclassified Industry,Texas Music Partners,sme,0.78,gpt-5.4-mini,2026-07-02T22:01:53.922361+00:00
+50597451,3,Genesis Automotive & Rv Repair,General Automotive Repair,Genesis Automotive & Rv Repair,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:54.042984+00:00
+32816743,1,Advanced Project Solutions (Aps),Electrical Contractors and Other Wiring Installation Contractors,Advanced Project Solutions (Aps),sme,0.94,gpt-5.4-mini,2026-07-02T22:01:53.256334+00:00
+79094449,1,Jet Auto Sales,Unclassified Industry,Jet Auto Sales,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:53.655782+00:00
+44791918,1,Solactron,Semiconductor and Related Device Manufacturing,Solactron,sme,0.79,gpt-5.4-mini,2026-07-02T22:01:53.777306+00:00
+75514800,5,Education Service Center Region 12,Educational Support Services,Education Service Center Region 12,large,0.95,gpt-5.4-mini,2026-07-02T22:01:54.312101+00:00
+31407987,1,All Seasons Farm,Unclassified Industry,All Seasons Farm,sme,0.88,gpt-5.4-mini,2026-07-02T22:01:53.815834+00:00
+5139340,3,Quantium,"Computing Infrastructure Providers, Data Processing, Web Hosting, and Related Services",Quantium,large,0.86,gpt-5.4-mini,2026-07-02T22:01:53.885701+00:00
+71288574,1,Metro Detroit & Regional Delivery Services,Unclassified Industry,Metro Detroit & Regional Delivery Services,sme,0.92,gpt-5.4-mini,2026-07-02T22:01:53.851318+00:00
+42500058,1,Compound Photonics,Analytical Laboratory Instrument Manufacturing,Compound Photonics,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:53.960904+00:00
+40575852,1,John Curry,Lessors of Nonresidential Buildings (except Miniwarehouses),John Curry,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:54.355179+00:00
+39909372,1,Dry Coats Painting,Painting and Wall Covering Contractors,Dry Coats Painting,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:55.280320+00:00
+42938626,2,Tiny Town Pets,Pet and Pet Supplies Retailers,Tiny Town Pets,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:54.920018+00:00
+38846932,3,Medallion Bank,Commercial Banking,Medallion Bank,large,0.96,gpt-5.4-mini,2026-07-02T22:01:55.093001+00:00
+5738215,1,Children's,Child Care Services,Children's,sme,0.9,gpt-5.4-mini,2026-07-02T22:01:54.968058+00:00
+44953062,3,Eagle Specialty Products,Paint and Coating Manufacturing,Eagle Specialty Products,sme,0.78,gpt-5.4-mini,2026-07-02T22:01:55.019983+00:00
+39444985,2,Clk Hr Acquisition,Full-Service Restaurants,Clk Hr Acquisition,sme,0.74,gpt-5.4-mini,2026-07-02T22:01:55.127710+00:00
+61951159,5,Sacred Circle Healthcare,Offices of Physicians (except Mental Health Specialists),Sacred Circle Healthcare,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:55.242596+00:00
+61227213,3,Fastsigns Of Lake Forest,Unclassified Industry,Fastsigns Of Lake Forest,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:55.056049+00:00
+85791630,1,Helmer Somers Law PLLC,Offices of Lawyers,Helmer Somers Law PLLC,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:55.361502+00:00
+62239255,1,Triton Marina,Unclassified Industry,Triton Marina,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:55.423111+00:00
+92148389,1,Eyenet Security,Unclassified Industry,Eyenet Security,sme,0.8,gpt-5.4-mini,2026-07-02T22:01:56.678235+00:00
+553799,1,Nadan,Unclassified Industry,Nadan,sme,0.55,gpt-5.4-mini,2026-07-02T22:01:56.213357+00:00
+36784558,2,Signs Plus,Sign Manufacturing,Signs Plus,sme,0.92,gpt-5.4-mini,2026-07-02T22:01:56.175297+00:00
+40880711,1,Vong Raymond H,Remediation Services,Vong Raymond H,sme,0.93,gpt-5.4-mini,2026-07-02T22:01:56.369429+00:00
+37471352,5,Newton High School,Elementary and Secondary Schools,Newton High School,sme,0.92,gpt-5.4-mini,2026-07-02T22:01:56.136270+00:00
+39058782,1,Longley Diesel And Equipment Service,General Automotive Repair,Longley Diesel And Equipment Service,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:56.283119+00:00
+37390207,3,Leech Tishman Fuscaldo & Lampl,Offices of Lawyers,Leech Tishman Fuscaldo & Lampl,sme,0.94,gpt-5.4-mini,2026-07-02T22:01:56.406742+00:00
+36449623,1,Stone Street Coffee,Unclassified Industry,Stone Street Coffee,sme,0.83,gpt-5.4-mini,2026-07-02T22:01:56.331412+00:00
+50670274,4,Choices Group,"Offices of Physical, Occupational and Speech Therapists, and Audiologists",Choices Group,sme,0.71,gpt-5.4-mini,2026-07-02T22:01:56.637005+00:00
+52965046,1,Cornell Roofing & Sheet Metal Company,Roofing Contractors,Cornell Roofing & Sheet Metal Company,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:56.444029+00:00
+37780661,2,Digitech Computer,Other Computer Related Services,Digitech Computer,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:57.445513+00:00
+97582761,2,W.H Gibbs Maintenance,Janitorial Services,W.H Gibbs Maintenance,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:57.261956+00:00
+38281804,3,Midwest Food Bank Nfp,Community Food Services,Midwest Food Bank Nfp,large,0.87,gpt-5.4-mini,2026-07-02T22:01:57.648474+00:00
+54856906,1,M. Shattuck Paving,All Other Specialty Trade Contractors,M. Shattuck Paving,sme,0.95,gpt-5.4-mini,2026-07-02T22:01:57.348421+00:00
+62740143,1,Autonation Collision Center,"Automotive Body, Paint, and Interior Repair and Maintenance",Autonation Collision Center,large,0.99,gpt-5.4-mini,2026-07-02T22:01:57.503173+00:00
+36374467,2,Tjm Properties,Offices of Real Estate Agents and Brokers,Tjm Properties,sme,0.94,gpt-5.4-mini,2026-07-02T22:01:57.614675+00:00
+40165727,67,Priority Dispatch,Other Scientific and Technical Consulting Services,Priority Dispatch,sme,0.84,gpt-5.4-mini,2026-07-02T22:01:57.686435+00:00
+79371227,1,K & B Mobility,Ambulance Services,K & B Mobility,sme,0.92,gpt-5.4-mini,2026-07-02T22:01:57.577306+00:00
+109240648,1,McQueen & Pitt,Unclassified Industry,McQueen & Pitt,sme,0.82,gpt-5.4-mini,2026-07-02T22:01:57.720209+00:00
+4055280,1,Pruftechnik Sarl,"All Other Professional, Scientific, and Technical Services",Pruftechnik Sarl,large,0.84,gpt-5.4-mini,2026-07-02T22:01:58.953432+00:00
+79234396,1,West Pasco Family Dental,Unclassified Industry,West Pasco Family Dental,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:58.329723+00:00
+308494,4,Be Strong International,Child and Youth Services,Be Strong International,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:58.288111+00:00
+60208697,19,Andersen Material Handling,"Industrial Truck, Tractor, Trailer, and Stacker Machinery Manufacturing",Andersen Material Handling,sme,0.89,gpt-5.4-mini,2026-07-02T22:01:58.629140+00:00
+269382,7,Sig International Ltd,Packing and Crating,Sig International Ltd,sme,0.85,gpt-5.4-mini,2026-07-02T22:01:58.729924+00:00
+34675830,31,Gemini Industries,Industrial Supplies Merchant Wholesalers,Gemini Industries,sme,0.77,gpt-5.4-mini,2026-07-02T22:01:58.764225+00:00
+59940990,16,Mandalay Bay Resort And Casino,Casino Hotels,Mandalay Bay Resort And Casino,large,0.99,gpt-5.4-mini,2026-06-23T22:00:28.012501+00:00
+36941503,3,Rye Junior High School,Elementary and Secondary Schools,Rye Junior High School,sme,0.99,gpt-5.4-mini,2026-07-02T22:02:00.136028+00:00
+52029331,2,Clear Winds Technologies,Computer Facilities Management Services,Clear Winds Technologies,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:58.691778+00:00
+39689984,8,River City Company,Limited-Service Restaurants,River City Company,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:58.993062+00:00
+64265337,1,MSC Industrial Supply Company In New Castle,Unclassified Industry,MSC Industrial Supply Company In New Castle,large,0.97,gpt-5.4-mini,2026-07-02T22:01:58.819677+00:00
+106340583,4,Bâoli Miami,Unclassified Industry,Bâoli Miami,sme,0.87,gpt-5.4-mini,2026-07-02T22:01:59.453227+00:00
+36599381,1,The Learning Junction,Child Care Services,The Learning Junction,sme,0.98,gpt-5.4-mini,2026-07-02T22:01:59.492324+00:00
+52998487,1,Harrison on,Unclassified Industry,Harrison on,unknown,0.11,gpt-5.4-mini,2026-07-02T22:01:59.891458+00:00
+38173872,3,Grace Medical,Wholesale Trade Agents and Brokers,Grace Medical,sme,0.81,gpt-5.4-mini,2026-07-02T22:02:00.064416+00:00
+2098546,21,Cacique,Lessors of Residential Buildings and Dwellings,Cacique,sme,0.67,gpt-5.4-mini,2026-07-02T22:02:00.026609+00:00
+36318897,4,Moanalua Elementary School,Elementary and Secondary Schools,Moanalua Elementary School,sme,0.97,gpt-5.4-mini,2026-07-02T22:01:59.956369+00:00
+75469194,2,Washington State Democrats,Unclassified Industry,Washington State Democrats,large,0.86,gpt-5.4-mini,2026-07-02T22:02:00.219556+00:00
+38209720,3,Lindy Paving,Natural Gas Extraction,Lindy Paving,sme,0.86,gpt-5.4-mini,2026-07-02T22:01:59.992229+00:00
+99542521,4,Sandusky County,Unclassified Industry,Sandusky County,large,0.97,gpt-5.4-mini,2026-07-02T22:02:00.100582+00:00
+56550343,1,Veteran Development and Constr,Commercial and Institutional Building Construction,Veteran Development and Constr,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:00.509227+00:00
+75834891,2,Go Health Chiropractic,Offices of Chiropractors,Go Health Chiropractic,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:00.631682+00:00
+47665099,1,Ciao Italian Grill,Full-Service Restaurants,Ciao Italian Grill,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:01.097711+00:00
+75252863,4,Gt Fish & Oyster,Unclassified Industry,Gt Fish & Oyster,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:01.171529+00:00
+40623900,8,Softwriters,Software Publishers,Softwriters,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:01.137365+00:00
+42261803,2,The Bay At Eastview Health And Rehabilitation,Nursing Care Facilities (Skilled Nursing Facilities),The Bay At Eastview Health And Rehabilitation,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:01.558342+00:00
+51475190,1,Peterson's Harley Davidson Of Miami,"Motorcycle, ATV, and All Other Motor Vehicle Dealers",Peterson's Harley Davidson Of Miami,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:01.649408+00:00
+100176440,2,Mile High Property Solutions,Unclassified Industry,Mile High Property Solutions,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:01.256372+00:00
+46583140,5,Saber Group,Unclassified Industry,Saber Group,unknown,0.52,gpt-5.4-mini,2026-07-02T22:02:01.449424+00:00
+103692876,1,Banty Rooster LLC (the),Other Management Consulting Services,Banty Rooster LLC (the),sme,0.88,gpt-5.4-mini,2026-07-02T22:02:01.329799+00:00
+49434327,2,Umpqua Feather Merchants,Sporting and Athletic Goods Manufacturing,Umpqua Feather Merchants,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:01.502156+00:00
+41035943,2,Highjump Software,Wholesale Trade Agents and Brokers,Highjump Software,large,0.81,gpt-5.4-mini,2026-07-02T22:02:01.812556+00:00
+75650844,1,The Noannet Group,Unclassified Industry,The Noannet Group,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:02.284925+00:00
+36601402,28,Mcclure Company,"Plumbing, Heating, and Air-Conditioning Contractors",Mcclure Company,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:02.442777+00:00
+35985968,1,Abcrosby & Company,Wood Office Furniture Manufacturing,Abcrosby & Company,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:02.371007+00:00
+43350205,1,Dilbeck & Sons,Commercial and Institutional Building Construction,Dilbeck & Sons,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:02.406806+00:00
+38343093,129,Medical Transportation Management,Special Needs Transportation,Medical Transportation Management,large,0.95,gpt-5.4-mini,2026-07-02T22:02:02.478584+00:00
+36224125,1,Agency Sales Academy,Unclassified Industry,Agency Sales Academy,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:02.514768+00:00
+75871424,1,Argentum It,Custom Computer Programming Services,Argentum It,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:02.743744+00:00
+1362394,1,D-Cube,Unclassified Industry,D-Cube,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:02.683971+00:00
+43754177,1,Navigate Wellness,Administration of Public Health Programs,Navigate Wellness,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:02.601593+00:00
+75548336,1,Innovation Learning & Education,Unclassified Industry,Innovation Learning & Education,sme,0.74,gpt-5.4-mini,2026-07-02T22:02:02.882410+00:00
+105948588,4,Women's Health Arizona,Offices of Physicians (except Mental Health Specialists),Women's Health Arizona,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:03.418875+00:00
+39073912,2,Buckhead Meat Of San Antonio,Meat Processed from Carcasses,Buckhead Meat Of San Antonio,large,0.91,gpt-5.4-mini,2026-07-02T22:02:03.363773+00:00
+11036926,1,Karnak Corporation,Asphalt Paving Mixture and Block Manufacturing,Karnak Corporation,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:03.321658+00:00
+81821583,2,Spyhouse Coffee Roasters,Unclassified Industry,Spyhouse Coffee Roasters,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:03.472975+00:00
+75999791,2,All Sport Health And Fitness,Fitness and Recreational Sports Centers,All Sport Health And Fitness,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:03.609324+00:00
+94750785,2,Athens Family Vision Clinic,Offices of Optometrists,Athens Family Vision Clinic,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:03.532992+00:00
+97953521,1,Pyramid Lake Jr/Sr High School,Elementary and Secondary Schools,Pyramid Lake Jr/Sr High School,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:03.684626+00:00
+75671386,1,Gray Loon Marketing Group,Advertising Agencies,Gray Loon Marketing Group,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:05.188646+00:00
+50721919,1,Mid America Wrecker Sales,Used Car Dealers,Mid America Wrecker Sales,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:03.945808+00:00
+105501065,1,Metcar,Other Paperboard Container Manufacturing,Metcar,sme,0.8,gpt-5.4-mini,2026-07-02T22:02:03.984240+00:00
+41121515,7,Brad Deery Motors,New Car Dealers,Brad Deery Motors,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:04.317955+00:00
+39603808,1,Lending Hands,Offices of Physicians (except Mental Health Specialists),Lending Hands,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:04.355498+00:00
+42898008,103,Cal Poly Pomona Foundation,Educational Support Services,Cal Poly Pomona Foundation,large,0.96,gpt-5.4-mini,2026-06-23T22:04:57.244809+00:00
+100214081,4,AW Vanguard,Unclassified Industry,AW Vanguard,sme,0.66,gpt-5.4-mini,2026-07-02T22:02:04.416857+00:00
+103918414,9,Synchrony Pharmacy,Unclassified Industry,Synchrony Pharmacy,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:04.522649+00:00
+35403300,4,Prolific Media,Unclassified Industry,Prolific Media,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:04.574372+00:00
+79067194,1,"Pointguard Financial, Pllc",Portfolio Management and Investment Advice,"Pointguard Financial, Pllc",sme,0.95,gpt-5.4-mini,2026-07-02T22:02:04.798470+00:00
+63395959,1,O'Donal's Nursery,Nursery and Tree Production,O'Donal's Nursery,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:04.735915+00:00
+55858394,1,Elite Tactical Security Solutions,Security Guards and Patrol Services,Elite Tactical Security Solutions,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:05.043804+00:00
+51659984,2,Agility Press,Commercial Printing (except Screen and Books),Agility Press,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:05.084284+00:00
+31822161,3,Big Retail,Administrative Management and General Management Consulting Services,Big Retail,unknown,0.86,gpt-5.4-mini,2026-07-02T22:02:05.566414+00:00
+34125847,3,Preferred Roofing,Roofing Contractors,Preferred Roofing,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:05.344458+00:00
+96846939,1,Jessup Care Pharmacy,Unclassified Industry,Jessup Care Pharmacy,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:05.529330+00:00
+64521717,4,Southern Care Assisted Living,Assisted Living Facilities for the Elderly,Southern Care Assisted Living,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:05.968996+00:00
+73573803,1,Stanaitis Landscaping,Unclassified Industry,Stanaitis Landscaping,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:05.601378+00:00
+75497649,3,Liberty Technology Solutions,Other Computer Related Services,Liberty Technology Solutions,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:05.841304+00:00
+49938467,1,Salt River Aviation,Other Social Advocacy Organizations,Salt River Aviation,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:05.879865+00:00
+37454832,1,Diamond R Fertilizer Company,Farm Supplies Merchant Wholesalers,Diamond R Fertilizer Company,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:06.678674+00:00
+35388995,4,Sentinel Homecare,Assisted Living Facilities for the Elderly,Sentinel Homecare,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:06.134377+00:00
+90652255,1,It Service Providers Lp,Unclassified Industry,It Service Providers Lp,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:06.433364+00:00
+99828264,1,Shoppas Mid America,Unclassified Industry,Shoppas Mid America,sme,0.85,gpt-5.4-mini,2026-07-02T22:02:06.498576+00:00
+80731809,1,Pacific Crown Cultivation,Unclassified Industry,Pacific Crown Cultivation,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:07.098197+00:00
+98023797,1,Lenox Memorial Middle And High School,Elementary and Secondary Schools,Lenox Memorial Middle And High School,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:07.407230+00:00
+107427267,1,Ultra Intelligence & Communications,Unclassified Industry,Ultra Intelligence & Communications,large,0.83,gpt-5.4-mini,2026-07-02T22:02:08.167402+00:00
+98045968,4,Laundry-4U,Unclassified Industry,Laundry-4U,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:07.004310+00:00
+52284612,12,Hutchinson Clinic P A Health & Welfare Fund,Unclassified Industry,Hutchinson Clinic P A Health & Welfare Fund,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:06.915136+00:00
+56510356,2,Automation Zone,Automotive Parts and Accessories Retailers,Automation Zone,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:06.968450+00:00
+50885510,6,The Children's Community Programs Of Ct,Child and Youth Services,The Children's Community Programs Of Ct,sme,0.85,gpt-5.4-mini,2026-07-02T22:02:07.230018+00:00
+75991729,9,Absolute Right Choice,Temporary Help Services,Absolute Right Choice,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:07.363245+00:00
+37888785,312,First Interstate Bank,Commercial Banking,First Interstate Bank,large,0.98,gpt-5.4-mini,2026-06-23T11:10:47.769279+00:00
+51826479,9,Cop Construction,"Highway, Street, and Bridge Construction",Cop Construction,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:07.570868+00:00
+42023507,1,Demo Leaders,All Other Specialty Trade Contractors,Demo Leaders,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:07.918727+00:00
+50091327,2,Downtown Seattle Association,Business Associations,Downtown Seattle Association,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:08.132705+00:00
+59444823,1,3 Lions Logistics,"Specialized Freight (except Used Goods) Trucking, Local",3 Lions Logistics,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:08.062364+00:00
+39295301,126,US Department of Commerce,Other General Government Support,US Department of Commerce,large,0.99,gpt-5.4-mini,2026-07-02T22:02:08.098006+00:00
+46743541,4,Field Landscape Architecture,Architectural Services,Field Landscape Architecture,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:08.238827+00:00
+52390749,6,Eelco Supply Chain Solutions,Freight Transportation Arrangement,Eelco Supply Chain Solutions,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:08.375322+00:00
+51468161,1,Tesla Logistics,"General Freight Trucking, Local",Tesla Logistics,large,0.92,gpt-5.4-mini,2026-07-02T22:02:08.563044+00:00
+99529088,1,Multiple Employers,Unclassified Industry,Multiple Employers,unknown,0.99,gpt-5.4-mini,2026-07-02T22:02:08.765926+00:00
+38363637,1,Csi Property Management,Office Administrative Services,Csi Property Management,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:08.651346+00:00
+35909000,3,Stearns Agency,Elementary and Secondary Schools,Stearns Agency,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:08.970189+00:00
+40983260,1,Dafna Capital Management,Portfolio Management and Investment Advice,Dafna Capital Management,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:09.102180+00:00
+40265512,2,Woebot Labs,Unclassified Industry,Woebot Labs,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:09.008754+00:00
+47246835,2,"Crabtree, Rowe & Berger, P.C.",Offices of Certified Public Accountants,"Crabtree, Rowe & Berger, P.C.",sme,0.98,gpt-5.4-mini,2026-07-02T22:02:09.861775+00:00
+46058747,2,Coastal Pest Control,Exterminating and Pest Control Services,Coastal Pest Control,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:09.139169+00:00
+83897535,1,Kiddie Depot Daycare,Child Care Services,Kiddie Depot Daycare,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:09.822900+00:00
+100172816,1,Abc Cours A Domicile,Unclassified Industry,Abc Cours A Domicile,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:09.521034+00:00
+36926068,1263,Einstein Noah Restaurant Group,Limited-Service Restaurants,Einstein Noah Restaurant Group,large,0.98,gpt-5.4-mini,2026-07-02T22:02:09.656203+00:00
+54891643,1,Nurturing Hearts Home Healthcare Agency,Home Health Care Services,Nurturing Hearts Home Healthcare Agency,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:09.693770+00:00
+53009672,1,"Sawyer & Sawyer, Llp",Offices of Lawyers,"Sawyer & Sawyer, Llp",sme,0.94,gpt-5.4-mini,2026-07-02T22:02:10.020744+00:00
+40176597,1,Skillist,Unclassified Industry,Skillist,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:09.982852+00:00
+75498040,19,Pennington Biomedical Research Center,Unclassified Industry,Pennington Biomedical Research Center,large,0.83,gpt-5.4-mini,2026-07-02T22:02:10.055020+00:00
+44661820,3,Dee Sign Company,Sign Manufacturing,Dee Sign Company,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:10.135458+00:00
+48655616,1,Illumination Pr,Periodical Publishers,Illumination Pr,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:10.098593+00:00
+99507209,2,Pcmechanic,Other Personal and Household Goods Repair and Maintenance,Pcmechanic,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:10.793729+00:00
+104651529,1,Grocapitus Investments,Unclassified Industry,Grocapitus Investments,sme,0.78,gpt-5.4-mini,2026-07-02T22:02:10.687224+00:00
+96791279,1,Lydia Hawk Elementary,Elementary and Secondary Schools,Lydia Hawk Elementary,large,0.98,gpt-5.4-mini,2026-07-02T22:02:11.674453+00:00
+43402730,2,Cleveland Range,Other Miscellaneous Durable Goods Merchant Wholesalers,Cleveland Range,large,0.85,gpt-5.4-mini,2026-07-02T22:02:11.025064+00:00
+61224876,12,Us Probation Office,Courts,Us Probation Office,large,0.98,gpt-5.4-mini,2026-07-02T22:02:11.328843+00:00
+40328951,7,Brazosport I.S.D,Elementary and Secondary Schools,Brazosport I.S.D,large,0.98,gpt-5.4-mini,2026-07-02T22:02:11.062878+00:00
+55777584,1,Palm Beach Autographs,"Gift, Novelty, and Souvenir Retailers",Palm Beach Autographs,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:11.099073+00:00
+44799845,1,Starpoint Health,General Medical and Surgical Hospitals,Starpoint Health,sme,0.78,gpt-5.4-mini,2026-07-02T22:02:11.133518+00:00
+85480250,1,Prime Obstetrics & Gynecology,Offices of Physicians (except Mental Health Specialists),Prime Obstetrics & Gynecology,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:11.191493+00:00
+50334812,6,Genfed Financial Credit Union,Credit Unions,Genfed Financial Credit Union,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:13.821868+00:00
+36422673,1,Optical Air Data Systems,Other Support Activities for Air Transportation,Optical Air Data Systems,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:11.775078+00:00
+98009044,2,Sussex Protection Service,All Other Support Services,Sussex Protection Service,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:16.400929+00:00
+52900420,1,Nice & Fresh Cleaners,Janitorial Services,Nice & Fresh Cleaners,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:12.130727+00:00
+37380904,1,Devonshire Preschool & Infant Center,Child Care Services,Devonshire Preschool & Infant Center,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:12.307702+00:00
+103354279,14,Rosemont Health & Rehab Center,Unclassified Industry,Rosemont Health & Rehab Center,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:12.272680+00:00
+81167056,3,Chico Christian Childcare Ctr,Unclassified Industry,Chico Christian Childcare Ctr,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:12.201728+00:00
+96525788,1,Drip Nation,Clothing and Clothing Accessories Retailers,Drip Nation,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:12.346906+00:00
+6567744,1,Cmw Co,Offices of Physicians (except Mental Health Specialists),Cmw Co,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:12.238486+00:00
+62373705,1,Berkshire East Ski Resort,Skiing Facilities,Berkshire East Ski Resort,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:12.594800+00:00
+48580873,1,Ifix Appliance Repair,Unclassified Industry,Ifix Appliance Repair,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:12.858349+00:00
+80556269,1,Bushland Independent School District,Unclassified Industry,Bushland Independent School District,large,0.96,gpt-5.4-mini,2026-07-02T22:02:13.384780+00:00
+50542289,1,North Boulder Dental Group,Offices of Dentists,North Boulder Dental Group,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:13.251028+00:00
+56095390,2,East Valley Family Practice,Offices of Physicians (except Mental Health Specialists),East Valley Family Practice,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:13.578866+00:00
+50309090,1,Supportive Care Solutions,Services for the Elderly and Persons with Disabilities,Supportive Care Solutions,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:13.486942+00:00
+41381202,2,Avenue At Wooster,Nursing Care Facilities (Skilled Nursing Facilities),Avenue At Wooster,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:13.163192+00:00
+36924507,1,"Melton & Melton, Llp",Offices of Certified Public Accountants,"Melton & Melton, Llp",sme,0.92,gpt-5.4-mini,2026-07-02T22:02:13.450683+00:00
+75810187,1,Aleris Salem Dental Center,Unclassified Industry,Aleris Salem Dental Center,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:13.858700+00:00
+45746773,3,Small Business Service Bureau,Unclassified Industry,Small Business Service Bureau,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:13.899599+00:00
+42003246,2,Wildflower Apt,Lessors of Residential Buildings and Dwellings,Wildflower Apt,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:14.096534+00:00
+42601905,1,Bauman Landscape,Landscaping Services,Bauman Landscape,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:14.717459+00:00
+41446530,1,Almost There,Full-Service Restaurants,Almost There,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:16.132810+00:00
+37231823,6,Brattleboro Union High School,Elementary and Secondary Schools,Brattleboro Union High School,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:14.608472+00:00
+54734163,1,Camp Blue Spruce,Recreational and Vacation Camps (except Campgrounds),Camp Blue Spruce,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:14.949706+00:00
+72925459,1,L & V Aerial Recovery,Unclassified Industry,L & V Aerial Recovery,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:14.649076+00:00
+49118650,8,Daniel Management Group,Nonresidential Property Managers,Daniel Management Group,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:15.026812+00:00
+43641817,2,Jefferson Parish Sheriff's Office,Police Protection,Jefferson Parish Sheriff's Office,large,0.97,gpt-5.4-mini,2026-07-02T22:02:15.213528+00:00
+49618052,5,Natura Life Science,Unclassified Industry,Natura Life Science,sme,0.72,gpt-5.4-mini,2026-07-02T22:02:15.176802+00:00
+100086962,12,Liberty Steel & Wire,Unclassified Industry,Liberty Steel & Wire,large,0.88,gpt-5.4-mini,2026-07-02T22:02:15.282431+00:00
+106023524,1,Family Medicine Residency,Unclassified Industry,Family Medicine Residency,sme,0.68,gpt-5.4-mini,2026-07-02T22:02:15.878961+00:00
+39968894,1,Waraner Tree Experts,Landscaping Services,Waraner Tree Experts,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:15.742650+00:00
+35345262,1,S&S Builders,New Single-Family Housing Construction (except For-Sale Builders),S&S Builders,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:15.794535+00:00
+12085333,1,Osc,Other Miscellaneous Nondurable Goods Merchant Wholesalers,Osc,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:16.060186+00:00
+8937376,22,Kp,"Other Direct Insurance (except Life, Health, and Medical) Carriers",Kp,unknown,0.86,gpt-5.4-mini,2026-07-02T22:02:20.277400+00:00
+50521363,4,Homegrown Tap And Dough,Full-Service Restaurants,Homegrown Tap And Dough,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:16.098467+00:00
+57380369,1,Spa ZenAura Massage,Unclassified Industry,Spa ZenAura Massage,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:16.274534+00:00
+47550407,1,Kw Executive,Unclassified Industry,Kw Executive,sme,0.74,gpt-5.4-mini,2026-07-02T22:02:16.502767+00:00
+47391291,31,Princeton Property Management,Residential Property Managers,Princeton Property Management,sme,0.94,gpt-5.4-mini,2026-06-23T11:07:49.993018+00:00
+34791880,1,"Integrity Business Solutions, Llc USA",Tour Operators,"Integrity Business Solutions, Llc USA",sme,0.9,gpt-5.4-mini,2026-07-02T22:02:16.926703+00:00
+59178564,1,Birkhold & Maider,Legal Counsel and Prosecution,Birkhold & Maider,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:16.879129+00:00
+46416730,3,Utimaco Gmbh,Software Publishers,Utimaco Gmbh,large,0.92,gpt-5.4-mini,2026-07-02T22:02:17.043934+00:00
+75296781,13,Christa Mcauliffe Charter School,Unclassified Industry,Christa Mcauliffe Charter School,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:17.080455+00:00
+35284190,1,Kck Services,Unclassified Industry,Kck Services,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:16.990612+00:00
+84795230,1,"Bradley A. Kmentt DDS, MSD",Offices of Dentists,"Bradley A. Kmentt DDS, MSD",sme,0.99,gpt-5.4-mini,2026-07-02T22:02:31.795211+00:00
+37965580,1,Continental Cellular,Electronics and Appliance Retailers,Continental Cellular,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:17.357105+00:00
+611261,1,Living Water International,Lessors of Residential Buildings and Dwellings,Living Water International,large,0.89,gpt-5.4-mini,2026-07-02T22:02:17.657945+00:00
+1286371,3,"Adesco, Sa",New Single-Family Housing Construction (except For-Sale Builders),"Adesco, Sa",sme,0.86,gpt-5.4-mini,2026-07-02T22:02:17.394367+00:00
+49098676,13,Colorado Public Radio,Other Scientific and Technical Consulting Services,Colorado Public Radio,large,0.93,gpt-5.4-mini,2026-07-02T22:02:18.023836+00:00
+75290687,1,Whatcom Electric & Battery,Unclassified Industry,Whatcom Electric & Battery,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:17.940053+00:00
+39830574,1,"Dallas Pediatric Dentistry, P.a.",Offices of Dentists,"Dallas Pediatric Dentistry, P.a.",sme,0.98,gpt-5.4-mini,2026-07-02T22:02:18.077175+00:00
+63397465,10,Tevora,Administrative Management and General Management Consulting Services,Tevora,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:18.195402+00:00
+79144699,1,Law Office Of Mark D Nelson Pllc,Offices of Lawyers,Law Office Of Mark D Nelson Pllc,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:18.155243+00:00
+57945013,1,Wise Building Solutions,Commercial and Institutional Building Construction,Wise Building Solutions,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:18.427815+00:00
+82292065,1,North Country Smoke House,Unclassified Industry,North Country Smoke House,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:19.804768+00:00
+35062087,1,Mcnamee,Pharmacies and Drug Retailers,Mcnamee,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:18.674968+00:00
+108238504,274,The University of Texas at San Antonio,"Colleges, Universities, and Professional Schools",The University of Texas at San Antonio,large,0.99,gpt-5.4-mini,2026-07-02T22:02:18.998704+00:00
+86640701,1,RNPC,All Other Personal Services,RNPC,sme,0.61,gpt-5.4-mini,2026-07-02T22:02:19.183033+00:00
+37935521,2,The Village Early Childhood Center,Child Care Services,The Village Early Childhood Center,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:19.536270+00:00
+75491429,1,Advancedtci,Unclassified Industry,Advancedtci,sme,0.61,gpt-5.4-mini,2026-07-02T22:02:21.312814+00:00
+100876186,3,Impress Staffing Solutions,Unclassified Industry,Impress Staffing Solutions,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:19.222013+00:00
+50485680,2,Art Of The Event,All Other Personal Services,Art Of The Event,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:19.574456+00:00
+35087149,1,G.E.T. Enterprises,All Other Specialty Trade Contractors,G.E.T. Enterprises,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:19.680148+00:00
+33079969,81,Ffwd,Other Social Advocacy Organizations,Ffwd,sme,0.83,gpt-5.4-mini,2026-06-23T11:12:04.782663+00:00
+96845343,1,Moto Technology Services,Unclassified Industry,Moto Technology Services,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:20.015031+00:00
+42707695,1,Coast Pacific Builders,Commercial and Institutional Building Construction,Coast Pacific Builders,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:20.065590+00:00
+48245817,158,Alliance Physical Therapy Partners,"Offices of Physical, Occupational and Speech Therapists, and Audiologists",Alliance Physical Therapy Partners,large,0.92,gpt-5.4-mini,2026-07-02T22:02:21.859815+00:00
+39571024,4,Hydro-Dyne Engineering,Other Metal Valve and Pipe Fitting Manufacturing,Hydro-Dyne Engineering,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:35.499619+00:00
+96651295,1,Michi Tacos,Unclassified Industry,Michi Tacos,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:20.550914+00:00
+83559042,1,Mindwell Psychology,Unclassified Industry,Mindwell Psychology,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:21.183042+00:00
+2144864,1,Retail First Corp.,Indoor and Outdoor Display Advertising,Retail First Corp.,sme,0.76,gpt-5.4-mini,2026-07-02T22:02:20.978816+00:00
+39720183,2,Tachyus,Custom Computer Programming Services,Tachyus,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:21.144365+00:00
+99503122,16,St Catherine's Manor Of Fostoria,Nursing Care Facilities (Skilled Nursing Facilities),St Catherine's Manor Of Fostoria,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:21.218928+00:00
+37145013,7,The Ravens Group,Janitorial Services,The Ravens Group,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:23.534187+00:00
+97272774,1,Select One Healthcare Solutions,Unclassified Industry,Select One Healthcare Solutions,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:21.661867+00:00
+35111792,88,Little Sprouts,Child Care Services,Little Sprouts,sme,0.92,gpt-5.4-mini,2026-06-23T11:12:07.045720+00:00
+75644985,2,Landmark Ceramics,Unclassified Industry,Landmark Ceramics,sme,0.71,gpt-5.4-mini,2026-07-02T22:02:23.482984+00:00
+92728198,1,Harbor Smiles Hygiene,Offices of Dentists,Harbor Smiles Hygiene,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:22.213970+00:00
+41499645,57,The Emmes Corporation,"Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",The Emmes Corporation,large,0.91,gpt-5.4-mini,2026-07-02T22:02:22.091213+00:00
+97935887,1,Zivitz Law Group P.C,Unclassified Industry,Zivitz Law Group P.C,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:22.253211+00:00
+90535835,1,Agrileum,Unclassified Industry,Agrileum,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:25.370078+00:00
+62659037,2,Jim Lupient Infiniti,New Car Dealers,Jim Lupient Infiniti,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:22.806060+00:00
+83830186,17,Ko Recruiting,Employment Placement Agencies,Ko Recruiting,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:23.034870+00:00
+31892236,2,Bridgemark,Crude Petroleum Extraction,Bridgemark,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:23.152057+00:00
+82722911,2,Judd Orthodontics,Offices of Dentists,Judd Orthodontics,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:23.349947+00:00
+1077259,2,Abhc,Unclassified Industry,Abhc,unknown,0.95,gpt-5.4-mini,2026-07-02T22:02:23.408476+00:00
+37014380,2,Town Of West Boylston,Solar Electric Power Generation,Town Of West Boylston,large,0.89,gpt-5.4-mini,2026-07-02T22:02:23.734916+00:00
+75665366,2,Cucina Colore,Snack and Nonalcoholic Beverage Bars,Cucina Colore,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:23.897845+00:00
+60164868,2,L.H Thomson,"Motorcycle, Bicycle, and Parts Manufacturing",L.H Thomson,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:24.292966+00:00
+50665962,4,Yerecic Label,Commercial Printing (except Screen and Books),Yerecic Label,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:24.613257+00:00
+39227205,8,Geographic Information Services,Surveying and Mapping (except Geophysical) Services,Geographic Information Services,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:24.431768+00:00
+99549301,1,Cft Products,Unclassified Industry,Cft Products,sme,0.62,gpt-5.4-mini,2026-07-02T22:02:27.449061+00:00
+34883648,1,Colane,Lessors of Other Real Estate Property,Colane,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:24.575241+00:00
+49184566,2,Jade Dental,Professional Organizations,Jade Dental,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:24.648880+00:00
+104585475,2,Fuccillo Kia Of Port Charlotte,Unclassified Industry,Fuccillo Kia Of Port Charlotte,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:25.032556+00:00
+52928421,1,Thomco Specialty Products,Paper Bag and Coated and Treated Paper Manufacturing,Thomco Specialty Products,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:25.414658+00:00
+48219320,1,Bergfelds,All Other Support Services,Bergfelds,sme,0.85,gpt-5.4-mini,2026-07-02T22:02:25.451895+00:00
+75442467,1,Listenwise,Software Publishers,Listenwise,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:25.670437+00:00
+38259312,183,InfoPeople,Other Computer Related Services,InfoPeople,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:25.712261+00:00
+83938172,1,"Riverfront Hotel Associates, LP",Hotels (except Casino Hotels) and Motels,"Riverfront Hotel Associates, LP",sme,0.89,gpt-5.4-mini,2026-07-02T22:02:25.504359+00:00
+35885130,3,University Of Detroit Jesuit High School And Academy,Elementary and Secondary Schools,University Of Detroit Jesuit High School And Academy,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:25.991974+00:00
+34311059,3,Notch,All Other Traveler Accommodation,Notch,sme,0.76,gpt-5.4-mini,2026-07-02T22:02:26.483655+00:00
+57325273,1,Everyday Aba,Unclassified Industry,Everyday Aba,sme,0.67,gpt-5.4-mini,2026-07-02T22:02:26.539686+00:00
+39628233,9,Seventy Seven Energy,Unclassified Industry,Seventy Seven Energy,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:26.444186+00:00
+34766949,2,Integrated Technology,Lessors of Nonresidential Buildings (except Miniwarehouses),Integrated Technology,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:26.656478+00:00
+37557581,35,Validity,Janitorial Services,Validity,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:26.577682+00:00
+79496418,1,Donner Creek Veterinary Clinic,Unclassified Industry,Donner Creek Veterinary Clinic,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:26.771152+00:00
+89919230,1,Bailey And Bailey Enterprises Limited,Unclassified Industry,Bailey And Bailey Enterprises Limited,sme,0.73,gpt-5.4-mini,2026-07-02T22:02:27.129850+00:00
+106264373,2,A Bathing Ape® | I.t Nowhere (uk) Limited,Clothing and Clothing Accessories Retailers,A Bathing Ape® | I.t Nowhere (uk) Limited,large,0.93,gpt-5.4-mini,2026-07-02T22:02:27.646908+00:00
+47556525,3,Wiliot,Unclassified Industry,Wiliot,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:27.610160+00:00
+45716038,2,Arbutus Biopharma Corporation,"All Other Professional, Scientific, and Technical Services",Arbutus Biopharma Corporation,large,0.95,gpt-5.4-mini,2026-07-02T22:02:27.563177+00:00
+36938147,4,Northwest Christian School,Elementary and Secondary Schools,Northwest Christian School,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:29.100980+00:00
+100108155,2,Guiding Home Care,Unclassified Industry,Guiding Home Care,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:30.036243+00:00
+40016915,3,Almost Heaven Saunas,All Other Miscellaneous Manufacturing,Almost Heaven Saunas,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:27.892436+00:00
+56145176,1,Oak Ridge Foam & Coating Systems,All Other Miscellaneous Chemical Product and Preparation Manufacturing,Oak Ridge Foam & Coating Systems,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:28.023030+00:00
+37790224,6,Construction Metal Products,Fabricated Structural Metal Manufacturing,Construction Metal Products,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:28.563921+00:00
+41007590,14,Westminster Oaks,Nursing Care Facilities (Skilled Nursing Facilities),Westminster Oaks,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:28.643490+00:00
+840418,2,Playland,Child Care Services,Playland,sme,0.78,gpt-5.4-mini,2026-07-02T22:02:28.713209+00:00
+97918829,1,The Villages Golf Cars,"Motorcycle, ATV, and All Other Motor Vehicle Dealers",The Villages Golf Cars,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:28.608057+00:00
+85149201,1,"DR. Lori Woodburn, DDS, PC",Offices of Dentists,"DR. Lori Woodburn, DDS, PC",sme,0.98,gpt-5.4-mini,2026-07-02T22:02:29.031066+00:00
+83837420,3,Pacific Ocean Dental Group,Offices of Dentists,Pacific Ocean Dental Group,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:28.904561+00:00
+48574996,1,"Iemmiti, Iemmiti, Iemmiti & Iemmiti Real Estate Management Firm",Unclassified Industry,"Iemmiti, Iemmiti, Iemmiti & Iemmiti Real Estate Management Firm",sme,0.9,gpt-5.4-mini,2026-07-02T22:02:29.707692+00:00
+18563692,1,La Calle,Full-Service Restaurants,La Calle,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:29.664527+00:00
+80460359,1,Midtown Center For Physical Therapy & Sports Medicine,"Offices of Physical, Occupational and Speech Therapists, and Audiologists",Midtown Center For Physical Therapy & Sports Medicine,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:29.743071+00:00
+53795403,1,Orofino Builders Supply,Hardware Retailers,Orofino Builders Supply,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:29.778170+00:00
+41574922,1,Railroad Signal Services,Other Heavy and Civil Engineering Construction,Railroad Signal Services,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:29.964735+00:00
+52380010,1,Sea Hag Marina,Marinas,Sea Hag Marina,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:30.075492+00:00
+40305019,3,Edison Software,Custom Computer Programming Services,Edison Software,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:32.210775+00:00
+97052824,1,Lube Xpress & Smogs,General Automotive Repair,Lube Xpress & Smogs,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:30.838180+00:00
+40183251,5,Dupli Envelope And Graphics,Commercial Printing (except Screen and Books),Dupli Envelope And Graphics,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:31.568282+00:00
+36640897,17,Firstsource Solutions Ltd,Collection Agencies,Firstsource Solutions Ltd,large,0.98,gpt-5.4-mini,2026-07-02T22:02:30.794104+00:00
+82585149,1,Travelcoin Foundation,Unclassified Industry,Travelcoin Foundation,sme,0.56,gpt-5.4-mini,2026-07-02T22:02:32.447532+00:00
+42884584,1,Somewear Labs,Satellite Telecommunications,Somewear Labs,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:33.130505+00:00
+97943319,2,Red Flag Pest Control,Exterminating and Pest Control Services,Red Flag Pest Control,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:30.930796+00:00
+32346506,1,Farm To Fork,Full-Service Restaurants,Farm To Fork,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:30.974589+00:00
+36545565,2,Columbia Elementary,Child Care Services,Columbia Elementary,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:31.861566+00:00
+48798735,1,Lemle & Wolff,New Multifamily Housing Construction (except For-Sale Builders),Lemle & Wolff,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:32.020110+00:00
+36711522,8,American Standard Brand- Fiat Products,"Showcase, Partition, Shelving, and Locker Manufacturing",American Standard Brand- Fiat Products,large,0.87,gpt-5.4-mini,2026-07-02T22:02:31.971729+00:00
+81882247,1,Boca Chamber Radio,Unclassified Industry,Boca Chamber Radio,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:32.532830+00:00
+68104623,1,Serpro Logistics,Administrative Management and General Management Consulting Services,Serpro Logistics,sme,0.8,gpt-5.4-mini,2026-07-02T22:02:32.740300+00:00
+86468984,3,Rossville Family Dental,Offices of Dentists,Rossville Family Dental,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:34.443580+00:00
+62296846,4,Central Medical Services Of Westrock,Offices of Physicians (except Mental Health Specialists),Central Medical Services Of Westrock,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:32.855499+00:00
+52860113,1,Urban Pathways K-5 College Charter School,Unclassified Industry,Urban Pathways K-5 College Charter School,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:33.043628+00:00
+46184703,1,Akina Enterprises,School and Employee Bus Transportation,Akina Enterprises,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:33.487131+00:00
+75630707,1,Northeast Digestive Health Center,General Medical and Surgical Hospitals,Northeast Digestive Health Center,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:33.172616+00:00
+50899222,3,WM T Burnett Fiber,Urethane and Other Foam Product (except Polystyrene) Manufacturing,WM T Burnett Fiber,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:33.620998+00:00
+33862097,1,Happy Adventures Limited,Unclassified Industry,Happy Adventures Limited,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:33.583311+00:00
+96674483,1,Ocean Brokerage,Unclassified Industry,Ocean Brokerage,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:33.860374+00:00
+38074124,1,Community Self Storage,Other Activities Related to Real Estate,Community Self Storage,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:33.912439+00:00
+98004299,1,Maryjo Home Care,Home Health Care Services,Maryjo Home Care,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:34.268248+00:00
+38367582,3,Shoshone County,Unclassified Industry,Shoshone County,large,0.96,gpt-5.4-mini,2026-07-02T22:02:34.343280+00:00
+1921727,2,Fuel It Refuelling,Unclassified Industry,Fuel It Refuelling,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:34.225017+00:00
+51062738,2,Furniture Galleries,Furniture Retailers,Furniture Galleries,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:34.407887+00:00
+53001523,6,Branson Internet Ventures,All Other Traveler Accommodation,Branson Internet Ventures,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:34.566262+00:00
+100316955,2,Air Flows Chicago,"Flower, Nursery Stock, and Florists' Supplies Merchant Wholesalers",Air Flows Chicago,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:34.731337+00:00
+41080476,4,Eben Ezer Lutheran Care Center,Assisted Living Facilities for the Elderly,Eben Ezer Lutheran Care Center,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:34.771727+00:00
+62135375,2,Scherbarth,Farm and Garden Machinery and Equipment Merchant Wholesalers,Scherbarth,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:35.082904+00:00
+97980236,6,Titan Home Improvement,Unclassified Industry,Titan Home Improvement,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:35.399319+00:00
+97603673,1,L & S Excavation,Unclassified Industry,L & S Excavation,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:35.171394+00:00
+105499318,61,Capitol Federal,Commercial Banking,Capitol Federal,large,0.91,gpt-5.4-mini,2026-07-02T22:02:35.768132+00:00
+37695265,12,Cincinnati Thermal Spray,Mechanical Power Transmission Equipment Manufacturing,Cincinnati Thermal Spray,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:35.718722+00:00
+45094128,1,Loyds Aviation,Other Airport Operations,Loyds Aviation,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:35.565762+00:00
+36301712,1,Titan Concrete,All Other Specialty Trade Contractors,Titan Concrete,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:37.218316+00:00
+41058697,130,Infinite Computing Systems,Custom Computer Programming Services,Infinite Computing Systems,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:35.681214+00:00
+80328308,3,Pack Orthodontics,Offices of Dentists,Pack Orthodontics,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:35.993498+00:00
+49469481,1,Kootenai Tribe Of Idaho,American Indian and Alaska Native Tribal Governments,Kootenai Tribe Of Idaho,large,0.91,gpt-5.4-mini,2026-07-02T22:02:36.470375+00:00
+45724487,1,American Nutritional Corporation,Dried and Dehydrated Food Manufacturing,American Nutritional Corporation,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:36.043656+00:00
+40718357,1,Messari,Software Publishers,Messari,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:36.389656+00:00
+79072513,1,Anchor Self Storage,General Warehousing and Storage,Anchor Self Storage,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:36.435106+00:00
+44362587,1,Doehrman Co.,Automobile and Other Motor Vehicle Merchant Wholesalers,Doehrman Co.,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:36.854652+00:00
+75539116,1,Levy Leff & Defrank P.C,Offices of Lawyers,Levy Leff & Defrank P.C,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:36.818246+00:00
+40074539,1,Johnson & Johns Group,Unclassified Industry,Johnson & Johns Group,sme,0.72,gpt-5.4-mini,2026-07-02T22:02:36.544635+00:00
+51548283,7,Bruttell Roofing,Roofing Contractors,Bruttell Roofing,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:36.677857+00:00
+56361856,2,Transaction Pros,Unclassified Industry,Transaction Pros,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:37.287999+00:00
+35273960,1,Crown Construction Co,Commercial and Institutional Building Construction,Crown Construction Co,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:37.125831+00:00
+86636192,2,Bonnie & Clyde,Clothing and Clothing Accessories Retailers,Bonnie & Clyde,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:37.584611+00:00
+39104954,4,C4 Therapeutics,Research and Development in Biotechnology (except Nanobiotechnology),C4 Therapeutics,large,0.89,gpt-5.4-mini,2026-07-02T22:02:38.195934+00:00
+58639967,2,Witkowiak Funeral Home,Funeral Homes and Funeral Services,Witkowiak Funeral Home,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:37.686772+00:00
+61564927,5,Ampm Arco,Other Gasoline Stations,Ampm Arco,large,0.92,gpt-5.4-mini,2026-07-02T22:02:38.880782+00:00
+96390115,1,Bristol Dental Associates,Offices of Dentists,Bristol Dental Associates,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:37.784691+00:00
+3930323,4,Qualico Developments U.S,Land Subdivision,Qualico Developments U.S,large,0.9,gpt-5.4-mini,2026-07-02T22:02:37.908421+00:00
+48867882,1,Just Let Me Do It,Commercial and Institutional Building Construction,Just Let Me Do It,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:37.736302+00:00
+54275585,2,Springfield Welding & Mfg,Welding and Soldering Equipment Manufacturing,Springfield Welding & Mfg,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:38.149868+00:00
+60793056,2,Aocusa,Petroleum Lubricating Oil and Grease Manufacturing,Aocusa,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:38.379045+00:00
+61285350,9,Sims Crane & Equipment Co,"Overhead Traveling Crane, Hoist, and Monorail System Manufacturing",Sims Crane & Equipment Co,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:38.338877+00:00
+79745496,1,Piqture Audiovisual Architects,Unclassified Industry,Piqture Audiovisual Architects,sme,0.9,gpt-5.4-mini,2026-06-23T10:23:14.202526+00:00
+39982488,5,Advanced Dental Arts,Offices of Dentists,Advanced Dental Arts,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:38.956161+00:00
+106910594,1,"Law Offices Of Todd K. Mohink, Pa",Unclassified Industry,"Law Offices Of Todd K. Mohink, Pa",sme,0.97,gpt-5.4-mini,2026-07-02T22:02:38.997608+00:00
+100377263,4,Lazy Bird,Limited-Service Restaurants,Lazy Bird,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:38.801193+00:00
+39012149,25,Sears Holdings Management Corporation,All Other Home Furnishings Retailers,Sears Holdings Management Corporation,large,0.98,gpt-5.4-mini,2026-07-02T22:02:38.845421+00:00
+38201669,1,Golden Greek Restaurant,Limited-Service Restaurants,Golden Greek Restaurant,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:38.916095+00:00
+40627640,1,Interfaith Caring Ministries,Religious Organizations,Interfaith Caring Ministries,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:39.032913+00:00
+39255959,3,Executive Maids,Janitorial Services,Executive Maids,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:39.218785+00:00
+340095,2,BRF,All Other Miscellaneous Food Manufacturing,BRF,large,0.99,gpt-5.4-mini,2026-07-02T22:02:39.323965+00:00
+96685611,1,Elim Child Development Center,Child Care Services,Elim Child Development Center,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:39.470117+00:00
+52853065,2,Rich Music,"Independent Artists, Writers, and Performers",Rich Music,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:39.935908+00:00
+46654974,1,Biobus,All Other Miscellaneous Schools and Instruction,Biobus,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:39.976819+00:00
+83604242,3,Beacon Hotel South Beach,Unclassified Industry,Beacon Hotel South Beach,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:40.106256+00:00
+80296593,4,Spectra Credit Union,Credit Unions,Spectra Credit Union,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:40.033576+00:00
+52123284,2,Premier Furnace Specialists,Heating Equipment (except Warm Air Furnaces) Manufacturing,Premier Furnace Specialists,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:40.415756+00:00
+41320265,13,American Medical Technologies,Custom Computer Programming Services,American Medical Technologies,sme,0.62,gpt-5.4-mini,2026-07-02T22:02:40.069326+00:00
+39268207,3,Aspen Dermatology,Offices of Physicians (except Mental Health Specialists),Aspen Dermatology,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:40.342618+00:00
+51277323,3,Sunrise Of Philadelphia,Educational Support Services,Sunrise Of Philadelphia,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:40.292752+00:00
+83808184,1,Pittsburgh Fitness Project,Fitness and Recreational Sports Centers,Pittsburgh Fitness Project,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:40.379404+00:00
+38097165,1,New Caney Independent School District Police Department,Elementary and Secondary Schools,New Caney Independent School District Police Department,large,0.98,gpt-5.4-mini,2026-07-02T22:02:40.450904+00:00
+84014616,1,Ashly Weissfield Pa,Professional Organizations,Ashly Weissfield Pa,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:40.911074+00:00
+51579310,4,Our Credit Union,Credit Unions,Our Credit Union,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:41.046875+00:00
+1757684,13,Elitechgroup,All Other Miscellaneous Manufacturing,Elitechgroup,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:41.203742+00:00
+40641678,1,Christy Webber & Company,Landscaping Services,Christy Webber & Company,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:41.270078+00:00
+40822097,1,Harman's Of Fairbanks,Full-Service Restaurants,Harman's Of Fairbanks,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:41.164909+00:00
+99932340,2,Code Ninjas Newport Beach,Unclassified Industry,Code Ninjas Newport Beach,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:41.704856+00:00
+76044235,8,Iota Soft,Unclassified Industry,Iota Soft,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:41.446362+00:00
+56592337,3,Advanced Program Analytics,Administrative Management and General Management Consulting Services,Advanced Program Analytics,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:41.310653+00:00
+36190147,2,Horace Mann Elementary School,Elementary and Secondary Schools,Horace Mann Elementary School,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:41.823681+00:00
+45720050,1,Woodland Wood Products,All Other Miscellaneous Wood Product Manufacturing,Woodland Wood Products,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:41.569354+00:00
+64618548,12,Juiceland,All Other Specialty Food Retailers,Juiceland,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:41.939295+00:00
+81004210,1,Taurus Firm,Unclassified Industry,Taurus Firm,sme,0.44,gpt-5.4-mini,2026-07-02T22:02:42.238798+00:00
+44915937,1,Primavera Foods,Unclassified Industry,Primavera Foods,sme,0.85,gpt-5.4-mini,2026-06-23T11:12:57.364519+00:00
+46717280,8,Maytronics,Wholesale Trade Agents and Brokers,Maytronics,large,0.96,gpt-5.4-mini,2026-07-02T22:02:42.190571+00:00
+39380054,1,Legacy Trucks & Cars,New Car Dealers,Legacy Trucks & Cars,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:42.083770+00:00
+75828175,7,Crossover Healthcare Ministry,Unclassified Industry,Crossover Healthcare Ministry,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:42.323159+00:00
+99635643,2,Muben Limited,Unclassified Industry,Muben Limited,sme,0.71,gpt-5.4-mini,2026-07-02T22:02:42.527776+00:00
+42499900,1,Laguna Asset Management,Lessors of Other Real Estate Property,Laguna Asset Management,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:42.454268+00:00
+96129866,1,Phlebotomy On Wheels,Unclassified Industry,Phlebotomy On Wheels,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:42.640280+00:00
+108151647,2,Volo Kids Foundation,Unclassified Industry,Volo Kids Foundation,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:42.795957+00:00
+50905777,1,Rishi Tea,Other Miscellaneous Durable Goods Merchant Wholesalers,Rishi Tea,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:42.945294+00:00
+59950628,2,Manninos Bakery,Retail Bakeries,Manninos Bakery,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:46.898444+00:00
+107616661,1,Murray Ford Superstore,Unclassified Industry,Murray Ford Superstore,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:43.253205+00:00
+33715607,1,Jsg Communications,Unclassified Industry,Jsg Communications,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:44.725932+00:00
+62832985,3,Able Distributing Company,Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers,Able Distributing Company,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:43.303947+00:00
+42737412,1,Expert Plumbing And Rooter,"Plumbing, Heating, and Air-Conditioning Contractors",Expert Plumbing And Rooter,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:43.445356+00:00
+81470002,1,Profense,Unclassified Industry,Profense,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:43.340842+00:00
+42395776,15,Daviess Community Hospital,General Medical and Surgical Hospitals,Daviess Community Hospital,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:43.611706+00:00
+1493872,1,NoviQ,Unclassified Industry,NoviQ,sme,0.56,gpt-5.4-mini,2026-07-02T22:02:43.573786+00:00
+50833494,1,"Vitreo-Retinal Associates, P.C.",Offices of Physicians (except Mental Health Specialists),"Vitreo-Retinal Associates, P.C.",sme,0.96,gpt-5.4-mini,2026-07-02T22:02:43.788265+00:00
+93598293,1,Anderson Flennoy I.l.s. Agency,Unclassified Industry,Anderson Flennoy I.l.s. Agency,sme,0.81,gpt-5.4-mini,2026-07-02T22:02:43.924720+00:00
+10176583,1,Imcs,All Other Personal Services,Imcs,sme,0.68,gpt-5.4-mini,2026-07-02T22:02:44.071156+00:00
+107030831,1,Financial Staffing 2000,Unclassified Industry,Financial Staffing 2000,sme,0.85,gpt-5.4-mini,2026-07-02T22:02:44.291206+00:00
+32091582,4,Emerald Park,Other Activities Related to Real Estate,Emerald Park,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:44.246025+00:00
+35718342,1,Newport Construction Services,New Single-Family Housing Construction (except For-Sale Builders),Newport Construction Services,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:44.985676+00:00
+48702134,5,Fairfax Software,Unclassified Industry,Fairfax Software,sme,0.85,gpt-5.4-mini,2026-07-02T22:02:44.864899+00:00
+75457707,1,Dumur Industries,Unclassified Industry,Dumur Industries,unknown,0.86,gpt-5.4-mini,2026-07-02T22:02:44.689025+00:00
+84306077,1,Weather Mark Group,Full-Service Restaurants,Weather Mark Group,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:44.644623+00:00
+38804365,3,Affordable Interior Systems,Office Furniture (except Wood) Manufacturing,Affordable Interior Systems,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:44.907388+00:00
+36932717,5,Green Mechanical Construction,Industrial Building Construction,Green Mechanical Construction,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:46.688201+00:00
+96712449,1,Ride Colorado,Unclassified Industry,Ride Colorado,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:45.220637+00:00
+98049498,2,We Olive & Wine Bar,Unclassified Industry,We Olive & Wine Bar,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:45.962846+00:00
+37071684,2,Integrated Industrial Information,Unclassified Industry,Integrated Industrial Information,sme,0.78,gpt-5.4-mini,2026-07-02T22:02:45.746928+00:00
+35471734,1,Trust Properties,Offices of Real Estate Agents and Brokers,Trust Properties,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:45.834663+00:00
+47128377,1,The Source Wellness Center,Offices of All Other Miscellaneous Health Practitioners,The Source Wellness Center,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:45.709519+00:00
+37979711,1,Rosemead Christian Preschool,Child Care Services,Rosemead Christian Preschool,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:45.879041+00:00
+35785303,1,Sgurrenergy,Unclassified Industry,Sgurrenergy,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:46.069823+00:00
+50884652,1,Miles Electric,Electrical Contractors and Other Wiring Installation Contractors,Miles Electric,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:46.116282+00:00
+97967596,3,Adorable Pet Grooming,Unclassified Industry,Adorable Pet Grooming,sme,0.99,gpt-5.4-mini,2026-07-02T22:02:46.199800+00:00
+75191091,3,Paws On The Duck,Pet Care (except Veterinary) Services,Paws On The Duck,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:46.640106+00:00
+60527783,7,Danville Community School,Unclassified Industry,Danville Community School,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:46.853918+00:00
+79336518,1,Thewrench,Unclassified Industry,Thewrench,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:46.804836+00:00
+39193616,1,Tate Con,Other Specialized Design Services,Tate Con,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:47.010619+00:00
+35190578,2,Major Contracting,Landscaping Services,Major Contracting,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:46.939946+00:00
+36702969,1,Downtown Campus,Elementary and Secondary Schools,Downtown Campus,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:47.160087+00:00
+37670820,3,"An Motors On South Padre, LP",New Car Dealers,"An Motors On South Padre, LP",sme,0.96,gpt-5.4-mini,2026-06-23T22:10:25.066766+00:00
+104648172,2,Frank From Philly & Andrea Pizza,Unclassified Industry,Frank From Philly & Andrea Pizza,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:47.225774+00:00
+63953182,5,Historic Palm,"All Other Professional, Scientific, and Technical Services",Historic Palm,sme,0.73,gpt-5.4-mini,2026-07-02T22:02:47.079562+00:00
+37148765,4,Fat Quarter Shop,Curtain and Linen Mills,Fat Quarter Shop,sme,0.99,gpt-5.4-mini,2026-07-02T22:02:47.650012+00:00
+105166090,5,"The H Hotel, A Dolce Hotel",Unclassified Industry,"The H Hotel, A Dolce Hotel",large,0.92,gpt-5.4-mini,2026-07-02T22:02:47.740691+00:00
+60849348,1,Tuckahoe Seafood,Unclassified Industry,Tuckahoe Seafood,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:47.913908+00:00
+41587929,1,Campbell Hall Rehabilitation Center,Nursing Care Facilities (Skilled Nursing Facilities),Campbell Hall Rehabilitation Center,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:48.045743+00:00
+97310590,1,Pediatric Dentistry Of Palo Alto,Unclassified Industry,Pediatric Dentistry Of Palo Alto,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:47.959233+00:00
+55497234,1,Kerry Bus Service,School and Employee Bus Transportation,Kerry Bus Service,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:47.996046+00:00
+45050922,2,Custom Outdoor Creations,Finish Carpentry Contractors,Custom Outdoor Creations,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:48.226375+00:00
+45517823,1,Easter-Owens Electric Co,Switchgear and Switchboard Apparatus Manufacturing,Easter-Owens Electric Co,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:48.099898+00:00
+52069808,2,Bay Street Bistro,Full-Service Restaurants,Bay Street Bistro,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:48.264907+00:00
+108236159,83,Truck Warrior- Regional,Unclassified Industry,Truck Warrior- Regional,sme,0.71,gpt-5.4-mini,2026-07-02T22:02:48.303182+00:00
+49923572,1,Coalition For Sonoran Desert Protection,"Environment, Conservation and Wildlife Organizations",Coalition For Sonoran Desert Protection,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:48.869526+00:00
+83789024,2,All Smiles Dental Of Falls Church,Offices of Dentists,All Smiles Dental Of Falls Church,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:48.793942+00:00
+52387665,1,Service First Processing,"Financial Transactions Processing, Reserve, and Clearinghouse Activities",Service First Processing,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:48.833345+00:00
+37954274,3,San Jose Police Department,Police Protection,San Jose Police Department,large,0.99,gpt-5.4-mini,2026-07-02T22:02:49.118298+00:00
+75891127,5,Firmstep,Unclassified Industry,Firmstep,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:49.003721+00:00
+52432386,3,Integra Health Care,Home Health Care Services,Integra Health Care,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:49.191103+00:00
+85878840,1,Pure Precision Custom Detailing,Car Washes,Pure Precision Custom Detailing,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:49.082948+00:00
+56263086,1,Buy N Rent Free Now,Lessors of Nonresidential Buildings (except Miniwarehouses),Buy N Rent Free Now,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:49.045940+00:00
+55996416,1,Simplicity Home Care Of Nevada,Home Health Care Services,Simplicity Home Care Of Nevada,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:49.155772+00:00
+47962526,1,HQC Medical PC,All Other Miscellaneous Ambulatory Health Care Services,HQC Medical PC,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:49.301484+00:00
+100332152,3,Sams Travel Center,Unclassified Industry,Sams Travel Center,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:49.840903+00:00
+55218708,1,All Kind Painting,Painting and Wall Covering Contractors,All Kind Painting,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:49.802114+00:00
+37095636,1,Wagging Tails Pet Resort & Spaw,Unclassified Industry,Wagging Tails Pet Resort & Spaw,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:49.877228+00:00
+43172620,7554,KinderCare Education,Child Care Services,KinderCare Education,large,0.99,gpt-5.4-mini,2026-07-02T22:02:50.142949+00:00
+53963273,2,Anduzzi's Of Howard,Drinking Places (Alcoholic Beverages),Anduzzi's Of Howard,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:50.103835+00:00
+37287020,1,Solid Rock Childcare,Child Care Services,Solid Rock Childcare,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:50.392399+00:00
+39489980,1,Csdi Construction,Industrial Building Construction,Csdi Construction,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:50.280456+00:00
+41045874,1,Cal-Tec,Testing Laboratories and Services,Cal-Tec,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:50.319803+00:00
+36937141,5,Economy Pharmacy,Pharmacies and Drug Retailers,Economy Pharmacy,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:50.178942+00:00
+60161822,1,Radiation Therapy,Offices of Physicians (except Mental Health Specialists),Radiation Therapy,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:50.356233+00:00
+100378025,2,Pollo Inferno,Unclassified Industry,Pollo Inferno,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:50.779963+00:00
+100401405,1,Aussie Pet Mobile Tampa Bay,Unclassified Industry,Aussie Pet Mobile Tampa Bay,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:50.984060+00:00
+63890632,2,Pat-Chem Laboratories,General Automotive Repair,Pat-Chem Laboratories,sme,0.89,gpt-5.4-mini,2026-07-02T22:02:50.946450+00:00
+83960579,1,"David L. Rever, D.D.S.",Offices of Dentists,"David L. Rever, D.D.S.",sme,0.99,gpt-5.4-mini,2026-07-02T22:02:51.020522+00:00
+57428664,3,Southside Cleaners,Drycleaning and Laundry Services (except Coin-Operated),Southside Cleaners,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:51.127253+00:00
+40222218,4,Onyx Paving,"Highway, Street, and Bridge Construction",Onyx Paving,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:51.166575+00:00
+99514774,5,Aht Wisconsin Windows,Framing Contractors,Aht Wisconsin Windows,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:51.325972+00:00
+51028660,2,The General Ship Repair Corporation,Ship Building and Repairing,The General Ship Repair Corporation,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:51.287209+00:00
+54378319,1,Grafted Growers,All Other Miscellaneous Crop Farming,Grafted Growers,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:51.382529+00:00
+37570563,2,Top Notch Roofing,New Single-Family Housing Construction (except For-Sale Builders),Top Notch Roofing,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:51.248406+00:00
+83956163,2,Clean Tastic,Other Services to Buildings and Dwellings,Clean Tastic,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:51.678627+00:00
+37279492,1,Journey Elementary - 05,Elementary and Secondary Schools,Journey Elementary - 05,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:51.978801+00:00
+59977034,1,Lyons Township District Library,Libraries and Archives,Lyons Township District Library,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:53.412139+00:00
+57506091,1,Ward Chiropractic And Rehabilitation,Offices of Chiropractors,Ward Chiropractic And Rehabilitation,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:52.145266+00:00
+83978101,1,Bellman Buying Group,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers",Bellman Buying Group,sme,0.85,gpt-5.4-mini,2026-07-02T22:02:52.240972+00:00
+49157059,1,Danwei Canting,Full-Service Restaurants,Danwei Canting,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:52.333489+00:00
+61399111,3,Estates At Greeley LLC The,Nursing Care Facilities (Skilled Nursing Facilities),Estates At Greeley LLC The,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:52.470182+00:00
+37051074,9,Six Star,All Other General Merchandise Retailers,Six Star,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:52.399042+00:00
+75658242,10,Dmacc Foundation,Unclassified Industry,Dmacc Foundation,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:58.211964+00:00
+93607102,1,Warther Cutlery,Unclassified Industry,Warther Cutlery,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:52.279104+00:00
+92167988,1,Malaves 2Nd To None Auto Service,Unclassified Industry,Malaves 2Nd To None Auto Service,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:52.813764+00:00
+105908518,1,Invedus Ltd.,Unclassified Industry,Invedus Ltd.,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:53.046401+00:00
+38964980,63,Mary Greeley Medical Center,General Medical and Surgical Hospitals,Mary Greeley Medical Center,large,0.96,gpt-5.4-mini,2026-06-23T22:02:39.381538+00:00
+52453801,1,Awnings Of Tulsa,Textile Bag and Canvas Mills,Awnings Of Tulsa,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:53.009042+00:00
+99538781,4,Kei-Ai Los Angeles Healthcare Center,Nursing Care Facilities (Skilled Nursing Facilities),Kei-Ai Los Angeles Healthcare Center,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:53.182007+00:00
+75560161,1,Cardigan Donuts,Baked Goods Retailers,Cardigan Donuts,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:55.239915+00:00
+34999866,162,Calibre Systems Incorporated,Custom Computer Programming Services,Calibre Systems Incorporated,large,0.88,gpt-5.4-mini,2026-07-02T22:02:53.513741+00:00
+40445863,1,Transit Mix Concrete Company/north Plant,Ready-Mix Concrete Manufacturing,Transit Mix Concrete Company/north Plant,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:53.342667+00:00
+79039877,2,Labchem,All Other Miscellaneous Chemical Product and Preparation Manufacturing,Labchem,large,0.77,gpt-5.4-mini,2026-07-02T22:02:53.594278+00:00
+93663017,1,Arizona Party Bike,Limousine Service,Arizona Party Bike,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:53.874508+00:00
+82267784,2,The Pet Ranch,Unclassified Industry,The Pet Ranch,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:54.103973+00:00
+56881005,1,Laura The Pet Nanny,Pet Care (except Veterinary) Services,Laura The Pet Nanny,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:54.146347+00:00
+36911199,1,Techability,Unclassified Industry,Techability,sme,0.72,gpt-5.4-mini,2026-07-02T22:02:54.373915+00:00
+64583170,2,Bill Fenwick Plumbing,"Plumbing, Heating, and Air-Conditioning Contractors",Bill Fenwick Plumbing,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:54.184562+00:00
+61470040,11,Amador County,"Other Justice, Public Order, and Safety Activities",Amador County,large,0.97,gpt-5.4-mini,2026-07-02T22:02:54.490895+00:00
+50727495,53,Team Drive-Away,"General Freight Trucking, Long-Distance, Truckload",Team Drive-Away,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:54.861074+00:00
+82062611,1,Jewish Community Center Of The Lehigh Valley,Unclassified Industry,Jewish Community Center Of The Lehigh Valley,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:54.576874+00:00
+75475030,1,Ostroff Injury Law,Offices of Lawyers,Ostroff Injury Law,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:55.005193+00:00
+97975063,2,Willow Creek Senior Living,Other Residential Care Facilities,Willow Creek Senior Living,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:55.074866+00:00
+97999023,2,Behc,Snack and Nonalcoholic Beverage Bars,Behc,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:55.163193+00:00
+53804275,1,Agency 1138,"All Other Professional, Scientific, and Technical Services",Agency 1138,sme,0.9,gpt-5.4-mini,2026-07-02T22:02:55.305708+00:00
+105074696,2,Sierra Piedmont Engineers & Geologists,Unclassified Industry,Sierra Piedmont Engineers & Geologists,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:55.423614+00:00
+59317504,1,Pillar Equipment,Farm and Garden Machinery and Equipment Merchant Wholesalers,Pillar Equipment,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:55.555176+00:00
+57698872,2,Arrikai,"All Other Professional, Scientific, and Technical Services",Arrikai,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:55.593913+00:00
+52610628,19,Tribe Express,"Specialized Freight (except Used Goods) Trucking, Long-Distance",Tribe Express,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:55.768163+00:00
+38940960,1,Ascent Foods,Other Grocery and Related Products Merchant Wholesalers,Ascent Foods,sme,0.78,gpt-5.4-mini,2026-07-02T22:02:56.345792+00:00
+32150172,1,Families Empowered,Other Social Advocacy Organizations,Families Empowered,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:56.004074+00:00
+105158305,2,The Woodlands Resort,Unclassified Industry,The Woodlands Resort,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:56.486675+00:00
+99459726,174,Five Star Quality Care,Assisted Living Facilities for the Elderly,Five Star Quality Care,large,0.91,gpt-5.4-mini,2026-06-23T22:04:35.760896+00:00
+107859463,2,Potomac Shores Golf Club,Unclassified Industry,Potomac Shores Golf Club,sme,0.98,gpt-5.4-mini,2026-07-02T22:02:56.305712+00:00
+46598273,2,Academy Of Medical & Public Health Services,Unclassified Industry,Academy Of Medical & Public Health Services,sme,0.91,gpt-5.4-mini,2026-07-02T22:02:56.442067+00:00
+106891582,1,The Breakaway League,Unclassified Industry,The Breakaway League,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:56.533116+00:00
+75646244,1,Muller Acura Of Merrillville,Unclassified Industry,Muller Acura Of Merrillville,sme,0.99,gpt-5.4-mini,2026-07-02T22:02:56.569960+00:00
+103275903,14,Sumer Innovations,"Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",Sumer Innovations,sme,0.86,gpt-5.4-mini,2026-07-02T22:02:56.607698+00:00
+51215938,1,Baywatch Enterprises,Metal Window and Door Manufacturing,Baywatch Enterprises,sme,0.78,gpt-5.4-mini,2026-06-23T22:02:49.970166+00:00
+84256088,1,Lincoln Avenue Brewery,Drinking Places (Alcoholic Beverages),Lincoln Avenue Brewery,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:57.451581+00:00
+36327587,11,Singerlewak Llp,Offices of Certified Public Accountants,Singerlewak Llp,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:57.238755+00:00
+37933978,1,Ambrose Elementary School,Elementary and Secondary Schools,Ambrose Elementary School,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:57.303189+00:00
+55000651,2,Warner Family Practice,Unclassified Industry,Warner Family Practice,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:59.152717+00:00
+60790478,1,Handi-Clean Products,Polish and Other Sanitation Good Manufacturing,Handi-Clean Products,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:57.366238+00:00
+50875311,1,Plymouth Spring Company,Other Fabricated Wire Product Manufacturing,Plymouth Spring Company,sme,0.84,gpt-5.4-mini,2026-07-02T22:02:57.528296+00:00
+99637966,3,Siege Consulting Group,All Other Miscellaneous Retailers,Siege Consulting Group,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:57.602465+00:00
+50437692,8,Vested Business Brokers,"All Other Professional, Scientific, and Technical Services",Vested Business Brokers,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:57.491161+00:00
+39858312,1,Pillar Commercial,Lessors of Nonresidential Buildings (except Miniwarehouses),Pillar Commercial,sme,0.87,gpt-5.4-mini,2026-07-02T22:02:57.566659+00:00
+107222823,2,Variis,Unclassified Industry,Variis,sme,0.62,gpt-5.4-mini,2026-07-02T22:02:58.372107+00:00
+78162510,1,Hillside Management Services Limited,Unclassified Industry,Hillside Management Services Limited,sme,0.82,gpt-5.4-mini,2026-07-02T22:02:58.251561+00:00
+49829369,6,Upstate Family Health Center,Offices of Physicians (except Mental Health Specialists),Upstate Family Health Center,sme,0.93,gpt-5.4-mini,2026-07-02T22:02:58.333898+00:00
+40285251,1,Waxman & Company,Unclassified Industry,Waxman & Company,sme,0.77,gpt-5.4-mini,2026-07-02T22:02:59.759185+00:00
+59500749,2,Robert Ranew,Insurance Agencies and Brokerages,Robert Ranew,sme,0.95,gpt-5.4-mini,2026-07-02T22:02:58.676972+00:00
+106415004,5,Smileline Dental,Offices of Dentists,Smileline Dental,sme,0.96,gpt-5.4-mini,2026-07-02T22:02:59.304231+00:00
+40266729,1,Coaire Corporation,Industrial Machinery and Equipment Merchant Wholesalers,Coaire Corporation,sme,0.88,gpt-5.4-mini,2026-07-02T22:02:58.640840+00:00
+79250854,1,Lake Sammamish Insurance,Unclassified Industry,Lake Sammamish Insurance,sme,0.94,gpt-5.4-mini,2026-07-02T22:02:58.602118+00:00
+38361175,24,Leland Management,Residential Property Managers,Leland Management,sme,0.83,gpt-5.4-mini,2026-07-02T22:02:59.340339+00:00
+73485052,30,Wings And Rings,Unclassified Industry,Wings And Rings,sme,0.92,gpt-5.4-mini,2026-07-02T22:02:59.191740+00:00
+42606118,247,Cricket Wireless,Electronics and Appliance Retailers,Cricket Wireless,large,0.99,gpt-5.4-mini,2026-07-02T22:02:59.265234+00:00
+50445026,1,Willamette Valley Alchemy,All Other Miscellaneous Chemical Product and Preparation Manufacturing,Willamette Valley Alchemy,sme,0.81,gpt-5.4-mini,2026-07-02T22:02:59.722974+00:00
+98807893,1,Morrison Senior Living,Nursing Care Facilities (Skilled Nursing Facilities),Morrison Senior Living,large,0.93,gpt-5.4-mini,2026-07-02T22:02:59.684702+00:00
+35509594,60,Medical Resource Group,Office Administrative Services,Medical Resource Group,sme,0.79,gpt-5.4-mini,2026-07-02T22:02:59.827135+00:00
+48361066,1,Jordan's Pet Care,Pet Care (except Veterinary) Services,Jordan's Pet Care,sme,0.97,gpt-5.4-mini,2026-07-02T22:02:59.637494+00:00
+41174323,1,Zhongli North America,Motor Vehicle Transmission and Power Train Parts Manufacturing,Zhongli North America,large,0.74,gpt-5.4-mini,2026-07-02T22:03:00.301682+00:00
+38586069,49,Dime Community Bank,Commercial Banking,Dime Community Bank,large,0.97,gpt-5.4-mini,2026-07-02T22:03:00.486346+00:00
+36508601,2,Kentucky Utilities,Electric Power Distribution,Kentucky Utilities,large,0.98,gpt-5.4-mini,2026-07-02T22:03:00.341909+00:00
+35952245,2,Ioactive,Other Scientific and Technical Consulting Services,Ioactive,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:00.184577+00:00
+62039300,7,Larken Associates,Lessors of Nonresidential Buildings (except Miniwarehouses),Larken Associates,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:00.378296+00:00
+35644139,1,Star Medical Services,"Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",Star Medical Services,sme,0.74,gpt-5.4-mini,2026-07-02T22:03:00.444279+00:00
+87133201,1,Sdfp,Unclassified Industry,Sdfp,unknown,0.98,gpt-5.4-mini,2026-07-02T22:03:00.624852+00:00
+36008461,2,Silver City Aluminum Corp.,"Other Aluminum Rolling, Drawing, and Extruding",Silver City Aluminum Corp.,sme,0.81,gpt-5.4-mini,2026-07-02T22:03:00.545349+00:00
+35392849,1,Westminster Promotions,Marketing Consulting Services,Westminster Promotions,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:00.582734+00:00
+94659252,2,Shilo Inn & Suites,Hotels (except Casino Hotels) and Motels,Shilo Inn & Suites,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:00.663289+00:00
+84027148,1,Acqua Trattoria,Full-Service Restaurants,Acqua Trattoria,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:01.342492+00:00
+61563060,1,Behnke Warehouse,Unclassified Industry,Behnke Warehouse,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:01.226187+00:00
+61149809,106,Blakehurst,Continuing Care Retirement Communities,Blakehurst,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:01.267808+00:00
+53741408,1,Columbus Family Dental,Offices of Dentists,Columbus Family Dental,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:01.730356+00:00
+46804714,1,Streamline Orthopedic,All Other Health and Personal Care Retailers,Streamline Orthopedic,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:01.305568+00:00
+40539816,9,Quality Yard And Home Maintenance,Landscape Architectural Services,Quality Yard And Home Maintenance,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:01.938013+00:00
+61868014,5,Prospect Chartercare,General Medical and Surgical Hospitals,Prospect Chartercare,large,0.92,gpt-5.4-mini,2026-07-02T22:03:01.418253+00:00
+85087378,1,Wake Monument Company,All Other Miscellaneous Retailers,Wake Monument Company,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:01.536771+00:00
+98027790,1,Allegiance Property Corporation,Other Activities Related to Real Estate,Allegiance Property Corporation,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:01.676511+00:00
+81292381,1,North Carolina State Parks,Unclassified Industry,North Carolina State Parks,large,0.99,gpt-5.4-mini,2026-07-02T22:03:01.458853+00:00
+56189428,1,Buckeye Heating & Cooling,"Plumbing, Heating, and Air-Conditioning Contractors",Buckeye Heating & Cooling,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:02.168810+00:00
+107860686,2,Oklahoma Pain & Wellness,Unclassified Industry,Oklahoma Pain & Wellness,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:02.107759+00:00
+52224840,1,Urology Surgeons Pc,Offices of Physicians (except Mental Health Specialists),Urology Surgeons Pc,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:02.416688+00:00
+96174685,3,Quitman County School District,Elementary and Secondary Schools,Quitman County School District,large,0.93,gpt-5.4-mini,2026-07-02T22:03:02.230536+00:00
+40260587,6,Shawntech Communications,Other Electronic Parts and Equipment Merchant Wholesalers,Shawntech Communications,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:02.512387+00:00
+85897975,1,Unity Music School,Musical Groups and Artists,Unity Music School,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:02.379287+00:00
+37835563,2,City Of Port Aransas,Executive Offices,City Of Port Aransas,large,0.97,gpt-5.4-mini,2026-07-02T22:03:02.475201+00:00
+39058889,1,Roam Adventure,All Other Miscellaneous Retailers,Roam Adventure,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:02.697881+00:00
+37298835,6,Scott Brown,Beef Cattle Ranching and Farming,Scott Brown,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:02.840534+00:00
+39410020,8,Paul Mitchell Advanced Education,Cosmetology and Barber Schools,Paul Mitchell Advanced Education,large,0.89,gpt-5.4-mini,2026-07-02T22:03:03.030247+00:00
+34307083,95,GateHouse Media,Newspaper Publishers,GateHouse Media,large,0.96,gpt-5.4-mini,2026-07-02T22:03:03.144719+00:00
+99642529,9,Family Leisure Of Kansas City,All Other Specialty Trade Contractors,Family Leisure Of Kansas City,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:03.426379+00:00
+57914563,1,Topdoghr,Other Management Consulting Services,Topdoghr,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:03.192108+00:00
+57911350,1,Dana Gardner Trucking,"Specialized Freight (except Used Goods) Trucking, Local",Dana Gardner Trucking,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:03.389243+00:00
+37593750,5,Condon-Johnson & Associates,Engineering Services,Condon-Johnson & Associates,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:03.351699+00:00
+38823067,1,Cancun Mexican Restaurant,Full-Service Restaurants,Cancun Mexican Restaurant,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:03.575786+00:00
+40425190,1,Plateau Land & Wildlife Management,Environmental Consulting Services,Plateau Land & Wildlife Management,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:03.313252+00:00
+40642893,11,Higher Ground Education,Other Management Consulting Services,Higher Ground Education,large,0.84,gpt-5.4-mini,2026-07-02T22:03:03.464940+00:00
+106147053,15,Hhdc Clinic,Unclassified Industry,Hhdc Clinic,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:03.996581+00:00
+52493990,1,Standards It,Custom Computer Programming Services,Standards It,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:04.197672+00:00
+48477300,1,Joy Learning Garden,Child Care Services,Joy Learning Garden,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:04.034426+00:00
+36928030,20,Chadron State College,"Colleges, Universities, and Professional Schools",Chadron State College,large,0.97,gpt-5.4-mini,2026-07-02T22:03:04.154266+00:00
+65633853,5,Accordius Health At Midwood,Unclassified Industry,Accordius Health At Midwood,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:04.442846+00:00
+48367200,1,Dave Pirro Ford,New Car Dealers,Dave Pirro Ford,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:04.274776+00:00
+59238376,1,Forks & Flavors,Caterers,Forks & Flavors,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:04.592140+00:00
+97994808,2,Jeptha Creed Distillery,Distilleries,Jeptha Creed Distillery,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:04.481220+00:00
+93975267,3,Tavern Restaurant,Unclassified Industry,Tavern Restaurant,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:04.397421+00:00
+54297242,1,Kolbe Clinic,Other Individual and Family Services,Kolbe Clinic,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:04.549609+00:00
+45654821,8,Orangewood Foundation,Other Individual and Family Services,Orangewood Foundation,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:04.870074+00:00
+75443803,1,Rhoades Mckee,Offices of Lawyers,Rhoades Mckee,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:05.108679+00:00
+37589272,2,Casa For Kids Of East Texas,Temporary Shelters,Casa For Kids Of East Texas,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:05.069862+00:00
+49701639,3,Merrimac Associates,Testing Laboratories and Services,Merrimac Associates,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:05.224628+00:00
+56682101,2,Vigilant Tiger Security,Security Guards and Patrol Services,Vigilant Tiger Security,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:05.432281+00:00
+79052603,2,Rockslide,Site Preparation Contractors,Rockslide,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:05.472752+00:00
+39953394,60,Alamon,Power and Communication Line and Related Structures Construction,Alamon,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:05.543621+00:00
+37285586,2,Midwayusa Foundation,Grantmaking Foundations,Midwayusa Foundation,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:05.664276+00:00
+2395225,1,Bahar Corp,Full-Service Restaurants,Bahar Corp,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:05.583072+00:00
+45163201,3,Spigen,Other Electronic Parts and Equipment Merchant Wholesalers,Spigen,large,0.95,gpt-5.4-mini,2026-07-02T22:03:05.851429+00:00
+95574619,2,Inclusive Community Home Care Agency,Home Health Care Services,Inclusive Community Home Care Agency,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:06.047694+00:00
+47599000,2,Safety And Aquatics Training Programs,Unclassified Industry,Safety And Aquatics Training Programs,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:06.794762+00:00
+47380200,1,Rain Remodeling,Roofing Contractors,Rain Remodeling,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:06.005183+00:00
+57704744,1,Blaze Consulting Group,Other Accounting Services,Blaze Consulting Group,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:06.214664+00:00
+100345184,2,Jefferson Manor Nursing &,Unclassified Industry,Jefferson Manor Nursing &,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:06.420307+00:00
+54384995,1,Roka Akor Chicago,Full-Service Restaurants,Roka Akor Chicago,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:06.565827+00:00
+105784457,1,Radilla Consulting,Unclassified Industry,Radilla Consulting,sme,0.81,gpt-5.4-mini,2026-07-02T22:03:06.935171+00:00
+39817825,3,Mobisoft Infotech,Custom Computer Programming Services,Mobisoft Infotech,sme,0.77,gpt-5.4-mini,2026-07-02T22:03:06.381474+00:00
+36713219,3,The Exhibit Source,"Promoters of Performing Arts, Sports, and Similar Events without Facilities",The Exhibit Source,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:06.755098+00:00
+43176630,1,Security Associates International,Security Systems Services (except Locksmiths),Security Associates International,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:06.831627+00:00
+99542943,28,Upper Chesapeake Health,Offices of Physicians (except Mental Health Specialists),Upper Chesapeake Health,large,0.96,gpt-5.4-mini,2026-07-02T22:03:07.030123+00:00
+100344095,1,Enchanted Medical Supplies,"Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",Enchanted Medical Supplies,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:06.868221+00:00
+83944857,2,Oakstop,Other Activities Related to Real Estate,Oakstop,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:07.102893+00:00
+106897731,8,Kenworth Northeast,Unclassified Industry,Kenworth Northeast,sme,0.82,gpt-5.4-mini,2026-07-02T22:03:07.501458+00:00
+515132,3,Tc Consulting,Other Scientific and Technical Consulting Services,Tc Consulting,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:07.389525+00:00
+62828790,2,Floyd S Lee Grading,Unclassified Industry,Floyd S Lee Grading,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:09.029102+00:00
+72042482,4,Cadence SL Lakewood,Unclassified Industry,Cadence SL Lakewood,sme,0.72,gpt-5.4-mini,2026-07-02T22:03:07.874510+00:00
+37339295,1,A Place To Grow Too,Child Care Services,A Place To Grow Too,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:07.757262+00:00
+45602737,1,Digestive Care Medical Center,Offices of Physicians (except Mental Health Specialists),Digestive Care Medical Center,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:07.794846+00:00
+51550014,1,Cardiovascular Institute Of Michigan P.C,Offices of Physicians (except Mental Health Specialists),Cardiovascular Institute Of Michigan P.C,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:08.036630+00:00
+96352802,3,X Sell Marketing,Unclassified Industry,X Sell Marketing,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:07.837157+00:00
+36771589,1,Interdistrict School For Arts And Communication,Elementary and Secondary Schools,Interdistrict School For Arts And Communication,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:08.135177+00:00
+47863346,1,Hotspring,Unclassified Industry,Hotspring,unknown,0.79,gpt-5.4-mini,2026-07-02T22:03:08.271524+00:00
+41101994,1,USA Global Logistics,"General Freight Trucking, Local",USA Global Logistics,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:08.627802+00:00
+100220433,1,The Roofing & Supply Co,Unclassified Industry,The Roofing & Supply Co,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:09.400287+00:00
+51564741,4,New Orleans Physician Services,Offices of Physicians (except Mental Health Specialists),New Orleans Physician Services,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:08.826320+00:00
+62738282,15,City Of Hallandale Beach,Unclassified Industry,City Of Hallandale Beach,large,0.98,gpt-5.4-mini,2026-07-02T22:03:08.863262+00:00
+55748793,1,Coders & Coaching,Unclassified Industry,Coders & Coaching,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:09.066576+00:00
+33270796,41,Lpr Construction,"Other Foundation, Structure, and Building Exterior Contractors",Lpr Construction,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:08.787657+00:00
+55714958,1,Mad Science Of Sacramento Valley,All Other Miscellaneous Schools and Instruction,Mad Science Of Sacramento Valley,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:09.103229+00:00
+49908760,6,Kiefer Kia,New Car Dealers,Kiefer Kia,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:09.187868+00:00
+75122491,2,"All Creatures Small Animal Hospital, L.C.",Unclassified Industry,"All Creatures Small Animal Hospital, L.C.",sme,0.98,gpt-5.4-mini,2026-07-02T22:03:09.450309+00:00
+85604850,1,At The Crossroads Weight Management PLLC,Diet and Weight Reducing Centers,At The Crossroads Weight Management PLLC,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:09.680732+00:00
+48773917,1,Lake Oswego Gyn,Unclassified Industry,Lake Oswego Gyn,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:09.847308+00:00
+105910500,1,Rescom Marketing,Unclassified Industry,Rescom Marketing,sme,0.81,gpt-5.4-mini,2026-07-02T22:03:09.888028+00:00
+36964444,1,Hugs Plus Learning Center,Child Care Services,Hugs Plus Learning Center,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:11.591985+00:00
+105001134,1,Clean Rite Center,Unclassified Industry,Clean Rite Center,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:10.266793+00:00
+41856540,1,Event Marketing,Marketing Consulting Services,Event Marketing,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:10.156322+00:00
+41177665,2,Benchmark Woodworks,Framing Contractors,Benchmark Woodworks,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:11.131451+00:00
+108446104,5,Sidus Space,Unclassified Industry,Sidus Space,large,0.88,gpt-5.4-mini,2026-07-02T22:03:10.308496+00:00
+40260994,2,Alltek Circuits,Printed Circuit Assembly (Electronic Assembly) Manufacturing,Alltek Circuits,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:10.348067+00:00
+84786622,1,Count Me In Childcare,Unclassified Industry,Count Me In Childcare,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:10.470969+00:00
+105764585,1,Kentucky Dermatology And Cosmetic Specialists,General Medical and Surgical Hospitals,Kentucky Dermatology And Cosmetic Specialists,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:10.815163+00:00
+38354199,1,Profit Expansion Group,Telephone Answering Services,Profit Expansion Group,sme,0.83,gpt-5.4-mini,2026-06-23T11:10:57.278597+00:00
+39083659,1,John Youngblood Motors,New Car Dealers,John Youngblood Motors,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:10.631860+00:00
+13280950,1,Alternative Management,All Other Personal Services,Alternative Management,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:10.853624+00:00
+41038187,61,Blake's Lotaburger,Limited-Service Restaurants,Blake's Lotaburger,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:11.267482+00:00
+37253016,1,Sabatino North America,All Other Miscellaneous Crop Farming,Sabatino North America,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:11.306136+00:00
+38477601,2,Riverdale Diner,Unclassified Industry,Riverdale Diner,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:11.200517+00:00
+59366402,3,Tramonto Circuits,Printed Circuit Assembly (Electronic Assembly) Manufacturing,Tramonto Circuits,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:11.365185+00:00
+51939270,1,Full Circle Marketing And Design,Marketing Consulting Services,Full Circle Marketing And Design,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:11.534824+00:00
+105105832,1,Craig Newmark Graduate School Of Journalism At Cuny,Unclassified Industry,Craig Newmark Graduate School Of Journalism At Cuny,large,0.97,gpt-5.4-mini,2026-07-02T22:03:11.629256+00:00
+83811373,1,Nous Espresso Bar,Limited-Service Restaurants,Nous Espresso Bar,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:11.704043+00:00
+85471237,2,Southern Shine Car Wash,Car Washes,Southern Shine Car Wash,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:11.982332+00:00
+41632286,8,Managed Mobile,Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance,Managed Mobile,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:12.083514+00:00
+75571104,1,All State Home Health,Unclassified Industry,All State Home Health,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:12.254807+00:00
+83931626,1,Campbell Academy,Elementary and Secondary Schools,Campbell Academy,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:12.343419+00:00
+33538217,28,Portland Glass,Glass and Glazing Contractors,Portland Glass,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:12.383077+00:00
+38828890,1,Amlogic,All Other Miscellaneous Manufacturing,Amlogic,large,0.94,gpt-5.4-mini,2026-07-02T22:03:12.305913+00:00
+84281505,1,Integrity Orthodontics,Offices of Dentists,Integrity Orthodontics,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:12.448617+00:00
+98024006,1,The Vosswood Nursing Center,Nursing Care Facilities (Skilled Nursing Facilities),The Vosswood Nursing Center,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:13.806645+00:00
+47075142,1,Blow And Arrow,Beauty Salons,Blow And Arrow,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:12.597236+00:00
+54997039,2,Remkes Garage,Specialized Automotive Repair,Remkes Garage,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:12.524123+00:00
+51857884,16,Ketchikan Indian Community,Ambulance Services,Ketchikan Indian Community,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:13.188775+00:00
+43035264,4,Mdot,"Highway, Street, and Bridge Construction",Mdot,large,0.95,gpt-5.4-mini,2026-07-02T22:03:13.265710+00:00
+42628930,15,To Be Disclosed,Unclassified Industry,To Be Disclosed,unknown,0.99,gpt-5.4-mini,2026-07-02T22:03:13.228217+00:00
+97988699,1,M Steffen Schneider Agency,Insurance Agencies and Brokerages,M Steffen Schneider Agency,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:13.448247+00:00
+60265728,5,Dhi Telecom Group,Wired Telecommunications Carriers,Dhi Telecom Group,sme,0.74,gpt-5.4-mini,2026-07-02T22:03:13.372872+00:00
+75179758,4,Nawty Hogg BBQ,Full-Service Restaurants,Nawty Hogg BBQ,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:13.614500+00:00
+39202253,17,The Lawrenceville School,Elementary and Secondary Schools,The Lawrenceville School,large,0.95,gpt-5.4-mini,2026-06-23T22:00:47.375099+00:00
+35432208,7,Prominent Fluid Controls,"Measuring, Dispensing, and Other Pumping Equipment Manufacturing",Prominent Fluid Controls,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:13.765204+00:00
+89889402,1,Alfa S.A.B. De C.V.,Unclassified Industry,Alfa S.A.B. De C.V.,large,0.86,gpt-5.4-mini,2026-07-02T22:03:13.574937+00:00
+37140042,1,Telelink Communications,Telecommunications Resellers,Telelink Communications,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:13.411268+00:00
+61754559,2,John Henry Foster Minnesota,Industrial Supplies Merchant Wholesalers,John Henry Foster Minnesota,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:14.246050+00:00
+39769250,1,A.W. Hastings,"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers",A.W. Hastings,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:14.362229+00:00
+40967453,1,Dickey,Employment Placement Agencies,Dickey,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:14.325254+00:00
+34673390,1,Linear,Advertising Agencies,Linear,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:14.287804+00:00
+51867300,1,Walloon Lake Association & Conservancy,Unclassified Industry,Walloon Lake Association & Conservancy,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:14.487752+00:00
+51238291,12,Certus Senior Living,Nursing Care Facilities (Skilled Nursing Facilities),Certus Senior Living,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:14.554730+00:00
+46735486,3,Hemborg Ford,New Car Dealers,Hemborg Ford,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:14.668243+00:00
+99526795,2,Acg Network,Unclassified Industry,Acg Network,sme,0.63,gpt-5.4-mini,2026-07-02T22:03:14.826285+00:00
+60012318,2,Shred360,All Other Support Services,Shred360,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:14.889234+00:00
+89725531,1,Whistle Stop Child Development,Unclassified Industry,Whistle Stop Child Development,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:14.711180+00:00
+75771329,1,Imperial Renovators,Janitorial Services,Imperial Renovators,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:15.278564+00:00
+38678440,2,"Empire Countertops, Llc.",Cut Stone and Stone Product Manufacturing,"Empire Countertops, Llc.",sme,0.96,gpt-5.4-mini,2026-07-02T22:03:15.315857+00:00
+98007546,8,Partnercare,Unclassified Industry,Partnercare,sme,0.56,gpt-5.4-mini,2026-07-02T22:03:15.202101+00:00
+39709207,2,Nowak Construction,Residential Remodelers,Nowak Construction,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:15.352210+00:00
+75946933,2,Coconut Breeze Cuisine,Full-Service Restaurants,Coconut Breeze Cuisine,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:15.242078+00:00
+52855200,2,Old Savannah Tours,Tour Operators,Old Savannah Tours,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:15.601190+00:00
+40741763,1,Jk Technology Solutions,Computer Systems Design Services,Jk Technology Solutions,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:15.638986+00:00
+45559587,1,Nppower International,"Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers",Nppower International,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:15.700193+00:00
+100257468,1,Rose Lane Florist,Unclassified Industry,Rose Lane Florist,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:15.737923+00:00
+38999950,1,Linscomb & Williams,Portfolio Management and Investment Advice,Linscomb & Williams,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:17.908755+00:00
+49779523,2,Ouzo Cafe,Full-Service Restaurants,Ouzo Cafe,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:16.639924+00:00
+41246997,2,Austin Brown,"General Freight Trucking, Local",Austin Brown,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:16.382193+00:00
+55582098,1,Scott Fulcher Trucking,"General Freight Trucking, Long-Distance, Truckload",Scott Fulcher Trucking,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:16.286671+00:00
+100351017,1,Aspen Racquet Club,Unclassified Industry,Aspen Racquet Club,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:16.327992+00:00
+37711958,12,Carrier Enterprise Leasing,Professional Employer Organizations,Carrier Enterprise Leasing,large,0.8,gpt-5.4-mini,2026-07-02T22:03:16.602716+00:00
+350574,1,Katya,Unclassified Industry,Katya,sme,0.55,gpt-5.4-mini,2026-07-02T22:03:16.419674+00:00
+50046350,1,Fabrizi Disposal,Site Preparation Contractors,Fabrizi Disposal,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:16.769802+00:00
+52376371,1,Aria Real Estate Group,Lessors of Nonresidential Buildings (except Miniwarehouses),Aria Real Estate Group,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:16.564508+00:00
+31013697,3,Academy Dental Care,Offices of Dentists,Academy Dental Care,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:16.810200+00:00
+108068822,3,Skyu,Unclassified Industry,Skyu,sme,0.61,gpt-5.4-mini,2026-07-02T22:03:17.425473+00:00
+55009684,3,Pappas Restaurant,Full-Service Restaurants,Pappas Restaurant,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:17.385107+00:00
+39286979,1,O.p.h. Iv,Full-Service Restaurants,O.p.h. Iv,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:17.568830+00:00
+3663933,2,National Transport,Freight Transportation Arrangement,National Transport,sme,0.81,gpt-5.4-mini,2026-07-02T22:03:17.480477+00:00
+75490218,107,Moments Hospice,Continuing Care Retirement Communities,Moments Hospice,sme,0.92,gpt-5.4-mini,2026-06-23T11:09:18.415120+00:00
+105499723,2,Jojo& X27 S Bar,Unclassified Industry,Jojo& X27 S Bar,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:17.624800+00:00
+96852696,1,Small Blessings Child Care,Child Care Services,Small Blessings Child Care,sme,0.98,gpt-5.4-mini,2026-06-23T22:06:12.152739+00:00
+75511395,1,Unity Worldwide Ministries (Aka Association Of Unity Churches International),Unclassified Industry,Unity Worldwide Ministries (Aka Association Of Unity Churches International),sme,0.75,gpt-5.4-mini,2026-07-02T22:03:20.901015+00:00
+52269201,8,Gentle Touch Health Initiatives,Assisted Living Facilities for the Elderly,Gentle Touch Health Initiatives,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:17.946110+00:00
+54066095,1,Community Caregivers Of Green,Home Health Care Services,Community Caregivers Of Green,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:17.766004+00:00
+37891622,7,Colormasters Llc.,Plastics Bag and Pouch Manufacturing,Colormasters Llc.,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:17.869460+00:00
+58596908,1,Brattle Book Shop,Used Merchandise Retailers,Brattle Book Shop,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:18.514422+00:00
+49341770,10,Community Home Care Services,Services for the Elderly and Persons with Disabilities,Community Home Care Services,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:18.399408+00:00
+38651165,6,The Bank Of Tampa,Commercial Banking,The Bank Of Tampa,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:18.223842+00:00
+75579982,1,Uniform Country,Clothing and Clothing Accessories Retailers,Uniform Country,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:18.605010+00:00
+100059157,1,Poseidon Security,Unclassified Industry,Poseidon Security,sme,0.85,gpt-5.4-mini,2026-07-02T22:03:18.709454+00:00
+50698115,1,Medway Cafe,Full-Service Restaurants,Medway Cafe,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:18.857109+00:00
+52218040,6,Twin Cities German Immersion School,Elementary and Secondary Schools,Twin Cities German Immersion School,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:18.757451+00:00
+53118777,3,"Visitation Catholic Church, Kansas City",Religious Organizations,"Visitation Catholic Church, Kansas City",sme,0.97,gpt-5.4-mini,2026-07-02T22:03:18.896564+00:00
+83755402,1,Deja Brew Cafe,Snack and Nonalcoholic Beverage Bars,Deja Brew Cafe,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:19.022416+00:00
+34555384,4,Ge Associates,All Other Miscellaneous Retailers,Ge Associates,sme,0.73,gpt-5.4-mini,2026-07-02T22:03:19.200216+00:00
+70125404,1,The Stone Independent School,Unclassified Industry,The Stone Independent School,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:19.581401+00:00
+82183135,1,Corey Advertising,Unclassified Industry,Corey Advertising,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:19.356439+00:00
+40543876,1,Phillips Food Service,Industrial and Personal Service Paper Merchant Wholesalers,Phillips Food Service,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:19.437732+00:00
+3243450,33,Dev Agency,Hotels (except Casino Hotels) and Motels,Dev Agency,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:19.834069+00:00
+38156592,1,Dfw Express,Unclassified Industry,Dfw Express,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:20.032060+00:00
+104409748,1,Premier Patio,Furniture Merchant Wholesalers,Premier Patio,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:19.910543+00:00
+39217096,7,Collision Center,"Automotive Body, Paint, and Interior Repair and Maintenance",Collision Center,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:19.873140+00:00
+42911872,1,Community Reconstruction Solutions,Residential Remodelers,Community Reconstruction Solutions,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:20.077824+00:00
+93272471,5,Florida Shrimp,Unclassified Industry,Florida Shrimp,sme,0.71,gpt-5.4-mini,2026-07-02T22:03:20.659042+00:00
+40942152,2,Mdm Commercial,Unclassified Industry,Mdm Commercial,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:20.115586+00:00
+103306216,2,West Side Oasis,Drinking Places (Alcoholic Beverages),West Side Oasis,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:21.932023+00:00
+51015837,1,The Center For Cultural Power,Other Social Advocacy Organizations,The Center For Cultural Power,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:20.388530+00:00
+63610236,2,Burlington County Special Services School District,Elementary and Secondary Schools,Burlington County Special Services School District,large,0.96,gpt-5.4-mini,2026-07-02T22:03:20.861188+00:00
+40472378,13,Shine Early Learning,Educational Support Services,Shine Early Learning,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:20.940775+00:00
+56817920,3,Sante Center For Healing,Psychiatric and Substance Abuse Hospitals,Sante Center For Healing,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:21.062399+00:00
+37464611,2,Atypical Digital,Custom Computer Programming Services,Atypical Digital,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:21.160773+00:00
+99508923,8,Once In A Licetime,All Other Outpatient Care Centers,Once In A Licetime,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:21.198281+00:00
+104450588,1,Clarity Laboratory,"Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",Clarity Laboratory,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:21.102561+00:00
+38309793,12,Medilogix,All Other Personal Services,Medilogix,sme,0.77,gpt-5.4-mini,2026-07-02T22:03:21.242420+00:00
+36330120,1,"American Midstream, Lp",Other Warehousing and Storage,"American Midstream, Lp",large,0.85,gpt-5.4-mini,2026-07-02T22:03:21.729575+00:00
+37800604,3,Insite Development Group,Repossession Services,Insite Development Group,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:23.266927+00:00
+97914116,5,Dashboard Instrument Cluster,Unclassified Industry,Dashboard Instrument Cluster,unknown,0.95,gpt-5.4-mini,2026-07-02T22:03:21.973529+00:00
+51395168,2,Leisure Living Management,Assisted Living Facilities for the Elderly,Leisure Living Management,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:22.011567+00:00
+2546713,238,PL Marketing,Wholesale Trade Agents and Brokers,PL Marketing,sme,0.87,gpt-5.4-mini,2026-06-23T22:07:58.427036+00:00
+39165270,2,Nighthawk Completion Services,Drilling Oil and Gas Wells,Nighthawk Completion Services,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:22.176423+00:00
+36276209,1,Caruthers Unified School District,Elementary and Secondary Schools,Caruthers Unified School District,large,0.96,gpt-5.4-mini,2026-07-02T22:03:22.056621+00:00
+35603932,8,Sourcemedia,All Other Telecommunications,Sourcemedia,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:22.095920+00:00
+51931580,3,Advanced Eyecare Solutions,Offices of Optometrists,Advanced Eyecare Solutions,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:22.134989+00:00
+2512939,1,Act Productions,"Agents and Managers for Artists, Athletes, Entertainers, and Other Public Figures",Act Productions,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:22.335112+00:00
+40040905,1,Fisch Properties,Nonresidential Property Managers,Fisch Properties,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:22.716355+00:00
+50377661,1,Scotthyver Visioncare,Offices of Physicians (except Mental Health Specialists),Scotthyver Visioncare,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:23.049460+00:00
+36359502,2,Annie Sullivan Middle School,Elementary and Secondary Schools,Annie Sullivan Middle School,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:23.124861+00:00
+47346372,2,Russ & Daughters,Fish and Seafood Retailers,Russ & Daughters,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:22.889640+00:00
+84199734,1,Wendell & Gayla Hoskins Farms Partnership,Soybean Farming,Wendell & Gayla Hoskins Farms Partnership,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:23.161490+00:00
+43541640,4,Redwood Community Action Agency,Other Individual and Family Services,Redwood Community Action Agency,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:23.087926+00:00
+455079,3,La Nouvelle Maison,Full-Service Restaurants,La Nouvelle Maison,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:23.009837+00:00
+99511799,1,Wellsbrooke Home Health Care,Unclassified Industry,Wellsbrooke Home Health Care,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:23.201266+00:00
+75581220,95,Psycho Bunny,Cut and Sew Apparel Contractors,Psycho Bunny,large,0.86,gpt-5.4-mini,2026-07-02T22:03:23.377991+00:00
+41721585,3,Life Care Center Of Melbourne,Nursing Care Facilities (Skilled Nursing Facilities),Life Care Center Of Melbourne,large,0.95,gpt-5.4-mini,2026-07-02T22:03:23.980134+00:00
+76122204,1,Jonas Stone And Marble,Tile and Terrazzo Contractors,Jonas Stone And Marble,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:24.137260+00:00
+37579403,88,Blattner Energy,Electric Bulk Power Transmission and Control,Blattner Energy,large,0.96,gpt-5.4-mini,2026-06-23T22:05:51.229685+00:00
+75631103,1,Pmi Nevada,Unclassified Industry,Pmi Nevada,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:24.174771+00:00
+81543953,1,Athena Condominium Association,Unclassified Industry,Athena Condominium Association,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:24.250248+00:00
+35917802,3,Kennedy Wilson,Other Activities Related to Real Estate,Kennedy Wilson,large,0.97,gpt-5.4-mini,2026-07-02T22:03:24.098035+00:00
+46807895,1,The Hiv Education And Prevention Project Of Alameda,Unclassified Industry,The Hiv Education And Prevention Project Of Alameda,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:24.212333+00:00
+39020696,4,Del Papa Distributing,Beer and Ale Merchant Wholesalers,Del Papa Distributing,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:24.408470+00:00
+48876791,10,Ineos Olefins And Polymers USA,Plastics Material and Resin Manufacturing,Ineos Olefins And Polymers USA,large,0.98,gpt-5.4-mini,2026-07-02T22:03:24.355624+00:00
+75641381,2,Texas Work Force Commission,Other Management Consulting Services,Texas Work Force Commission,large,0.98,gpt-5.4-mini,2026-07-02T22:03:24.289788+00:00
+51915490,1,Olympic Orthodontic Laboratory,Testing Laboratories and Services,Olympic Orthodontic Laboratory,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:24.558896+00:00
+75664696,55,Ica Language Services,Unclassified Industry,Ica Language Services,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:24.901330+00:00
+75587774,2,Safety Lawn Care,Landscaping Services,Safety Lawn Care,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:25.105536+00:00
+47878160,9,First Class Commercial Cleaning,Janitorial Services,First Class Commercial Cleaning,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:25.228824+00:00
+62256822,1,Rocky Mount Recyclers,Recyclable Material Merchant Wholesalers,Rocky Mount Recyclers,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:26.845513+00:00
+36652350,1,Delaney Street Baptist Church,Unclassified Industry,Delaney Street Baptist Church,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:25.065017+00:00
+75632840,11,Medical Case Management Group,Offices of Physicians (except Mental Health Specialists),Medical Case Management Group,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:27.178554+00:00
+46723301,1,Evolution Dental Science,Dental Laboratories,Evolution Dental Science,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:25.451545+00:00
+40486171,2,The Vane Brothers Company,Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals),The Vane Brothers Company,sme,0.82,gpt-5.4-mini,2026-07-02T22:03:25.188360+00:00
+33464475,1,Diverse Property Solutions Limited,Residential Property Managers,Diverse Property Solutions Limited,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:25.411904+00:00
+34778461,1,Sk & Associates,Tax Preparation Services,Sk & Associates,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:25.509712+00:00
+36681999,1,Recovery Resource Group,Marketing Research and Public Opinion Polling,Recovery Resource Group,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:25.862514+00:00
+79280881,1,Phillip Ashley Chocolates,Confectionery Manufacturing from Purchased Chocolate,Phillip Ashley Chocolates,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:26.120248+00:00
+55488750,4,Remax Properties,Offices of Real Estate Agents and Brokers,Remax Properties,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:26.162925+00:00
+35893158,3,The Centenary School,Elementary and Secondary Schools,The Centenary School,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:26.578006+00:00
+105915449,1,Empire Strategics,Unclassified Industry,Empire Strategics,sme,0.68,gpt-5.4-mini,2026-07-02T22:03:26.383386+00:00
+50463230,4,Rmr Colorado,Full-Service Restaurants,Rmr Colorado,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:26.618346+00:00
+59625604,1,"South Pasadena, City Of",Administration of Air and Water Resource and Solid Waste Management Programs,"South Pasadena, City Of",large,0.98,gpt-5.4-mini,2026-07-02T22:03:26.471670+00:00
+99491057,20,Aaron Manor Nursing And Rehabilitation Center,Nursing Care Facilities (Skilled Nursing Facilities),Aaron Manor Nursing And Rehabilitation Center,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:26.686872+00:00
+15474699,2,Keel,All Other Personal Services,Keel,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:26.780176+00:00
+47669731,1,JIMMY's ITALIAN KITCHEN,Unclassified Industry,JIMMY's ITALIAN KITCHEN,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:27.095557+00:00
+62331392,1,Westwinds Contracting,Roofing Contractors,Westwinds Contracting,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:27.221585+00:00
+45672023,1,The Asian American Foundation,Unclassified Industry,The Asian American Foundation,large,0.88,gpt-5.4-mini,2026-07-02T22:03:27.364606+00:00
+37158044,1,Joshua Expeditions,Educational Support Services,Joshua Expeditions,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:27.428007+00:00
+35085251,1,Richard & Associates,Insurance Agencies and Brokerages,Richard & Associates,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:27.672255+00:00
+67473624,2,Comfortcare Homes,Continuing Care Retirement Communities,Comfortcare Homes,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:27.870134+00:00
+75668933,7,Stryxe,Unclassified Industry,Stryxe,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:27.804512+00:00
+75841883,2,Monroe Career & Technical Institute,Unclassified Industry,Monroe Career & Technical Institute,large,0.88,gpt-5.4-mini,2026-07-02T22:03:27.712447+00:00
+85983854,3,Eugia Jackson,All Other Personal Services,Eugia Jackson,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:27.750396+00:00
+105072704,12,The Hotel At Auburn University,Unclassified Industry,The Hotel At Auburn University,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:28.153975+00:00
+47042131,1,C/o Hearthfire Holdings,Unclassified Industry,C/o Hearthfire Holdings,unknown,0.92,gpt-5.4-mini,2026-07-02T22:03:28.483648+00:00
+36344874,1,North Marion Middle School,Elementary and Secondary Schools,North Marion Middle School,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:28.222950+00:00
+47090551,1,Vision Communications Ks,Electrical Contractors and Other Wiring Installation Contractors,Vision Communications Ks,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:28.385509+00:00
+44584279,7,San Francisco Bay Area Rapid Transit District,Commuter Rail Systems,San Francisco Bay Area Rapid Transit District,large,0.99,gpt-5.4-mini,2026-07-02T22:03:28.426547+00:00
+81069703,1,Insurance Warehouses Of America,Unclassified Industry,Insurance Warehouses Of America,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:28.739482+00:00
+37033361,8,Worcester Eisenbrandt,Museums,Worcester Eisenbrandt,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:28.778903+00:00
+59895355,3,Industrial Lumber & Plywood,"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers",Industrial Lumber & Plywood,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:28.829587+00:00
+54497072,1,Alvarez Morris Architectural Studio,Architectural Services,Alvarez Morris Architectural Studio,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:28.961306+00:00
+106819962,3,Ark Biotech,Unclassified Industry,Ark Biotech,sme,0.74,gpt-5.4-mini,2026-07-02T22:03:28.611299+00:00
+48606428,1,Lieb Foods,Fruit and Vegetable Canning,Lieb Foods,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:29.355781+00:00
+99549205,8,Jbcplatform,Wholesale Trade Agents and Brokers,Jbcplatform,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:29.263054+00:00
+49985011,1,Magee Excavation & Development,Site Preparation Contractors,Magee Excavation & Development,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:29.476365+00:00
+69141245,1,Barracuda Consulting,Unclassified Industry,Barracuda Consulting,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:29.516661+00:00
+39018254,1,Living Colors,"Independent Artists, Writers, and Performers",Living Colors,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:29.862941+00:00
+59541747,1,Wellsite Services,Support Activities for Oil and Gas Operations,Wellsite Services,sme,0.85,gpt-5.4-mini,2026-07-02T22:03:29.900175+00:00
+35170335,1,Majestic Landscapes,Landscaping Services,Majestic Landscapes,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:29.819381+00:00
+37351081,2,Fort Wayne Wire Die,"Special Die and Tool, Die Set, Jig, and Fixture Manufacturing",Fort Wayne Wire Die,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:44.435276+00:00
+61415790,1,Ye Olde Centerton Inn,Unclassified Industry,Ye Olde Centerton Inn,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:29.983813+00:00
+36448640,62,Accruent,Custom Computer Programming Services,Accruent,large,0.95,gpt-5.4-mini,2026-07-02T22:03:31.677045+00:00
+40394482,1,Dataedge,Other Scientific and Technical Consulting Services,Dataedge,sme,0.87,gpt-5.4-mini,2026-07-02T22:03:31.855848+00:00
+59797868,1,Clarendon Hills Park District,Unclassified Industry,Clarendon Hills Park District,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:30.750841+00:00
+40096671,1,Prime Building Components,Other Building Material Dealers,Prime Building Components,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:30.384005+00:00
+85885796,1,Consolidated Waste Systems Orlando,Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance,Consolidated Waste Systems Orlando,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:30.451186+00:00
+41592003,1,Captain It,Custom Computer Programming Services,Captain It,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:30.831975+00:00
+37631769,2,Capsa Ventures,Other Activities Related to Real Estate,Capsa Ventures,sme,0.77,gpt-5.4-mini,2026-07-02T22:03:30.793770+00:00
+105009922,3,University Club Atop Symphony Towers,Unclassified Industry,University Club Atop Symphony Towers,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:30.973891+00:00
+42756490,20,Sefnco Communications,All Other Telecommunications,Sefnco Communications,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:30.868958+00:00
+35325519,1,Westflow,Industrial Supplies Merchant Wholesalers,Westflow,sme,0.81,gpt-5.4-mini,2026-07-02T22:03:31.361630+00:00
+57992700,1,Sanders It Consulting,Other Management Consulting Services,Sanders It Consulting,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:31.320533+00:00
+80837615,1,"Timonier, Wealth Beyond Financial™",Unclassified Industry,"Timonier, Wealth Beyond Financial™",sme,0.86,gpt-5.4-mini,2026-07-02T22:03:31.592739+00:00
+95419935,49,Timberline Knolls,Residential Mental Health and Substance Abuse Facilities,Timberline Knolls,large,0.86,gpt-5.4-mini,2026-07-02T22:03:31.962641+00:00
+38755086,7,Snowbird Operations,All Other Amusement and Recreation Industries,Snowbird Operations,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:32.000664+00:00
+36639333,3,One Sotheby's International Realty,"Other Similar Organizations (except Business, Professional, Labor, and Political Organizations)",One Sotheby's International Realty,large,0.94,gpt-5.4-mini,2026-07-02T22:03:32.098090+00:00
+37836899,2,Titanium Alarm,Unclassified Industry,Titanium Alarm,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:31.922985+00:00
+40688277,2,Ozark Mountain Technologies,"Electroplating, Plating, Polishing, Anodizing, and Coloring",Ozark Mountain Technologies,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:32.137248+00:00
+41407964,2,Gold Key Auto Credit,Used Car Dealers,Gold Key Auto Credit,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:32.495235+00:00
+82205154,1,The Sandri Companies,Unclassified Industry,The Sandri Companies,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:34.298785+00:00
+104689031,8,Sussman Automotive,Unclassified Industry,Sussman Automotive,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:32.684301+00:00
+40878633,6,Robins Kaplan Llp,Offices of Lawyers,Robins Kaplan Llp,large,0.88,gpt-5.4-mini,2026-07-02T22:03:33.000544+00:00
+50302684,1,Northside Liquor,"Beer, Wine, and Liquor Retailers",Northside Liquor,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:33.081193+00:00
+45604031,1,Advanced Concrete Technology,Poured Concrete Foundation and Structure Contractors,Advanced Concrete Technology,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:32.960127+00:00
+66269135,3,Avaler Consulting,Other Management Consulting Services,Avaler Consulting,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:33.043010+00:00
+48849787,2,Ai-Tech,Other Scientific and Technical Consulting Services,Ai-Tech,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:33.127325+00:00
+37754328,1,The Student Stop,Child Care Services,The Student Stop,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:33.208189+00:00
+81916281,1,Julius Blum Builders,New Multifamily Housing Construction (except For-Sale Builders),Julius Blum Builders,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:33.334131+00:00
+107775750,1,Pellucid Tech Solutions,Custom Computer Programming Services,Pellucid Tech Solutions,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:33.597872+00:00
+39310764,1,Bassett-Walker,Apparel Knitting Mills,Bassett-Walker,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:33.982053+00:00
+55706693,2,Nardella & Nardella Pllc,Offices of Lawyers,Nardella & Nardella Pllc,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:34.026315+00:00
+38994303,1,Vazquez Holdings,Unclassified Industry,Vazquez Holdings,sme,0.72,gpt-5.4-mini,2026-07-02T22:03:34.100923+00:00
+40123578,46,Voith,"Sawmill, Woodworking, and Paper Machinery Manufacturing",Voith,large,0.98,gpt-5.4-mini,2026-07-02T22:03:34.063589+00:00
+52454971,1,Abundant Behavioral Health,Outpatient Mental Health and Substance Abuse Centers,Abundant Behavioral Health,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:34.139856+00:00
+4901455,1,B2B,Convenience Retailers,B2B,unknown,0.93,gpt-5.4-mini,2026-07-02T22:03:34.576442+00:00
+45274720,8,Kern Regional Center,Parole Offices and Probation Offices,Kern Regional Center,large,0.88,gpt-5.4-mini,2026-07-02T22:03:34.181205+00:00
+37233733,4,16 Handles Stamford,Unclassified Industry,16 Handles Stamford,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:35.107412+00:00
+38245339,1,Pearl Tea,Snack and Nonalcoholic Beverage Bars,Pearl Tea,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:35.294372+00:00
+62490985,1,Mountain Laurel Resort,Unclassified Industry,Mountain Laurel Resort,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:35.031630+00:00
+34682046,28,HS Express,"Process, Physical Distribution, and Logistics Consulting Services",HS Express,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:35.069600+00:00
+46564651,1,Jad Transportation,Travel Agencies,Jad Transportation,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:35.352916+00:00
+100084086,1,VPG Systems Uk Limited,Unclassified Industry,VPG Systems Uk Limited,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:35.256957+00:00
+75446193,5,"Munster, In",Unclassified Industry,"Munster, In",unknown,0.95,gpt-5.4-mini,2026-07-02T22:03:34.987338+00:00
+48419183,1,Lavish Vitamin & Supplement,Unclassified Industry,Lavish Vitamin & Supplement,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:35.211273+00:00
+51355727,1,Northshore Dental,Offices of Dentists,Northshore Dental,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:35.616438+00:00
+45190135,2,American Medical Administrators,Unclassified Industry,American Medical Administrators,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:36.083559+00:00
+98019581,1,Team Net Medical,Unclassified Industry,Team Net Medical,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:36.045952+00:00
+54369987,1,Southern Loans,Sales Financing,Southern Loans,sme,0.82,gpt-5.4-mini,2026-07-02T22:03:36.005426+00:00
+37610394,8,Prestige Companion And Homemakers,Home Health Care Services,Prestige Companion And Homemakers,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:38.130944+00:00
+46609670,1,Grand Basket,Full-Service Restaurants,Grand Basket,sme,0.94,gpt-5.4-mini,2026-07-02T22:03:36.319544+00:00
+106412674,1,Do It All Cleaning,Residential Remodelers,Do It All Cleaning,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:36.208592+00:00
+63731840,2,Quality Aluminum Products,Other Metal Container Manufacturing,Quality Aluminum Products,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:36.359265+00:00
+104951308,3,Monroeville Bdc,Unclassified Industry,Monroeville Bdc,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:36.464453+00:00
+49778715,1,Pleasant Forest Camping Club,Unclassified Industry,Pleasant Forest Camping Club,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:36.653715+00:00
+53888145,1,Maritime Market Ventures,Convenience Retailers,Maritime Market Ventures,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:37.187735+00:00
+51268621,1,Souder Brothers Construction,New Single-Family Housing Construction (except For-Sale Builders),Souder Brothers Construction,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:37.075091+00:00
+36843297,1,Uniserv,Other Services Related to Advertising,Uniserv,sme,0.83,gpt-5.4-mini,2026-07-02T22:03:37.306727+00:00
+56832323,1,Knox Speed And Diesel,General Automotive Repair,Knox Speed And Diesel,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:37.267997+00:00
+83805967,1,PGC8,Hotels (except Casino Hotels) and Motels,PGC8,sme,0.82,gpt-5.4-mini,2026-07-02T22:03:37.229048+00:00
+50610063,4,Amz Manufacturing Corp.,"Metal Coating, Engraving (except Jewelry and Silverware), and Allied Services to Manufacturers",Amz Manufacturing Corp.,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:37.680104+00:00
+48569573,2,Research Institute Without Walls,Unclassified Industry,Research Institute Without Walls,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:37.590063+00:00
+37570002,4,Blue Home Care,Unclassified Industry,Blue Home Care,sme,0.91,gpt-5.4-mini,2026-07-02T22:03:37.633604+00:00
+38941385,3,Direct Source Meats,Meat Processed from Carcasses,Direct Source Meats,sme,0.92,gpt-5.4-mini,2026-07-02T22:03:38.272081+00:00
+75842323,1,Middleburg Heights Family Dentistry,Offices of Dentists,Middleburg Heights Family Dentistry,sme,0.99,gpt-5.4-mini,2026-07-02T22:03:38.088207+00:00
+58858072,1,Sunshine State Counseling Center,Other Individual and Family Services,Sunshine State Counseling Center,sme,0.97,gpt-5.4-mini,2026-07-02T22:03:38.225344+00:00
+93619550,1,S & D Moving & Delivery,Freight Transportation Arrangement,S & D Moving & Delivery,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:38.732621+00:00
+62477819,1,Sharky's Cafe,Full-Service Restaurants,Sharky's Cafe,sme,0.96,gpt-5.4-mini,2026-07-02T22:03:38.668154+00:00
+35360737,13,Therapy Partners,"Offices of Physical, Occupational and Speech Therapists, and Audiologists",Therapy Partners,sme,0.84,gpt-5.4-mini,2026-07-02T22:03:40.061569+00:00
+48287267,8,All Island Maintenance Corp,Unclassified Industry,All Island Maintenance Corp,sme,0.85,gpt-5.4-mini,2026-07-02T22:03:38.519649+00:00
+47673183,1,NICK's MOWING SERVICE,Unclassified Industry,NICK's MOWING SERVICE,sme,0.98,gpt-5.4-mini,2026-07-02T22:03:39.332052+00:00
+35860220,1,Rossier Park School,Elementary and Secondary Schools,Rossier Park School,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:38.993812+00:00
+34893428,1,Run The World,"Computing Infrastructure Providers, Data Processing, Web Hosting, and Related Services",Run The World,sme,0.78,gpt-5.4-mini,2026-07-02T22:03:39.291030+00:00
+36168858,1,St Peter Church,Religious Organizations,St Peter Church,sme,0.95,gpt-5.4-mini,2026-07-02T22:03:39.395774+00:00
+346646,5,Endless West,Unclassified Industry,Endless West,sme,0.89,gpt-5.4-mini,2026-07-02T22:03:39.436489+00:00
+52325745,1,R&L Metals,Recyclable Material Merchant Wholesalers,R&L Metals,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:39.480194+00:00
+79044968,2,Sweet Living,Offices of Real Estate Agents and Brokers,Sweet Living,sme,0.88,gpt-5.4-mini,2026-07-02T22:03:39.519543+00:00
+37324222,5038,Driveline,Marketing Consulting Services,Driveline,sme,0.72,gpt-5.4-mini,2026-07-02T22:03:39.596938+00:00
+97921536,1,Just Industrial Services,Unclassified Industry,Just Industrial Services,sme,0.86,gpt-5.4-mini,2026-07-02T22:03:40.030359+00:00
+62866560,1,Discovery Point At Lexington Oaks Plaza North,Unclassified Industry,Discovery Point At Lexington Oaks Plaza North,sme,0.9,gpt-5.4-mini,2026-07-02T22:03:40.596198+00:00
+43972228,2,So Cal Glass,Glass and Glazing Contractors,So Cal Glass,sme,0.93,gpt-5.4-mini,2026-07-02T22:03:40.241818+00:00

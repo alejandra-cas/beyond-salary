@@ -2,13 +2,13 @@
 """
 Validate posting-count firm-size cutoffs with sampled LLM labels.
 
-For each cutoff, this script:
-  1. predicts SME when FIRM_POSTING_COUNT < cutoff, else large firm;
-  2. draws a random firm sample from each predicted class;
-  3. optionally asks an OpenAI model whether each sampled firm is
-     truly an SME or a large firm;
-  4. reports false-positive, false-negative, sensitivity scores, and
-     95% confidence intervals for recall.
+This script:
+  1. draws one random firm sample;
+  2. optionally asks an OpenAI model whether each sampled firm is truly an SME
+     or a large firm;
+  3. evaluates every posting-count cutoff on that same labeled sample;
+  4. reports recall, precision, F1, accuracy, and post-weighted variants where
+     each sampled firm is weighted by its number of postings.
 
 Examples
 --------
@@ -195,42 +195,22 @@ def split_context_values(value: Any) -> list[str]:
     return [part.strip() for part in str(value).split("|") if part.strip()]
 
 
-def draw_cutoff_samples(
+def draw_validation_sample(
     firms: pd.DataFrame,
-    cutoffs: list[int],
-    sample_per_class: int,
+    sample_size: int,
     seed: int,
 ) -> pd.DataFrame:
-    """Sample firms at each cutoff, stratified by the proxy SME decision."""
-    samples = []
-    # Use numpy's generator so the same seed gives repeatable sampled firms.
+    """Draw one reproducible firm sample for validating every cutoff."""
+    if sample_size < 1:
+        raise ValueError("--sample-size must be at least 1.")
+
     rng = np.random.default_rng(seed)
-
-    for cutoff in cutoffs:
-        frame = firms.copy()
-        frame["cutoff"] = cutoff
-        # At a given threshold, firms below the cutoff are predicted SMEs and
-        # firms at/above the cutoff are predicted large.
-        frame["proxy_sme"] = frame["FIRM_POSTING_COUNT"] < cutoff
-
-        # Sample both sides of the decision boundary so we can estimate both
-        # false positives (proxy SME, truly large) and false negatives.
-        for proxy_sme, label in [(True, "proxy_sme"), (False, "proxy_large")]:
-            pool = frame[frame["proxy_sme"] == proxy_sme]
-            n = min(sample_per_class, len(pool))
-            if n == 0:
-                continue
-            sampled_idx = rng.choice(pool.index.to_numpy(), size=n, replace=False)
-            sampled = pool.loc[sampled_idx].copy()
-            sampled["sample_stratum"] = label
-            samples.append(sampled)
-
-    if not samples:
+    n = min(sample_size, len(firms))
+    if n == 0:
         return pd.DataFrame()
 
-    out = pd.concat(samples, ignore_index=True)
-    out["proxy_label"] = np.where(out["proxy_sme"], "sme", "large")
-    return out
+    sampled_idx = rng.choice(firms.index.to_numpy(), size=n, replace=False)
+    return firms.loc[sampled_idx].copy().reset_index(drop=True)
 
 
 def load_label_cache(path: Path) -> dict[str, dict[str, Any]]:
@@ -514,14 +494,19 @@ def normalize_label(label: Any) -> str:
     return "unknown"
 
 
-def score_cutoffs(labeled_samples: pd.DataFrame) -> pd.DataFrame:
-    """Compute validation metrics for each cutoff."""
+def score_cutoffs(labeled_samples: pd.DataFrame, cutoffs: list[int]) -> pd.DataFrame:
+    """Compute validation metrics for each cutoff on the same labeled sample."""
     df = labeled_samples.copy()
     if "llm_label" not in df.columns:
         return pd.DataFrame()
+    if "FIRM_POSTING_COUNT" not in df.columns:
+        raise ValueError("Labeled samples must include FIRM_POSTING_COUNT.")
 
     df["truth_sme"] = df["llm_label"] == "sme"
     df["truth_large"] = df["llm_label"] == "large"
+    df["post_weight"] = pd.to_numeric(df["FIRM_POSTING_COUNT"], errors="coerce")
+    df = df[df["post_weight"].notna() & (df["post_weight"] > 0)].copy()
+    df["FIRM_POSTING_COUNT"] = df["post_weight"]
     # Unknown labels are useful to audit, but they are excluded from metric
     # denominators because they do not define a true positive/negative class.
     df = df[df["llm_label"].isin(["sme", "large"])].copy()
@@ -529,143 +514,228 @@ def score_cutoffs(labeled_samples: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
 
     rows = []
-    for cutoff, sub in df.groupby("cutoff"):
-        # Treat SME as the positive class:
-        #   TP = predicted SME and LLM says SME
-        #   FP = predicted SME but LLM says large
-        #   FN = predicted large but LLM says SME
-        #   TN = predicted large and LLM says large
-        tp = int((sub["proxy_sme"] & sub["truth_sme"]).sum())
-        fp = int((sub["proxy_sme"] & sub["truth_large"]).sum())
-        fn = int((~sub["proxy_sme"] & sub["truth_sme"]).sum())
-        tn = int((~sub["proxy_sme"] & sub["truth_large"]).sum())
-        n = tp + fp + fn + tn
-        sme_recall = safe_divide(tp, tp + fn)
-        large_recall = safe_divide(tn, tn + fp)
-        sme_recall_ci_low, sme_recall_ci_high = binomial_wilson_interval(tp, tp + fn)
-        large_recall_ci_low, large_recall_ci_high = binomial_wilson_interval(
-            tn, tn + fp
-        )
-        rows.append(
-            {
-                "cutoff": cutoff,
-                "n_labeled": n,
-                "true_sme": tp + fn,
-                "true_large": tn + fp,
-                "false_positive_count": fp,
-                "false_negative_count": fn,
-                "false_positive_rate": safe_divide(fp, fp + tn),
-                "false_negative_rate": safe_divide(fn, fn + tp),
-                "sme_sensitivity": safe_divide(tp, tp + fn),
-                # SME precision falls as the cutoff rises: a higher threshold
-                # pulls more truly-large firms into the predicted-SME bucket.
-                "sme_precision": safe_divide(tp, tp + fp),
-                "large_sensitivity": safe_divide(tn, tn + fp),
-                # Large-firm precision is TN/(TN+FN): of firms predicted large,
-                # how many the LLM agrees are large. This is the mirror of SME
-                # precision and should erode as the cutoff rises, because a high
-                # threshold leaves only the very largest firms predicted large.
-                "large_precision": safe_divide(tn, tn + fn),
-                "accuracy": safe_divide(tp + tn, n),
-                # Balanced accuracy gives equal weight to SME and large-firm
-                # recall, useful when the sampled classes are not perfectly even.
-                "balanced_accuracy": np.nanmean([sme_recall, large_recall]),
-            }
-        )
+    for cutoff in cutoffs:
+        sub = df.copy()
+        # At a given threshold, firms below the cutoff are predicted SMEs and
+        # firms at/above the cutoff are predicted large.
+        sub["proxy_sme"] = sub["post_weight"] < cutoff
+        unweighted = cutoff_metric_dict(sub)
+        post_weighted = cutoff_metric_dict(sub, weight_column="post_weight")
+
+        row = {
+            "cutoff": cutoff,
+            "n_labeled": int(round(unweighted["n"])),
+            "posting_weight_total": post_weighted["n"],
+            "true_sme": int(round(unweighted["true_sme"])),
+            "true_large": int(round(unweighted["true_large"])),
+            "true_sme_post_weighted": post_weighted["true_sme"],
+            "true_large_post_weighted": post_weighted["true_large"],
+            "false_positive_count": int(round(unweighted["fp"])),
+            "false_negative_count": int(round(unweighted["fn"])),
+            "false_positive_count_post_weighted": post_weighted["fp"],
+            "false_negative_count_post_weighted": post_weighted["fn"],
+            "false_positive_rate": unweighted["false_positive_rate"],
+            "false_negative_rate": unweighted["false_negative_rate"],
+            "false_positive_rate_post_weighted": post_weighted["false_positive_rate"],
+            "false_negative_rate_post_weighted": post_weighted["false_negative_rate"],
+        }
+
+        for metric in [
+            "sme_recall",
+            "large_recall",
+            "sme_precision",
+            "large_precision",
+            "sme_f1",
+            "large_f1",
+            "combined_f1",
+            "accuracy",
+            "balanced_accuracy",
+        ]:
+            row[metric] = unweighted[metric]
+            row[f"{metric}_post_weighted"] = post_weighted[metric]
+
+        # Keep the old sensitivity column names for downstream scripts that may
+        # already read the metrics CSV.
+        row["sme_sensitivity"] = row["sme_recall"]
+        row["large_sensitivity"] = row["large_recall"]
+        row["sme_sensitivity_post_weighted"] = row["sme_recall_post_weighted"]
+        row["large_sensitivity_post_weighted"] = row["large_recall_post_weighted"]
+        rows.append(row)
+
     return pd.DataFrame(rows).sort_values("cutoff")
 
 
-def binomial_wilson_interval(successes: int, trials: int) -> tuple[float, float]:
-    """Return a 95% Wilson score confidence interval for a binomial rate."""
-    if trials == 0:
-        return np.nan, np.nan
+def cutoff_metric_dict(
+    sub: pd.DataFrame,
+    weight_column: str | None = None,
+) -> dict[str, float]:
+    """Return confusion-matrix metrics, optionally weighted by posting count."""
+    if weight_column is None:
+        weights = pd.Series(1.0, index=sub.index)
+    else:
+        weights = sub[weight_column].astype(float)
 
-    z = 1.959963984540054
-    proportion = successes / trials
-    z2 = z**2
-    denominator = 1 + z2 / trials
-    center = (proportion + z2 / (2 * trials)) / denominator
-    margin = (
-        z
-        * np.sqrt((proportion * (1 - proportion) + z2 / (4 * trials)) / trials)
-        / denominator
-    )
-    return max(0.0, center - margin), min(1.0, center + margin)
+    def weighted_count(mask: pd.Series) -> float:
+        return float(weights[mask].sum())
+
+    # Treat SME as the positive class:
+    #   TP = predicted SME and LLM says SME
+    #   FP = predicted SME but LLM says large
+    #   FN = predicted large but LLM says SME
+    #   TN = predicted large and LLM says large
+    tp = weighted_count(sub["proxy_sme"] & sub["truth_sme"])
+    fp = weighted_count(sub["proxy_sme"] & sub["truth_large"])
+    fn = weighted_count(~sub["proxy_sme"] & sub["truth_sme"])
+    tn = weighted_count(~sub["proxy_sme"] & sub["truth_large"])
+    n = tp + fp + fn + tn
+    sme_recall = safe_divide(tp, tp + fn)
+    large_recall = safe_divide(tn, tn + fp)
+    sme_precision = safe_divide(tp, tp + fp)
+    large_precision = safe_divide(tn, tn + fn)
+    sme_f1 = f1_score(sme_precision, sme_recall)
+    large_f1 = f1_score(large_precision, large_recall)
+
+    return {
+        "n": n,
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "tn": tn,
+        "true_sme": tp + fn,
+        "true_large": tn + fp,
+        "false_positive_rate": safe_divide(fp, fp + tn),
+        "false_negative_rate": safe_divide(fn, fn + tp),
+        "sme_recall": sme_recall,
+        "large_recall": large_recall,
+        # SME precision falls as the cutoff rises: a higher threshold pulls more
+        # truly-large firms into the predicted-SME bucket.
+        "sme_precision": sme_precision,
+        # Large-firm precision is TN/(TN+FN): of firms predicted large, how many
+        # the LLM agrees are large.
+        "large_precision": large_precision,
+        "sme_f1": sme_f1,
+        "large_f1": large_f1,
+        "combined_f1": np.nanmean([sme_f1, large_f1]),
+        "accuracy": safe_divide(tp + tn, n),
+        # Balanced accuracy gives equal weight to SME and large-firm recall.
+        "balanced_accuracy": np.nanmean([sme_recall, large_recall]),
+    }
 
 
-def safe_divide(num: int, den: int) -> float:
+def f1_score(precision: float, recall: float) -> float:
+    """Return F1 from precision and recall, preserving NaN when undefined."""
+    if pd.isna(precision) or pd.isna(recall) or precision + recall == 0:
+        return np.nan
+    return 2 * precision * recall / (precision + recall)
+
+
+def safe_divide(num: float, den: float) -> float:
     """Return NaN for undefined rates instead of raising ZeroDivisionError."""
     return np.nan if den == 0 else num / den
 
 
 def plot_cutoff_metrics(metrics: pd.DataFrame, output_path: Path) -> None:
-    """Plot SME and large-firm recall by posting-count cutoff."""
+    """Plot class-specific and overall cutoff performance metrics."""
     if metrics.empty:
         return
 
+    if "MPLCONFIGDIR" not in os.environ:
+        mpl_config_dir = Path("/tmp") / f"matplotlib-{os.getuid()}"
+        mpl_config_dir.mkdir(parents=True, exist_ok=True)
+        os.environ["MPLCONFIGDIR"] = str(mpl_config_dir)
     import matplotlib.pyplot as plt
 
-    # Plot both class-specific recalls so the chosen cutoff is not optimized for
-    # SMEs at the expense of missing large firms, or vice versa.
-    fig, ax = plt.subplots(figsize=(10, 5.8))
-    sme_line = ax.plot(
-        metrics["cutoff"],
-        metrics["sme_sensitivity"],
-        marker="o",
-        linewidth=2,
-        label="SME recall",
-    )[0]
-    large_line = ax.plot(
-        metrics["cutoff"],
-        metrics["large_sensitivity"],
-        marker="o",
-        linewidth=2,
-        label="Large firm recall",
-    )
-    # Plot both precisions too: SME precision should fall and large-firm
-    # precision should erode as the cutoff rises, which is the trade-off the
-    # cutoff search is meant to expose.
-    ax.plot(
-        metrics["cutoff"],
-        metrics["sme_precision"],
-        marker="^",
-        linewidth=1.6,
-        linestyle=":",
-        label="SME precision",
-    )
-    ax.plot(
-        metrics["cutoff"],
-        metrics["large_precision"],
-        marker="^",
-        linewidth=1.6,
-        linestyle=":",
-        label="Large firm precision",
-    )
-    ax.plot(
-        metrics["cutoff"],
-        metrics["accuracy"],
-        marker="s",
-        linewidth=1.6,
-        linestyle="--",
-        color="#555555",
-        label="Accuracy",
-    )
+    fig, axes = plt.subplots(2, 2, figsize=(13.5, 8.3), sharex=True, sharey=True)
+    fig.suptitle("Firm-Size Classification Metrics by Posting-Count Cutoff", y=0.98)
+    blue = "#1f77b4"
+    orange = "#ff7f0e"
+    gray = "#555555"
+
+    def add_line(ax, y_column: str, label: str, color: str, linestyle: str = "-") -> None:
+        ax.plot(
+            metrics["cutoff"],
+            metrics[y_column],
+            marker="o",
+            linewidth=2,
+            linestyle=linestyle,
+            color=color,
+            label=label,
+        )
 
     optimal = metrics["balanced_accuracy"].max()
     optimal_band = metrics[metrics["balanced_accuracy"] >= optimal - 0.02]
+    band_limits = None
     if not optimal_band.empty:
         # Shade all cutoffs within two percentage points of the best balanced
         # accuracy. This avoids over-interpreting one noisy sampled threshold.
-        lo = optimal_band["cutoff"].min()
-        hi = optimal_band["cutoff"].max()
-        ax.axvspan(lo, hi, color="#9ecae1", alpha=0.25, label="Near-optimal range")
+        band_limits = (optimal_band["cutoff"].min(), optimal_band["cutoff"].max())
 
-    ax.set_title("Recall by Firm-Size Classification Threshold")
-    ax.set_xlabel("Posting-count cutoff")
-    ax.set_ylabel("Score")
-    ax.set_ylim(0, 1.05)
-    ax.grid(True, alpha=0.3)
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.28), ncol=3, frameon=False)
+    recall_ax, precision_ax, f1_ax, overall_ax = axes.ravel()
+
+    add_line(recall_ax, "sme_recall", "SME recall", blue)
+    add_line(recall_ax, "large_recall", "Large recall", orange)
+    add_line(
+        recall_ax,
+        "sme_recall_post_weighted",
+        "SME recall, post-weighted",
+        blue,
+        "--",
+    )
+    add_line(
+        recall_ax,
+        "large_recall_post_weighted",
+        "Large recall, post-weighted",
+        orange,
+        "--",
+    )
+    recall_ax.set_title("Recall")
+
+    add_line(precision_ax, "sme_precision", "SME precision", blue)
+    add_line(precision_ax, "large_precision", "Large precision", orange)
+    add_line(
+        precision_ax,
+        "sme_precision_post_weighted",
+        "SME precision, post-weighted",
+        blue,
+        "--",
+    )
+    add_line(
+        precision_ax,
+        "large_precision_post_weighted",
+        "Large precision, post-weighted",
+        orange,
+        "--",
+    )
+    precision_ax.set_title("Precision")
+
+    add_line(f1_ax, "combined_f1", "Combined F1", gray)
+    add_line(f1_ax, "combined_f1_post_weighted", "Combined F1, post-weighted", gray, "--")
+    add_line(f1_ax, "sme_f1", "SME F1", blue)
+    add_line(f1_ax, "large_f1", "Large F1", orange)
+    f1_ax.set_title("F1")
+
+    add_line(overall_ax, "accuracy", "Accuracy", gray)
+    add_line(overall_ax, "accuracy_post_weighted", "Accuracy, post-weighted", gray, "--")
+    add_line(overall_ax, "balanced_accuracy", "Balanced accuracy", orange)
+    overall_ax.set_title("Overall")
+
+    for ax in axes.ravel():
+        if band_limits is not None:
+            ax.axvspan(
+                band_limits[0],
+                band_limits[1],
+                color="#9ecae1",
+                alpha=0.18,
+                label="Near-optimal range" if ax is recall_ax else None,
+            )
+        ax.set_ylim(0, 1.05)
+        ax.grid(True, alpha=0.28)
+        ax.legend(loc="lower right", frameon=False)
+
+    recall_ax.set_ylabel("Score")
+    f1_ax.set_ylabel("Score")
+    f1_ax.set_xlabel("Posting-count cutoff")
+    overall_ax.set_xlabel("Posting-count cutoff")
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -686,10 +756,16 @@ def main() -> None:
         help="Comma list (5,10,15) or range (5:100:5). Default: 5:100:5.",
     )
     parser.add_argument(
+        "--sample-size",
+        type=int,
+        default=1000,
+        help="Number of firms sampled once for all cutoffs. Default: 1000.",
+    )
+    parser.add_argument(
         "--sample-per-class",
         type=int,
-        default=100,
-        help="Number of proxy-SME and proxy-large firms sampled per cutoff.",
+        default=None,
+        help=argparse.SUPPRESS,
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
@@ -727,17 +803,24 @@ def main() -> None:
     # Define all output paths once so the filenames stay consistent across dry
     # runs and LLM-scored runs.
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    sample_path = args.output_dir / "firm_size_cutoff_samples.csv"
+    sample_path = args.output_dir / "firm_size_validation_sample.csv"
     label_cache_path = args.output_dir / "firm_size_llm_labels_cache.csv"
-    labeled_path = args.output_dir / "firm_size_cutoff_labeled_samples.csv"
+    labeled_path = args.output_dir / "firm_size_labeled_validation_sample.csv"
     metrics_path = args.output_dir / "firm_size_cutoff_metrics.csv"
     plot_path = (
         get_repo_root()
         / "results"
         / "figures_2026"
         / "validation"
-        / "firm_size_cutoff_recall_plot.png"
+        / "firm_size_cutoff_metrics_plot.png"
     )
+
+    if args.sample_per_class is not None:
+        print(
+            "--sample-per-class is deprecated; using its value as --sample-size "
+            "for this one-sample validation design."
+        )
+        args.sample_size = args.sample_per_class
 
     df = load_data(args.input_path)
     if not args.include_sp500:
@@ -748,11 +831,11 @@ def main() -> None:
 
     # Always write the sampled firms, even if --llm is not used. This makes it
     # possible to inspect the sample manually before spending API tokens.
-    samples = draw_cutoff_samples(firms, args.cutoffs, args.sample_per_class, args.seed)
+    samples = draw_validation_sample(firms, args.sample_size, args.seed)
     if samples.empty:
         raise RuntimeError("No firms were sampled. Check cutoffs and input data.")
     samples.to_csv(sample_path, index=False)
-    print(f"Saved cutoff samples: {sample_path}")
+    print(f"Saved validation sample: {sample_path}")
 
     if not args.llm:
         print("LLM labeling skipped. Re-run with --llm to classify and score samples.")
@@ -771,11 +854,11 @@ def main() -> None:
     labeled.to_csv(labeled_path, index=False)
     print(f"Saved labeled samples: {labeled_path}")
 
-    metrics = score_cutoffs(labeled)
+    metrics = score_cutoffs(labeled, args.cutoffs)
     metrics.to_csv(metrics_path, index=False)
     print(f"Saved cutoff metrics: {metrics_path}")
     plot_cutoff_metrics(metrics, plot_path)
-    print(f"Saved recall plot: {plot_path}")
+    print(f"Saved metrics plot: {plot_path}")
     print("\nCutoff metrics:")
     print(metrics.to_string(index=False))
 
