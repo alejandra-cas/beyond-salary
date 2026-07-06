@@ -125,6 +125,7 @@ def add_demand_inset(ax, demand_wide):
 
     inset.set_xticks(x)
     inset.set_xticklabels(periods, fontsize=8)
+    inset.set_xlabel("relative to GenAI (ChatGPT, Nov. 2022)", fontsize=6, style="italic")
     inset.set_ylabel("% AI", fontsize=7)
     inset.tick_params(axis="both", labelsize=7)
     inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
@@ -194,6 +195,7 @@ def add_wage_inset(ax, wage_betas):
     inset.axhline(0, color="gray", linewidth=0.7, linestyle="--")
     inset.set_xticks(x)
     inset.set_xticklabels(periods, fontsize=8)
+    inset.set_xlabel("relative to GenAI (ChatGPT, Nov. 2022)", fontsize=6, style="italic")
     inset.set_ylabel("Coef.", fontsize=7)
     inset.tick_params(axis="both", labelsize=7)
     inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
@@ -253,8 +255,14 @@ def main():
             color=FIRM_CATEGORY_COLORS[category],
         )
 
+    demand_ymax = demand_wide[FIRM_CATEGORY_ORDER].max().max()
+    demand_ax.set_ylim(top=demand_ymax * 1.2)
     demand_ax.set_ylabel("% AI Roles", fontsize=15)
-    demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
+    demand_ax.text(
+        0.5, 0.96, "Demand for AI Skills by Firm Category",
+        transform=demand_ax.transAxes, ha="center", va="top",
+        fontsize=15, fontweight="bold",
+    )
     add_chatgpt_quarter_line(demand_ax, demand_wide.index, add_label=True)
     demand_ax.legend(title=None, fontsize=11)
     demand_ax.grid(alpha=0.25)
@@ -278,9 +286,13 @@ def main():
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_chatgpt_quarter_line(wage_ax, demand_wide.index)
-    wage_ax.set_ylim(0, 0.4)
+    wage_ax.set_ylim(0, 0.48)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
-    wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
+    wage_ax.text(
+        0.5, 0.96, "Adjusted AI-Skills Wage Premium by Firm Category",
+        transform=wage_ax.transAxes, ha="center", va="top",
+        fontsize=15, fontweight="bold",
+    )
     wage_ax.grid(alpha=0.25)
     wage_ax.legend(title=None, fontsize=11)
     add_wage_inset(wage_ax, wage_betas)
