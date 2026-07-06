@@ -5,406 +5,481 @@ COMPANY,COMPANY_NAME,SP500_COMPANY_NAME,SYMBOLS,SNAPSHOT_DATE
 20,Amazon,Amazon.com Inc,AMZN,2026-06-02
 16932009,Google,Alphabet Inc,"GOOGL,GOOG",2026-06-02
 40252853,Broadcom,Broadcom Inc,AVGO,2026-06-02
-37356086,Tesla,Tesla Inc,TSLA,2026-06-02
 36969497,Meta,Meta Platforms Inc,META,2026-06-02
+37356086,Tesla,Tesla Inc,TSLA,2026-06-02
 33484636,Micron Technology,Micron Technology Inc,MU,2026-06-02
 34481911,Berkshire Hathaway,Berkshire Hathaway Inc,BRK.B,2026-06-02
+40425754,Lilly,Eli Lilly & Co,LLY,2026-06-02
 36704772,Walmart,Walmart Inc,WMT,2026-06-02
 33553916,JPMorgan Chase,JPMorgan Chase & Co,JPM,2026-06-02
-89628092,Oracle,Oracle Corp,ORCL,2026-06-02
-38614427,ExxonMobil,Exxon Mobil Corp,XOM,2026-06-02
-8792060,Visa,Visa Inc,V,2026-06-02
+9175501,AMD,Advanced Micro Devices Inc,AMD,2026-06-02
 8482428,Intel,Intel Corp,INTC,2026-06-02
+8792060,Visa,Visa Inc,V,2026-06-02
 42,Johnson & Johnson,Johnson & Johnson,JNJ,2026-06-02
+38614427,ExxonMobil,Exxon Mobil Corp,XOM,2026-06-02
 89628088,Cisco,Cisco Systems Inc,CSCO,2026-06-02
-1136,Mastercard,Mastercard Inc,MA,2026-06-02
-19799425,Costco,Costco Wholesale Corp,COST,2026-06-02
-2552872,Caterpillar,Caterpillar Inc,CAT,2026-06-02
 35102053,Lam Research,Lam Research Corp,LRCX,2026-06-02
 36136059,Applied Materials,Applied Materials Inc,AMAT,2026-06-02
+2552872,Caterpillar,Caterpillar Inc,CAT,2026-06-02
+89628092,Oracle,Oracle Corp,ORCL,2026-06-02
+1136,Mastercard,Mastercard Inc,MA,2026-06-02
+19799425,Costco,Costco Wholesale Corp,COST,2026-06-02
 37924,AbbVie,AbbVie Inc,ABBV,2026-06-02
-346991,Chevron,Chevron Corp,CVX,2026-06-02
 4808322,Bank of America,Bank of America Corp,BAC,2026-06-02
-42175308,Palantir Technologies,Palantir Technologies Inc,PLTR,2026-06-02
-35242913,Netflix,Netflix Inc,NFLX,2026-06-02
+76540,GE Aerospace,General Electric Co,GE,2026-06-02
 99,UnitedHealth Group,UnitedHealth Group Inc,UNH,2026-06-02
+6505993,Procter & Gamble,Procter & Gamble Co/The,PG,2026-06-02
 39551416,Morgan Stanley,Morgan Stanley,MS,2026-06-02
 469459,The Coca-Cola Company,Coca-Cola Co/The,KO,2026-06-02
-6505993,Procter & Gamble,Procter & Gamble Co/The,PG,2026-06-02
-37825458,Goldman Sachs,Goldman Sachs Group Inc/The,GS,2026-06-02
 21230682,The Home Depot,Home Depot Inc/The,HD,2026-06-02
-101036629,IBM,International Business Machines Corp,IBM,2026-06-02
-34991124,Dell Technologies,Dell Technologies Inc,DELL,2026-06-02
-39209858,Merck & Co.,Merck & Co Inc,MRK,2026-06-02
-37407004,Texas Instruments,Texas Instruments Inc,TXN,2026-06-02
+346991,Chevron,Chevron Corp,CVX,2026-06-02
+37825458,Goldman Sachs,Goldman Sachs Group Inc/The,GS,2026-06-02
 108337,KLA,KLA Corp,KLAC,2026-06-02
+35242913,Netflix,Netflix Inc,NFLX,2026-06-02
+39209858,Merck & Co.,Merck & Co Inc,MRK,2026-06-02
 108231221,GE Vernova,GE Vernova Inc,GEV,2026-06-02
-33355578,Qualcomm,QUALCOMM Inc,QCOM,2026-06-02
+3173468,SanDisk,Sandisk Corp/DE,SNDK,2026-06-02
+34991124,Dell Technologies,Dell Technologies Inc,DELL,2026-06-02
+1621665,Philip Morris International,Philip Morris International Inc,PM,2026-06-02
+37407004,Texas Instruments,Texas Instruments Inc,TXN,2026-06-02
+42175308,Palantir Technologies,Palantir Technologies Inc,PLTR,2026-06-02
 37615159,Wells Fargo,Wells Fargo & Co,WFC,2026-06-02
-1176619,Palo Alto Networks,Palo Alto Networks Inc,PANW,2026-06-02
 35344865,RTX,RTX Corp,RTX,2026-06-02
-8821559,Linde,Linde PLC,LIN,2026-06-02
+101036629,IBM,International Business Machines Corp,IBM,2026-06-02
 582288,Citigroup,Citigroup Inc,C,2026-06-02
-38903403,Arista Networks,Arista Networks Inc,ANET,2026-06-02
+97918841,Marvell Technology,Marvell Technology,MRVL,2026-06-02
+8821559,Linde,Linde PLC,LIN,2026-06-02
 2219962,American Express,American Express Co,AXP,2026-06-02
+1176619,Palo Alto Networks,Palo Alto Networks Inc,PANW,2026-06-02
 2353333,Seagate Technology,Seagate Technology Holdings PLC,STX,2026-06-02
-33276931,Analog Devices,Analog Devices Inc,ADI,2026-06-02
-41047343,Applovin,AppLovin Corp,APP,2026-06-02
-36267524,T-Mobile US,T-Mobile US Inc,TMUS,2026-06-02
-37914916,Verizon Communications,Verizon Communications Inc,VZ,2026-06-02
-994310,McDonald's,McDonald's Corp,MCD,2026-06-02
 326005,Western Digital,Western Digital Corp,WDC,2026-06-02
-40596479,PepsiCo,PepsiCo Inc,PEP,2026-06-02
-44765391,CrowdStrike,Crowdstrike Holdings Inc,CRWD,2026-06-02
+33355578,Qualcomm,QUALCOMM Inc,QCOM,2026-06-02
+38903403,Arista Networks,Arista Networks Inc,ANET,2026-06-02
+33276931,Analog Devices,Analog Devices Inc,ADI,2026-06-02
 33104784,Amphenol,Amphenol Corp,APH,2026-06-02
+36267524,T-Mobile US,T-Mobile US Inc,TMUS,2026-06-02
+994310,McDonald's,McDonald's Corp,MCD,2026-06-02
+40596479,PepsiCo,PepsiCo Inc,PEP,2026-06-02
+37914916,Verizon Communications,Verizon Communications Inc,VZ,2026-06-02
+9156215,Amgen,Amgen Inc,AMGN,2026-06-02
 1799176,Thermo Fisher Scientific,Thermo Fisher Scientific Inc,TMO,2026-06-02
 36513137,NextEra Energy,NextEra Energy Inc,NEE,2026-06-02
-9156215,Amgen,Amgen Inc,AMGN,2026-06-02
-43327097,Corning,Corning Inc,GLW,2026-06-02
-1629540,Boeing,Boeing Co/The,BA,2026-06-02
-36874975,AT&T,AT&T Inc,T,2026-06-02
 89628133,TJX,TJX Cos Inc/The,TJX,2026-06-02
-89628101,Salesforce,Salesforce Inc,CRM,2026-06-02
-1539288,Eaton Corporation,Eaton Corp PLC,ETN,2026-06-02
-35343005,Gilead Sciences,Gilead Sciences Inc,GILD,2026-06-02
-976,BlackRock,Blackrock Inc,BLK,2026-06-02
-38658795,Union Pacific Railroad,Union Pacific Corp,UNP,2026-06-02
+43327097,Corning,Corning Inc,GLW,2026-06-02
+89628099,Disney,Walt Disney Co/The,DIS,2026-06-02
+1629540,Boeing,Boeing Co/The,BA,2026-06-02
+44765391,CrowdStrike,Crowdstrike Holdings Inc,CRWD,2026-06-02
+3580599,John Deere,Deere & Co,DE,2026-06-02
 89628114,Charles Schwab,Charles Schwab Corp/The,SCHW,2026-06-02
 2295140,Abbott Laboratories,Abbott Laboratories,ABT,2026-06-02
-1523411,Honeywell International,Honeywell International Inc,HON,2026-06-02
+1539288,Eaton Corporation,Eaton Corp PLC,ETN,2026-06-02
+47255609,Welltower,Welltower Inc,WELL,2026-06-02
+41047343,Applovin,AppLovin Corp,APP,2026-06-02
+36874975,AT&T,AT&T Inc,T,2026-06-02
+35343005,Gilead Sciences,Gilead Sciences Inc,GILD,2026-06-02
+38658795,Union Pacific Railroad,Union Pacific Corp,UNP,2026-06-02
+976,BlackRock,Blackrock Inc,BLK,2026-06-02
 2430029,Uber,Uber Technologies Inc,UBER,2026-06-02
-101393367,Pfizer,Pfizer Inc,PFE,2026-06-02
+1523411,Honeywell International,Honeywell International Inc,HON,2026-06-02
 79037416,Intuitive,Intuitive Surgical Inc,ISRG,2026-06-02
-1681036,ServiceNow,ServiceNow Inc,NOW,2026-06-02
-41008236,Vertiv,Vertiv Holdings,VRT,2026-06-02
+918029,Booking.com,Booking Holdings Inc,BKNG,2026-06-02
+5227848,The Blackstone Group,Blackstone Inc,BX,2026-06-02
+101393367,Pfizer,Pfizer Inc,PFE,2026-06-02
 36926534,Danaher,Danaher Corp,DHR,2026-06-02
-99459645,S&P Global,S&P Global Inc,SPGI,2026-06-02
+11240086,Prologis,Prologis Inc,PLD,2026-06-02
+32772520,ConocoPhillips,ConocoPhillips,COP,2026-06-02
 99479706,Chubb,Chubb Ltd,CB,2026-06-02
-37027932,Lockheed Martin,Lockheed Martin Corp,LMT,2026-06-02
-89628149,Newmont,Newmont Corp,NEM,2026-06-02
-37662275,Lowe's,Lowe's Cos Inc,LOW,2026-06-02
 37839757,CVS Health,CVS Health Corp,CVS,2026-06-02
-38360945,Capital One,Capital One Financial Corp,COF,2026-06-02
-38333389,Altria Group,Altria Group Inc,MO,2026-06-02
 38522287,Progressive,Progressive Corp/The,PGR,2026-06-02
-8592955,Accenture,Accenture PLC,ACN,2026-06-02
-25195085,Bristol-Myers Squibb,Bristol-Myers Squibb Co,BMY,2026-06-02
-2730848,Starbucks,Starbucks Corp,SBUX,2026-06-02
-3691012,Vertex Pharmaceuticals,Vertex Pharmaceuticals Inc,VRTX,2026-06-02
-2993397,Fortinet,Fortinet Inc,FTNT,2026-06-02
-34313436,Equinix,Equinix Inc,EQIX,2026-06-02
-89628122,Adobe,Adobe Inc,ADBE,2026-06-02
+89628101,Salesforce,Salesforce Inc,CRM,2026-06-02
+38360945,Capital One,Capital One Financial Corp,COF,2026-06-02
+37662275,Lowe's,Lowe's Cos Inc,LOW,2026-06-02
+41008236,Vertiv,Vertiv Holdings,VRT,2026-06-02
 1742028,Parker Hannifin,Parker-Hannifin Corp,PH,2026-06-02
-45788713,Quanta Services,Quanta Services Inc,PWR,2026-06-02
-38349110,Freeport-McMoRan,Freeport-McMoRan Inc,FCX,2026-06-02
-36798433,Southern Company,Southern Co/The,SO,2026-06-02
+3691012,Vertex Pharmaceuticals,Vertex Pharmaceuticals Inc,VRTX,2026-06-02
+38333389,Altria Group,Altria Group Inc,MO,2026-06-02
+4855312,Stryker,Stryker Corp,SYK,2026-06-02
+99459645,S&P Global,S&P Global Inc,SPGI,2026-06-02
+2730848,Starbucks,Starbucks Corp,SBUX,2026-06-02
+37027932,Lockheed Martin,Lockheed Martin Corp,LMT,2026-06-02
+25195085,Bristol-Myers Squibb,Bristol-Myers Squibb Co,BMY,2026-06-02
 25521446,Howmet Aerospace,Howmet Aerospace Inc,HWM,2026-06-02
+34313436,Equinix,Equinix Inc,EQIX,2026-06-02
+36798433,Southern Company,Southern Co/The,SO,2026-06-02
 105498780,Trane Technologies,Trane Technologies PLC,TT,2026-06-02
-11257336,Marriott International,Marriott International Inc/MD,MAR,2026-06-02
-39362058,Constellation Energy,Constellation Energy Corp,CEG,2026-06-02
-4383680,BNY Mellon,Bank of New York Mellon Corp/The,BNY,2026-06-02
-1886813,Synopsys,Synopsys Inc,SNPS,2026-06-02
-33808262,Datadog,Datadog Inc,DDOG,2026-06-02
+2993397,Fortinet,Fortinet Inc,FTNT,2026-06-02
+45788713,Quanta Services,Quanta Services Inc,PWR,2026-06-02
+5516430,Cadence Design Systems,Cadence Design Systems Inc,CDNS,2026-06-02
 35622956,Medtronic,Medtronic PLC,MDT,2026-06-02
+11257336,Marriott International,Marriott International Inc/MD,MAR,2026-06-02
+89628149,Newmont,Newmont Corp,NEM,2026-06-02
 39773756,Duke Energy,Duke Energy Corp,DUK,2026-06-02
-2893206,Cummins,Cummins Inc,CMI,2026-06-02
-3157026,General Dynamics,General Dynamics Corp,GD,2026-06-02
-34404991,CME Group,CME Group Inc,CME,2026-06-02
-40257897,Comcast,Comcast Corp,CMCSA,2026-06-02
-36832260,McKesson,McKesson Corp,MCK,2026-06-02
+4383680,BNY Mellon,Bank of New York Mellon Corp/The,BNY,2026-06-02
+1681036,ServiceNow,ServiceNow Inc,NOW,2026-06-02
 37869367,PNC,PNC Financial Services Group Inc/The,PNC,2026-06-02
-35326006,Intuit,Intuit Inc,INTU,2026-06-02
+2893206,Cummins,Cummins Inc,CMI,2026-06-02
+39362058,Constellation Energy,Constellation Energy Corp,CEG,2026-06-02
+37723136,US Bank,US Bancorp,USB,2026-06-02
+3157026,General Dynamics,General Dynamics Corp,GD,2026-06-02
 7749595,Williams,Williams Cos Inc/The,WMB,2026-06-02
-42096680,American Tower,American Tower Corp,AMT,2026-06-02
-100729442,Johnson Controls,Johnson Controls International plc,JCI,2026-06-02
 40181367,Monster Beverage,Monster Beverage Corp,MNST,2026-06-02
-38121853,Elevance Health,Elevance Health Inc,ELV,2026-06-02
-35602002,CSX,CSX Corp,CSX,2026-06-02
+12330310,UPS,United Parcel Service Inc,UPS,2026-06-02
+36832260,McKesson,McKesson Corp,MCK,2026-06-02
 4323366,Waste Management,Waste Management Inc,WM,2026-06-02
-12122363,Coherent,Coherent,COHR,2026-06-02
+38349110,Freeport-McMoRan,Freeport-McMoRan Inc,FCX,2026-06-02
+1886813,Synopsys,Synopsys Inc,SNPS,2026-06-02
+7897782,ADP,Automatic Data Processing Inc,ADP,2026-06-02
+36254093,Robinhood,Robinhood Markets Inc,HOOD,2026-06-02
+100729442,Johnson Controls,Johnson Controls International plc,JCI,2026-06-02
+1113791,3M,3M Co,MMM,2026-06-02
+37080579,Royal Caribbean Group,Royal Caribbean Cruises Ltd,RCL,2026-06-02
 89628093,HCA Healthcare,HCA Healthcare Inc,HCA,2026-06-02
 40256794,Airbnb,Airbnb Inc,ABNB,2026-06-02
-38330232,Intercontinental Exchange,Intercontinental Exchange Inc,ICE,2026-06-02
-10616646,Emerson Electric,Emerson Electric Co,EMR,2026-06-02
-39344281,FedEx,FedEx Corp,FDX,2026-06-02
-1113791,3M,3M Co,MMM,2026-06-02
-1481583,Moody's,Moody's Corp,MCO,2026-06-02
-37080579,Royal Caribbean Group,Royal Caribbean Cruises Ltd,RCL,2026-06-02
-99459535,Mondelez International,Mondelez International Inc,MDLZ,2026-06-02
+35602002,CSX,CSX Corp,CSX,2026-06-02
+34404991,CME Group,CME Group Inc,CME,2026-06-02
+38121853,Elevance Health,Elevance Health Inc,ELV,2026-06-02
+2873922,KKR,KKR & Co Inc,KKR,2026-06-02
+38800374,Sherwin-Williams,Sherwin-Williams Co/The,SHW,2026-06-02
+42096680,American Tower,American Tower Corp,AMT,2026-06-02
+40257897,Comcast,Comcast Corp,CMCSA,2026-06-02
 89628142,Marsh McLennan,Marsh & McLennan Cos Inc,MRSH,2026-06-02
-40171528,Marathon Petroleum,Marathon Petroleum Corp,MPC,2026-06-02
-37057669,Northrop Grumman,Northrop Grumman Corp,NOC,2026-06-02
-3244732,Valero Energy,Valero Energy Corp,VLO,2026-06-02
-99459484,Hewlett Packard Enterprise,Hewlett Packard Enterprise Co,HPE,2026-06-02
+33808262,Datadog,Datadog Inc,DDOG,2026-06-02
+99459535,Mondelez International,Mondelez International Inc,MDLZ,2026-06-02
+10616646,Emerson Electric,Emerson Electric Co,EMR,2026-06-02
+8592955,Accenture,Accenture PLC,ACN,2026-06-02
+1481583,Moody's,Moody's Corp,MCO,2026-06-02
 75783181,Hilton,Hilton Worldwide Holdings Inc,HLT,2026-06-02
+89628122,Adobe,Adobe Inc,ADBE,2026-06-02
+1933624,Ecolab,Ecolab Inc,ECL,2026-06-02
+53993098,Doordash,DoorDash Inc,DASH,2026-06-02
+12122363,Coherent,Coherent,COHR,2026-06-02
+39344281,FedEx,FedEx Corp,FDX,2026-06-02
+108922724,CRH plc,CRH PLC,CRH,2026-06-02
+68784,NXP Semiconductors N.V.,NXP Semiconductors NV,NXPI,2026-06-02
+59214976,TransDigm Group,TransDigm Group Inc,TDG,2026-06-02
+32848673,Cigna,Cigna Group/The,CI,2026-06-02
+38330232,Intercontinental Exchange,Intercontinental Exchange Inc,ICE,2026-06-02
+503305,Colgate-Palmolive,Colgate-Palmolive Co,CL,2026-06-02
+38586150,American Electric Power,American Electric Power Co Inc,AEP,2026-06-02
+39054344,Ross Stores,Ross Stores Inc,ROST,2026-06-02
+42049638,O'Reilly Auto Parts,O'Reilly Automotive Inc,ORLY,2026-06-02
+38200507,Kinder Morgan,Kinder Morgan Inc,KMI,2026-06-02
+37844540,Simon Property Group,Simon Property Group Inc,SPG,2026-06-02
+3244732,Valero Energy,Valero Energy Corp,VLO,2026-06-02
+40171528,Marathon Petroleum,Marathon Petroleum Corp,MPC,2026-06-02
+35326006,Intuit,Intuit Inc,INTU,2026-06-02
+38193684,EOG Resources,EOG Resources Inc,EOG,2026-06-02
+37057669,Northrop Grumman,Northrop Grumman Corp,NOC,2026-06-02
 37493873,General Motors,General Motors Co,GM,2026-06-02
 36379656,Apollo Global Management,Apollo Global Management Inc,APO,2026-06-02
-6775086,Phillips 66,Phillips 66,PSX,2026-06-02
-38800374,Sherwin-Williams,Sherwin-Williams Co/The,SHW,2026-06-02
-32848673,Cigna,Cigna Group/The,CI,2026-06-02
-1933624,Ecolab,Ecolab Inc,ECL,2026-06-02
-39054344,Ross Stores,Ross Stores Inc,ROST,2026-06-02
-108922724,CRH plc,CRH PLC,CRH,2026-06-02
-79037373,Boston Scientific,Boston Scientific Corp,BSX,2026-06-02
-503305,Colgate-Palmolive,Colgate-Palmolive Co,CL,2026-06-02
-53993098,Doordash,DoorDash Inc,DASH,2026-06-02
-38200507,Kinder Morgan,Kinder Morgan Inc,KMI,2026-06-02
-35578191,Norfolk Southern,Norfolk Southern Corp,NSC,2026-06-02
-40108921,Cintas,Cintas Corp,CTAS,2026-06-02
-40284956,Warner Bros. Discovery,Warner Bros Discovery Inc,WBD,2026-06-02
-1168055,Motorola Solutions,Motorola Solutions Inc,MSI,2026-06-02
-38586150,American Electric Power,American Electric Power Co Inc,AEP,2026-06-02
+35462654,Monolithic Power Systems,Monolithic Power Systems Inc,MPWR,2026-06-02
+1931311,Slb,SLB Ltd,SLB,2026-06-02
 4241295,AON,Aon PLC,AON,2026-06-02
-37844540,Simon Property Group,Simon Property Group Inc,SPG,2026-06-02
-2783746,Ford,Ford Motor Co,F,2026-06-02
-44339329,Digital Realty,Digital Realty Trust Inc,DLR,2026-06-02
-89628094,Nike,NIKE Inc,NKE,2026-06-02
-7317957,Baker Hughes,Baker Hughes Co,BKR,2026-06-02
-902867,United Rentals,United Rentals Inc,URI,2026-06-02
-100068864,TE Connectivity,TE Connectivity PLC,TEL,2026-06-02
-38449442,Regeneron Pharmaceuticals,Regeneron Pharmaceuticals Inc,REGN,2026-06-02
-39449493,Air Products & Chemicals,Air Products and Chemicals Inc,APD,2026-06-02
+4277269,Comfort Systems USA,Comfort Systems USA Inc,FIX,2026-06-02
+40108921,Cintas,Cintas Corp,CTAS,2026-06-02
+35578191,Norfolk Southern,Norfolk Southern Corp,NSC,2026-06-02
 99459653,Travelers,Travelers Cos Inc/The,TRV,2026-06-02
+40284956,Warner Bros. Discovery,Warner Bros Discovery Inc,WBD,2026-06-02
+902867,United Rentals,United Rentals Inc,URI,2026-06-02
+44339329,Digital Realty,Digital Realty Trust Inc,DLR,2026-06-02
+6775086,Phillips 66,Phillips 66,PSX,2026-06-02
+2625202,Teradyne,Teradyne Inc,TER,2026-06-02
+1168055,Motorola Solutions,Motorola Solutions Inc,MSI,2026-06-02
+79037373,Boston Scientific,Boston Scientific Corp,BSX,2026-06-02
 38580394,Republic Services,Republic Services Inc,RSG,2026-06-02
-37852748,Truist Financial,Truist Financial Corp,TFC,2026-06-02
-41359260,Keysight,Keysight Technologies Inc,KEYS,2026-06-02
-40497720,W.W. Grainger,WW Grainger Inc,GWW,2026-06-02
-35866960,Paccar,PACCAR Inc,PCAR,2026-06-02
-34647401,Nucor,Nucor Corp,NUE,2026-06-02
-36563761,Dominion Energy,Dominion Energy Inc,D,2026-06-02
-1135798,L3Harris Technologies,L3Harris Technologies Inc,LHX,2026-06-02
-89628098,Aflac,Aflac Inc,AFL,2026-06-02
-11699713,Carrier Corporation,Carrier Global Corp,CARR,2026-06-02
+1813463,Ciena,Ciena,CIEN,2026-06-02
+39930333,Lumentum Holdings,Lumentum Holdings,LITE,2026-06-02
+38449442,Regeneron Pharmaceuticals,Regeneron Pharmaceuticals Inc,REGN,2026-06-02
+99459484,Hewlett Packard Enterprise,Hewlett Packard Enterprise Co,HPE,2026-06-02
 1569362,Target,Target Corp,TGT,2026-06-02
+61819367,Ww.Grainger,WW Grainger Inc,GWW,2026-06-02
+39449493,Air Products & Chemicals,Air Products and Chemicals Inc,APD,2026-06-02
+37852748,Truist Financial,Truist Financial Corp,TFC,2026-06-02
+89628094,Nike,NIKE Inc,NKE,2026-06-02
+35866960,Paccar,PACCAR Inc,PCAR,2026-06-02
+11699713,Carrier Corporation,Carrier Global Corp,CARR,2026-06-02
+36563761,Dominion Energy,Dominion Energy Inc,D,2026-06-02
+89628089,Allstate,Allstate Corp/The,ALL,2026-06-02
+41359260,Keysight,Keysight Technologies Inc,KEYS,2026-06-02
+89628098,Aflac,Aflac Inc,AFL,2026-06-02
+594997,Delta Air Lines,Delta Air Lines Inc,DAL,2026-06-02
+100068864,TE Connectivity,TE Connectivity PLC,TEL,2026-06-02
 38560222,Targa Resources,Targa Resources Corp,TRGP,2026-06-02
+33987233,Arthur J. Gallagher,Arthur J Gallagher & Co,AJG,2026-06-02
+7317957,Baker Hughes,Baker Hughes Co,BKR,2026-06-02
+42934242,Public Storage,Public Storage,PSA,2026-06-02
+34090005,Cencora Limited,Cencora Inc,COR,2026-06-02
+61624047,Flex,Flex,FLEX,2026-06-02
+2783746,Ford,Ford Motor Co,F,2026-06-02
 42387946,Oneok Services Company,ONEOK Inc,OKE,2026-06-02
 36191478,Vistra Group,Vistra Corp,VST,2026-06-02
-89628089,Allstate,Allstate Corp/The,ALL,2026-06-02
-664,MetLife,MetLife Inc,MET,2026-06-02
-594997,Delta Air Lines,Delta Air Lines Inc,DAL,2026-06-02
-33987233,Arthur J. Gallagher,Arthur J Gallagher & Co,AJG,2026-06-02
-42934242,Public Storage,Public Storage,PSA,2026-06-02
-38034719,Corteva,Corteva Inc,CTVA,2026-06-02
-1449341,Ametek,AMETEK Inc,AME,2026-06-02
-33467982,Microchip Technology,Microchip Technology Inc,MCHP,2026-06-02
-99459491,Rockwell Automation,Rockwell Automation Inc,ROK,2026-06-02
-34090005,Cencora Limited,Cencora Inc,COR,2026-06-02
-40992132,Fastenal,Fastenal Co,FAST,2026-06-02
-101461861,Electronic Arts,Electronic Arts Inc,EA,2026-06-02
-79037426,Edwards Lifesciences,Edwards Lifesciences Corp,EW,2026-06-02
-33166091,ON Semiconductor,ON Semiconductor Corp,ON,2026-06-02
-101260746,Autodesk,Autodesk Inc,ADSK,2026-06-02
-89630725,Nasdaq,Nasdaq Inc,NDAQ,2026-06-02
-34131843,AutoZone,AutoZone Inc,AZO,2026-06-02
-37470543,Entergy,Entergy Corp,ETR,2026-06-02
-33545375,eBay,eBay Inc,EBAY,2026-06-02
-40973917,Xcel Energy,Xcel Energy Inc,XEL,2026-06-02
-45501410,Old Dominion Freight Line,Old Dominion Freight Line Inc,ODFL,2026-06-02
-33181055,Carvana,Carvana Co,CVNA,2026-06-02
-37122716,Exelon,Exelon Corp,EXC,2026-06-02
-657124,MSCI,MSCI Inc,MSCI,2026-06-02
+34647401,Nucor,Nucor Corp,NUE,2026-06-02
 79037368,Cardinal Health,Cardinal Health Inc,CAH,2026-06-02
-34185129,Garmin International,Garmin Ltd,GRMN,2026-06-02
-47450,Coinbase Global,Coinbase Global Inc,COIN,2026-06-02
+664,MetLife,MetLife Inc,MET,2026-06-02
+1449341,Ametek,AMETEK Inc,AME,2026-06-02
+38034719,Corteva,Corteva Inc,CTVA,2026-06-02
+1135798,L3Harris Technologies,L3Harris Technologies Inc,LHX,2026-06-02
+40992132,Fastenal,Fastenal Co,FAST,2026-06-02
+37470543,Entergy,Entergy Corp,ETR,2026-06-02
+79037426,Edwards Lifesciences,Edwards Lifesciences Corp,EW,2026-06-02
+39491773,Diamondback Energy,Diamondback Energy Inc,FANG,2026-06-02
+101461861,Electronic Arts,Electronic Arts Inc,EA,2026-06-02
+99459491,Rockwell Automation,Rockwell Automation Inc,ROK,2026-06-02
+40973917,Xcel Energy,Xcel Energy Inc,XEL,2026-06-02
+2080852,Occidental Petroleum,Occidental Petroleum Corp,OXY,2026-06-02
+34131843,AutoZone,AutoZone Inc,AZO,2026-06-02
+33467982,Microchip Technology,Microchip Technology Inc,MCHP,2026-06-02
 61796602,Fifth Third,Fifth Third Bancorp,FITB,2026-06-02
-7968440,Block,Block Inc,XYZ,2026-06-02
+32367025,Devon Energy,Devon Energy Corp,DVN,2026-06-02
+33181055,Carvana,Carvana Co,CVNA,2026-06-02
+33545375,eBay,eBay Inc,EBAY,2026-06-02
+37122716,Exelon,Exelon Corp,EXC,2026-06-02
+63512472,Dr.Horton,DR Horton Inc,DHI,2026-06-02
 35807747,State Street Corporation,State Street Corp,STT,2026-06-02
+34185129,Garmin International,Garmin Ltd,GRMN,2026-06-02
 99459650,Wabtec,Westinghouse Air Brake Technologies Corp,WAB,2026-06-02
-1213139,IDEXX,IDEXX Laboratories Inc,IDXX,2026-06-02
-39331095,D.R. Horton,DR Horton Inc,DHI,2026-06-02
-39511702,Keurig Dr Pepper,Keurig Dr Pepper Inc,KDP,2026-06-02
+89630725,Nasdaq,Nasdaq Inc,NDAQ,2026-06-02
+45501410,Old Dominion Freight Line,Old Dominion Freight Line Inc,ODFL,2026-06-02
+7968440,Block,Block Inc,XYZ,2026-06-02
+33166091,ON Semiconductor,ON Semiconductor Corp,ON,2026-06-02
 41227141,Take-Two Interactive Software,Take-Two Interactive Software Inc,TTWO,2026-06-02
-89628135,Interactive Brokers,Interactive Brokers Group Inc,IBKR,2026-06-02
-43075762,Ameriprise Financial,Ameriprise Financial Inc,AMP,2026-06-02
-39608040,Crown Castle,Crown Castle Inc,CCI,2026-06-02
-38379711,PayPal,PayPal Holdings Inc,PYPL,2026-06-02
-79037401,Jabil,Jabil Inc,JBL,2026-06-02
 6915630,Humana,Humana Inc,HUM,2026-06-02
-38528267,Live Nation,Live Nation Entertainment Inc,LYV,2026-06-02
-37475658,Public Service Enterprise Group,Public Service Enterprise Group Inc,PEG,2026-06-02
-46207983,Axon Enterprise,Axon Enterprise Inc,AXON,2026-06-02
-35696183,Iron Mountain,Iron Mountain Inc,IRM,2026-06-02
-33451929,Agilent Technologies,Agilent Technologies Inc,A,2026-06-02
-40163672,Kroger,Kroger Co/The,KR,2026-06-02
-23924727,Chipotle,Chipotle Mexican Grill Inc,CMG,2026-06-02
-39431141,The Hershey Company,Hershey Co/The,HSY,2026-06-02
-32048440,EMCOR Group,EMCOR Group Inc,EME,2026-06-02
-6213303,CBRE,CBRE Group Inc,CBRE,2026-06-02
-42040688,Vulcan Materials,Vulcan Materials Co,VMC,2026-06-02
-36075424,PG&E,PG&E Corp,PCG,2026-06-02
-99465574,EchoStar,EchoStar,SATS,2026-06-02
-89628115,Workday,Workday Inc,WDAY,2026-06-02
-38746262,Paychex,Paychex Inc,PAYX,2026-06-02
+1213139,IDEXX,IDEXX Laboratories Inc,IDXX,2026-06-02
+39511702,Keurig Dr Pepper,Keurig Dr Pepper Inc,KDP,2026-06-02
 8263000,United Airlines,United Airlines Holdings Inc,UAL,2026-06-02
-1852,Prudential Financial,Prudential Financial Inc,PRU,2026-06-02
+38522858,Yum! Brands,Yum! Brands Inc,YUM,2026-06-02
+99459648,Ventas,Ventas Inc,VTR,2026-06-02
+657124,MSCI,MSCI Inc,MSCI,2026-06-02
+43075762,Ameriprise Financial,Ameriprise Financial Inc,AMP,2026-06-02
+89628135,Interactive Brokers,Interactive Brokers Group Inc,IBKR,2026-06-02
+37475658,Public Service Enterprise Group,Public Service Enterprise Group Inc,PEG,2026-06-02
+49705832,Consolidated Edison,Consolidated Edison Inc,ED,2026-06-02
+101260746,Autodesk,Autodesk Inc,ADSK,2026-06-02
+23924727,Chipotle,Chipotle Mexican Grill Inc,CMG,2026-06-02
+105502207,AIG,American International Group Inc,AIG,2026-06-02
+99461686,Carnival Cruise Lines,Carnival Corp,CCL,2026-06-02
+38528267,Live Nation,Live Nation Entertainment Inc,LYV,2026-06-02
+42040688,Vulcan Materials,Vulcan Materials Co,VMC,2026-06-02
+47450,Coinbase Global,Coinbase Global Inc,COIN,2026-06-02
+79037401,Jabil,Jabil Inc,JBL,2026-06-02
+6213303,CBRE,CBRE Group Inc,CBRE,2026-06-02
+35696183,Iron Mountain,Iron Mountain Inc,IRM,2026-06-02
 4586544,Sysco,Sysco Corp,SYY,2026-06-02
-9568684,NetApp,NetApp Inc,NTAP,2026-06-02
-89628139,The Hartford,Hartford Insurance Group Inc/The,HIG,2026-06-02
+36075424,PG&E,PG&E Corp,PCG,2026-06-02
+38335018,WEC Energy Group,WEC Energy Group Inc,WEC,2026-06-02
+32048440,EMCOR Group,EMCOR Group Inc,EME,2026-06-02
+38379711,PayPal,PayPal Holdings Inc,PYPL,2026-06-02
+33451929,Agilent Technologies,Agilent Technologies Inc,A,2026-06-02
+39431141,The Hershey Company,Hershey Co/The,HSY,2026-06-02
 42095388,Martin Marietta,Martin Marietta Materials Inc,MLM,2026-06-02
-37611679,Las Vegas Sands Corp.,Las Vegas Sands Corp,LVS,2026-06-02
-4402064,Halliburton,Halliburton Co,HAL,2026-06-02
-2661011,First Solar,First Solar Inc,FSLR,2026-06-02
+1852,Prudential Financial,Prudential Financial Inc,PRU,2026-06-02
+46207983,Axon Enterprise,Axon Enterprise Inc,AXON,2026-06-02
+89628139,The Hartford,Hartford Insurance Group Inc/The,HIG,2026-06-02
+3125543,Waters,Waters Corp,WAT,2026-06-02
+39608040,Crown Castle,Crown Castle Inc,CCI,2026-06-02
+40163672,Kroger,Kroger Co/The,KR,2026-06-02
 40095920,Huntington Bancshares,Huntington Bancshares Inc/OH,HBAN,2026-06-02
 2415680,Kimberly-Clark,Kimberly-Clark Corp,KMB,2026-06-02
-41180857,Zoetis,Zoetis Inc,ZTS,2026-06-02
+35924186,Steel Dynamics,Steel Dynamics Inc,STLD,2026-06-02
+38746262,Paychex,Paychex Inc,PAYX,2026-06-02
 38735393,M&T Bank,M&T Bank Corp,MTB,2026-06-02
-40222123,Northern Trust,Northern Trust Corp,NTRS,2026-06-02
+36679156,Roper Technologies,Roper Technologies Inc,ROP,2026-06-02
 40025090,Arch Capital Group Ltd.,Arch Capital Group Ltd,ACGL,2026-06-02
-89628136,IQVIA,IQVIA Holdings Inc,IQV,2026-06-02
-33893272,Fiserv,Fiserv Inc,FISV,2026-06-02
-36119280,Extra Space Storage,Extra Space Storage Inc,EXR,2026-06-02
-36843197,Centene,Centene Corp,CNC,2026-06-02
-38907068,DTE Energy,DTE Energy Co,DTE,2026-06-02
-36914744,Copart,Copart Inc,CPRT,2026-06-02
-36479055,Ameren,Ameren Corp,AEE,2026-06-02
-4010282,Veeva Systems,Veeva Systems,VEEV,2026-06-02
-3609149,FAIR  ISAAC,Fair Isaac Corp,FICO,2026-06-02
-40023932,Teledyne Technologies,Teledyne Technologies Inc,TDY,2026-06-02
-2484950,Dover Corporation,Dover Corp,DOV,2026-06-02
-34525055,NRG Energy,NRG Energy Inc,NRG,2026-06-02
-797802,Dexcom,Dexcom Inc,DXCM,2026-06-02
-79037412,GE Healthcare,GE HealthCare Technologies Inc,GEHC,2026-06-02
-864195,Ingersoll Rand,Ingersoll Rand Inc,IR,2026-06-02
-38338722,Casey's,Casey's General Stores,CASY,2026-06-02
-99459520,Tapestry,Tapestry Inc,TPR,2026-06-02
-43679894,Kraft Heinz,Kraft Heinz Co/The,KHC,2026-06-02
-32103263,Biogen,Biogen Inc,BIIB,2026-06-02
-1210326,Edison International,Edison International,EIX,2026-06-02
-37331480,CenterPoint Energy,CenterPoint Energy Inc,CNP,2026-06-02
+41180857,Zoetis,Zoetis Inc,ZTS,2026-06-02
+6424594,EQT,EQT Corp,EQT,2026-06-02
+40222123,Northern Trust,Northern Trust Corp,NTRS,2026-06-02
+37611679,Las Vegas Sands Corp.,Las Vegas Sands Corp,LVS,2026-06-02
 6315471,Expedia Group,Expedia Group Inc,EXPE,2026-06-02
+38907068,DTE Energy,DTE Energy Co,DTE,2026-06-02
+36479055,Ameren,Ameren Corp,AEE,2026-06-02
+36843197,Centene,Centene Corp,CNC,2026-06-02
+89628136,IQVIA,IQVIA Holdings Inc,IQV,2026-06-02
+36119280,Extra Space Storage,Extra Space Storage Inc,EXR,2026-06-02
+864195,Ingersoll Rand,Ingersoll Rand Inc,IR,2026-06-02
+9568684,NetApp,NetApp Inc,NTAP,2026-06-02
+99459520,Tapestry,Tapestry Inc,TPR,2026-06-02
+2484950,Dover Corporation,Dover Corp,DOV,2026-06-02
+89628126,The Estée Lauder Companies,Estee Lauder Cos Inc/The,EL,2026-06-02
+99465574,EchoStar,EchoStar,SATS,2026-06-02
+34525055,NRG Energy,NRG Energy Inc,NRG,2026-06-02
+38338722,Casey's,Casey's General Stores,CASY,2026-06-02
+79037412,GE Healthcare,GE HealthCare Technologies Inc,GEHC,2026-06-02
+32103263,Biogen,Biogen Inc,BIIB,2026-06-02
+37859278,Citizens Financial,Citizens Financial Group Inc,CFG,2026-06-02
+89628115,Workday,Workday Inc,WDAY,2026-06-02
+37391556,Atmos Energy,Atmos Energy Corp,ATO,2026-06-02
+35583865,Vici Properties,VICI Properties Inc,VICI,2026-06-02
+37331480,CenterPoint Energy,CenterPoint Energy Inc,CNP,2026-06-02
+1210326,Edison International,Edison International,EIX,2026-06-02
 79037617,ResMed,ResMed Inc,RMD,2026-06-02
-37478930,FirstEnergy,FirstEnergy Corp,FE,2026-06-02
-37612921,Xylem,Xylem Inc/NY,XYL,2026-06-02
+40023932,Teledyne Technologies,Teledyne Technologies Inc,TDY,2026-06-02
+4402064,Halliburton,Halliburton Co,HAL,2026-06-02
+36914744,Copart,Copart Inc,CPRT,2026-06-02
+113319,Otis Worldwide Corporation,Otis Worldwide Corp,OTIS,2026-06-02
 5587669,PPL,PPL Corp,PPL,2026-06-02
-42138992,JB Hunt,JB Hunt Transport Services Inc,JBHT,2026-06-02
-35447165,AvalonBay Communities,AvalonBay Communities Inc,AVB,2026-06-02
-94544,HP,HP Inc,HPQ,2026-06-02
-34840531,Cognizant Technology Solutions,Cognizant Technology Solutions Corp,CTSH,2026-06-02
-688982,PPG,PPG Industries Inc,PPG,2026-06-02
-38332562,Eversource Energy,Eversource Energy,ES,2026-06-02
-34776018,Hubbell,Hubbell Inc,HUBB,2026-06-02
-2003684,Bunge,Bunge Global SA,BG,2026-06-02
-34368341,Equity Residential,Equity Residential,EQR,2026-06-02
-10137,W.R. Berkley,W R Berkley Corp,WRB,2026-06-02
 36150752,Williams-Sonoma,Williams-Sonoma Inc,WSM,2026-06-02
-40333245,Willis Towers Watson,Willis Towers Watson PLC,WTW,2026-06-02
-10106637,Synchrony,Synchrony Financial,SYF,2026-06-02
-42002225,Regions Financial,Regions Financial Corp,RF,2026-06-02
+37478930,FirstEnergy,FirstEnergy Corp,FE,2026-06-02
+38306449,Cincinnati Financial,Cincinnati Financial Corp,CINF,2026-06-02
+34776018,Hubbell,Hubbell Inc,HUBB,2026-06-02
+43679894,Kraft Heinz,Kraft Heinz Co/The,KHC,2026-06-02
+38332562,Eversource Energy,Eversource Energy,ES,2026-06-02
+688982,PPG,PPG Industries Inc,PPG,2026-06-02
+797802,Dexcom,Dexcom Inc,DXCM,2026-06-02
+2661011,First Solar,First Solar Inc,FSLR,2026-06-02
+37612921,Xylem,Xylem Inc/NY,XYL,2026-06-02
+3609149,FAIR  ISAAC,Fair Isaac Corp,FICO,2026-06-02
 36955778,Dollar General,Dollar General Corp,DG,2026-06-02
-38217106,American Water Works,American Water Works Co Inc,AWK,2026-06-02
-1620112,Mettler Toledo,Mettler-Toledo International Inc,MTD,2026-06-02
-38737378,Constellation Brands,Constellation Brands Inc,STZ,2026-06-02
-34097636,Akamai Technologies,Akamai Technologies Inc,AKAM,2026-06-02
-41740379,Corpay,Corpay Inc,CPAY,2026-06-02
-35324557,Verisk Analytics,Verisk Analytics Inc,VRSK,2026-06-02
-37179677,Darden Restaurants,Darden Restaurants Inc,DRI,2026-06-02
-36173312,Church & Dwight,Church & Dwight Co Inc,CHD,2026-06-02
+4010282,Veeva Systems,Veeva Systems,VEEV,2026-06-02
+43479346,Cboe Global Markets,Cboe Global Markets Inc,CBOE,2026-06-02
+10137,W.R. Berkley,W R Berkley Corp,WRB,2026-06-02
+35447165,AvalonBay Communities,AvalonBay Communities Inc,AVB,2026-06-02
 38336912,PulteGroup,PulteGroup Inc,PHM,2026-06-02
-39636220,T. Rowe Price Group,T Rowe Price Group Inc,TROW,2026-06-02
-42456532,Principal Financial Group,Principal Financial Group Inc,PFG,2026-06-02
-41047520,Lennar,Lennar Corp,LEN,2026-06-02
-99459575,West Pharmaceutical Services,West Pharmaceutical Services Inc,WST,2026-06-02
-41220187,Rollins,Rollins Inc,ROL,2026-06-02
-37389667,NiSource,NiSource Inc,NI,2026-06-02
-40037875,Ralph Lauren Retail,Ralph Lauren Corp,RL,2026-06-02
-38898648,LyondellBasell,LyondellBasell Industries NV,LYB,2026-06-02
-37749631,Loews,Loews Corp,L,2026-06-02
-36563759,Ulta Beauty,Ulta Beauty Inc,ULTA,2026-06-02
-38758311,Quest Diagnostics,Quest Diagnostics Inc,DGX,2026-06-02
-38585155,SBA Communications,SBA Communications Corp,SBAC,2026-06-02
-42188476,Tyson Foods,Tyson Foods Inc,TSN,2026-06-02
-38498746,Labcorp,Labcorp Holdings Inc,LH,2026-06-02
-34538057,C.H. Robinson Worldwide,CH Robinson Worldwide Inc,CHRW,2026-06-02
-36264802,Dollar Tree,Dollar Tree Inc,DLTR,2026-06-02
-38333848,Expeditors,Expeditors International of Washington Inc,EXPD,2026-06-02
-34294036,Equifax,Equifax Inc,EFX,2026-06-02
+33893272,Fiserv,Fiserv Inc,FISV,2026-06-02
+4245452,Ares Management,Ares Management Corp,ARES,2026-06-02
+10106637,Synchrony,Synchrony Financial,SYF,2026-06-02
+42138992,JB Hunt,JB Hunt Transport Services Inc,JBHT,2026-06-02
+38217106,American Water Works,American Water Works Co Inc,AWK,2026-06-02
+42002225,Regions Financial,Regions Financial Corp,RF,2026-06-02
+36031738,KeyBank,KeyCorp,KEY,2026-06-02
 38690267,Southwest Airlines,Southwest Airlines Co,LUV,2026-06-02
-9693857,Steris Corporation,STERIS PLC,STE,2026-06-02
-97824913,Veralto,Veralto Corp,VLTO,2026-06-02
-404315,Albemarle,Albemarle Corp,ALB,2026-06-02
-61486839,Packaging Corporation of America,Packaging Corp of America,PKG,2026-06-02
-33083448,Global Payments,Global Payments Inc,GPN,2026-06-02
-8515296,DuPont,DuPont de Nemours Inc,DD,2026-06-02
-99459501,Snap-on,Snap-on Inc,SNA,2026-06-02
-32869538,Brown & Brown,Brown & Brown Inc,BRO,2026-06-02
-35363047,Evergy,Evergy Inc,EVRG,2026-06-02
-33560807,Incyte,Incyte Corp,INCY,2026-06-02
-40952136,Alliant Energy,Alliant Energy Corp,LNT,2026-06-02
-99462514,Viatris,Viatris Inc,VTRS,2026-06-02
-406634,Lennox International,Lennox International Inc,LII,2026-06-02
-79032877,Fortive,Fortive Corp,FTV,2026-06-02
-8158898,International Paper,International Paper Co,IP,2026-06-02
-99459684,Broadridge Financial Solutions,Broadridge Financial Solutions Inc,BR,2026-06-02
+34368341,Equity Residential,Equity Residential,EQR,2026-06-02
+40333245,Willis Towers Watson,Willis Towers Watson PLC,WTW,2026-06-02
+40037875,Ralph Lauren Retail,Ralph Lauren Corp,RL,2026-06-02
+38737378,Constellation Brands,Constellation Brands Inc,STZ,2026-06-02
+37179677,Darden Restaurants,Darden Restaurants Inc,DRI,2026-06-02
+108672398,Smurfit Westrock,Smurfit WestRock PLC,SW,2026-06-02
+1620112,Mettler Toledo,Mettler-Toledo International Inc,MTD,2026-06-02
+99459575,West Pharmaceutical Services,West Pharmaceutical Services Inc,WST,2026-06-02
 99459859,Moderna Therapeutics,Moderna Inc,MRNA,2026-06-02
+37472564,CMS Energy,CMS Energy Corp,CMS,2026-06-02
+35324557,Verisk Analytics,Verisk Analytics Inc,VRSK,2026-06-02
+36173312,Church & Dwight,Church & Dwight Co Inc,CHD,2026-06-02
+42456532,Principal Financial Group,Principal Financial Group Inc,PFG,2026-06-02
+37749631,Loews,Loews Corp,L,2026-06-02
+675482,Verisign Incorporated,VeriSign Inc,VRSN,2026-06-02
+36264802,Dollar Tree,Dollar Tree Inc,DLTR,2026-06-02
+41047520,Lennar,Lennar Corp,LEN,2026-06-02
+37389667,NiSource,NiSource Inc,NI,2026-06-02
+39636220,T. Rowe Price Group,T Rowe Price Group Inc,TROW,2026-06-02
+41740379,Corpay,Corpay Inc,CPAY,2026-06-02
+38758311,Quest Diagnostics,Quest Diagnostics Inc,DGX,2026-06-02
+38498746,Labcorp,Labcorp Holdings Inc,LH,2026-06-02
+1001800,F5,F5 Inc,FFIV,2026-06-02
+33560807,Incyte,Incyte Corp,INCY,2026-06-02
+41220187,Rollins,Rollins Inc,ROL,2026-06-02
+94544,HP,HP Inc,HPQ,2026-06-02
+97824913,Veralto,Veralto Corp,VLTO,2026-06-02
+89747953,Expand Energy Corporation,Expand Energy Corp,EXE,2026-06-02
+61486839,Packaging Corporation of America,Packaging Corp of America,PKG,2026-06-02
+62009627,Dow Chemical,Dow Inc,DOW,2026-06-02
+2003684,Bunge,Bunge Global SA,BG,2026-06-02
+4937674,Omnicom,Omnicom Group Inc,OMC,2026-06-02
+37448805,Supermicro,Super Micro Computer Inc,SMCI,2026-06-02
+38333848,Expeditors,Expeditors International of Washington Inc,EXPD,2026-06-02
+32869538,Brown & Brown,Brown & Brown Inc,BRO,2026-06-02
+34538057,C.H. Robinson Worldwide,CH Robinson Worldwide Inc,CHRW,2026-06-02
+36563759,Ulta Beauty,Ulta Beauty Inc,ULTA,2026-06-02
+42188476,Tyson Foods,Tyson Foods Inc,TSN,2026-06-02
+99459501,Snap-on,Snap-on Inc,SNA,2026-06-02
+8158898,International Paper,International Paper Co,IP,2026-06-02
+9693857,Steris Corporation,STERIS PLC,STE,2026-06-02
+35363047,Evergy,Evergy Inc,EVRG,2026-06-02
+38585155,SBA Communications,SBA Communications Corp,SBAC,2026-06-02
+34840531,Cognizant Technology Solutions,Cognizant Technology Solutions Corp,CTSH,2026-06-02
+40952136,Alliant Energy,Alliant Energy Corp,LNT,2026-06-02
+122969,International Flavors & Fragrances,International Flavors & Fragrances Inc,IFF,2026-06-02
 8754478,Amcor,Amcor PLC,AMCR,2026-06-02
-37451464,Essex Property Trust,Essex Property Trust Inc,ESS,2026-06-02
-2463641,CDW,CDW Corp/DE,CDW,2026-06-02
-35879671,Weyerhaeuser,Weyerhaeuser Co,WY,2026-06-02
+406634,Lennox International,Lennox International Inc,LII,2026-06-02
+34294036,Equifax,Equifax Inc,EFX,2026-06-02
+8515296,DuPont,DuPont de Nemours Inc,DD,2026-06-02
 3312821,General Mills,General Mills Inc,GIS,2026-06-02
-3915879,CF Industries,CF Industries Holdings Inc,CF,2026-06-02
-35455688,Invitation Homes,Invitation Homes Inc,INVH,2026-06-02
-40943116,Generac Power Systems,Generac Holdings Inc,GNRC,2026-06-02
+99462514,Viatris,Viatris Inc,VTRS,2026-06-02
+79032877,Fortive,Fortive Corp,FTV,2026-06-02
+33083448,Global Payments,Global Payments Inc,GPN,2026-06-02
 3296569,NVR,NVR Inc,NVR,2026-06-02
+35879671,Weyerhaeuser,Weyerhaeuser Co,WY,2026-06-02
+38898648,LyondellBasell,LyondellBasell Industries NV,LYB,2026-06-02
+37451464,Essex Property Trust,Essex Property Trust Inc,ESS,2026-06-02
+35455688,Invitation Homes,Invitation Homes Inc,INVH,2026-06-02
 79037395,Zimmer Biomet,Zimmer Biomet Holdings Inc,ZBH,2026-06-02
-99459945,Gen Digital,Gen Digital Inc,GEN,2026-06-02
-7135549,PTC Inc,PTC Inc,PTC,2026-06-02
-33845120,Nordson,Nordson Corp,NDSN,2026-06-02
-38416486,Tractor Supply,Tractor Supply Co,TSCO,2026-06-02
+404315,Albemarle,Albemarle Corp,ALB,2026-06-02
+34097636,Akamai Technologies,Akamai Technologies Inc,AKAM,2026-06-02
 7692998,Kimco,Kimco Realty Corp,KIM,2026-06-02
-37424360,Textron,Textron Inc,TXT,2026-06-02
+38339592,Franklin Resources,Franklin Resources Inc,BEN,2026-06-02
+37506948,Host Hotels & Resorts,Host Hotels & Resorts Inc,HST,2026-06-02
+40943116,Generac Power Systems,Generac Holdings Inc,GNRC,2026-06-02
+2463641,CDW,CDW Corp/DE,CDW,2026-06-02
+33845120,Nordson,Nordson Corp,NDSN,2026-06-02
 1896889,IDEX,IDEX Corp,IEX,2026-06-02
-38329190,Leidos,Leidos Holdings Inc,LDOS,2026-06-02
 37422702,Best Buy,Best Buy Co Inc,BBY,2026-06-02
-99459675,Aptiv,Aptiv PLC,APTV,2026-06-02
-36359330,Deckers,Deckers Outdoor Corp,DECK,2026-06-02
-38770048,Lululemon,Lululemon Athletica Inc,LULU,2026-06-02
 2952315,Ball,Ball Corp,BALL,2026-06-02
-3544402,Jacobs Solutions,Jacobs Solutions Inc,J,2026-06-02
+99459684,Broadridge Financial Solutions,Broadridge Financial Solutions Inc,BR,2026-06-02
+41110818,Spectrum,Charter Communications Inc,CHTR,2026-06-02
+3915879,CF Industries,CF Industries Holdings Inc,CF,2026-06-02
+38416486,Tractor Supply,Tractor Supply Co,TSCO,2026-06-02
 3181447,Masco,Masco Corp,MAS,2026-06-02
-41418228,CoStar Group,CoStar Group Inc,CSGP,2026-06-02
+38504921,Mid-America Apartment Communities,Mid-America Apartment Communities Inc,MAA,2026-06-02
 34883932,Genuine Parts Company,Genuine Parts Co,GPC,2026-06-02
-1143992,APA Corporation,APA Corp,APA,2026-06-02
-7994736,Trimble,Trimble Inc,TRMB,2026-06-02
+37424360,Textron,Textron Inc,TXT,2026-06-02
+36359330,Deckers,Deckers Outdoor Corp,DECK,2026-06-02
+38179791,Regency Centers,Regency Centers Corp,REG,2026-06-02
+3544402,Jacobs Solutions,Jacobs Solutions Inc,J,2026-06-02
+99459945,Gen Digital,Gen Digital Inc,GEN,2026-06-02
 38083307,Hormel,Hormel Foods Corp,HRL,2026-06-02
-40621853,The Everest Group,Everest Group Ltd,EG,2026-06-02
-35865566,MGM Resorts International,MGM Resorts International,MGM,2026-06-02
-42432353,Tyler Technologies,Tyler Technologies Inc,TYL,2026-06-02
-46301492,Assurant,Assurant Inc,AIZ,2026-06-02
-1778144,McCormick,McCormick & Co Inc/MD,MKC,2026-06-02
 38091246,Stanley Black & Decker,Stanley Black & Decker Inc,SWK,2026-06-02
-35375269,Invesco,Invesco Ltd,IVZ,2026-06-02
+40621853,The Everest Group,Everest Group Ltd,EG,2026-06-02
 36018020,DaVita,DaVita Inc,DVA,2026-06-02
-99459577,Skyworks Solutions,Skyworks Solutions Inc,SWKS,2026-06-02
-4503144,Align Technology,Align Technology Inc,ALGN,2026-06-02
-42660373,GoDaddy,GoDaddy Inc,GDDY,2026-06-02
-37693575,Zebra Technologies,Zebra Technologies Corp,ZBRA,2026-06-02
-943738,Avery Dennison,Avery Dennison Corp,AVY,2026-06-02
 89628131,Globe Life,Globe Life Inc,GL,2026-06-02
-1770273,Udr,UDR Inc,UDR,2026-06-02
-37580189,Huntington Ingalls Industries,Huntington Ingalls Industries Inc,HII,2026-06-02
-34223219,Gartner,Gartner Inc,IT,2026-06-02
+38329190,Leidos,Leidos Holdings Inc,LDOS,2026-06-02
+46301492,Assurant,Assurant Inc,AIZ,2026-06-02
+7135549,PTC Inc,PTC Inc,PTC,2026-06-02
+38770048,Lululemon,Lululemon Athletica Inc,LULU,2026-06-02
+1778144,McCormick,McCormick & Co Inc/MD,MKC,2026-06-02
+99459675,Aptiv,Aptiv PLC,APTV,2026-06-02
+35702694,Pinnacle West Capital,Pinnacle West Capital Corp,PNW,2026-06-02
 32907328,Brown-Forman,Brown-Forman Corp,BF.B,2026-06-02
+943738,Avery Dennison,Avery Dennison Corp,AVY,2026-06-02
+1770273,Udr,UDR Inc,UDR,2026-06-02
+4503144,Align Technology,Align Technology Inc,ALGN,2026-06-02
+41418228,CoStar Group,CoStar Group Inc,CSGP,2026-06-02
 34054053,Pentair,Pentair PLC,PNR,2026-06-02
-693052,Allegion,Allegion plc,ALLE,2026-06-02
+35865566,MGM Resorts International,MGM Resorts International,MGM,2026-06-02
+37918270,Erie Indemnity Company,Erie Indemnity Co,ERIE,2026-06-02
+40363361,The J M Smucker Company,J M Smucker Co/The,SJM,2026-06-02
+37693575,Zebra Technologies,Zebra Technologies Corp,ZBRA,2026-06-02
 108232962,Revvity,Revvity Inc,RVTY,2026-06-02
-79032879,Wynn Resorts,Wynn Resorts Ltd,WYNN,2026-06-02
+559901,Hasbro,Hasbro Inc,HAS,2026-06-02
+1143992,APA Corporation,APA Corp,APA,2026-06-02
+42432353,Tyler Technologies,Tyler Technologies Inc,TYL,2026-06-02
+7994736,Trimble,Trimble Inc,TRMB,2026-06-02
 40054367,Clorox,Clorox Co/The,CLX,2026-06-02
-41501248,The AES Corporation,AES Corp/The,AES,2026-06-02
+693052,Allegion,Allegion plc,ALLE,2026-06-02
+35375269,Invesco,Invesco Ltd,IVZ,2026-06-02
 41382527,Camden Property Trust,Camden Property Trust,CPT,2026-06-02
-2358186,Domino's Pizza,Domino's Pizza Inc,DPZ,2026-06-02
-40374079,The Trade Desk,Trade Desk Inc/The,TTD,2026-06-02
-79038307,Insulet Corporation,Insulet Corp,PODD,2026-06-02
+37580189,Huntington Ingalls Industries,Huntington Ingalls Industries Inc,HII,2026-06-02
 1938075,Baxter International,Baxter International Inc,BAX,2026-06-02
-44693730,Jack Henry & Associates,Jack Henry & Associates Inc,JKHY,2026-06-02
-10106586,News Corp,News Corp,"NWSA,NWS",2026-06-02
-38441795,FactSet Research Systems,FactSet Research Systems Inc,FDS,2026-06-02
-37454624,Universal Health Services,Universal Health Services Inc,UHS,2026-06-02
-1959414,Henry Schein,Henry Schein Inc,HSIC,2026-06-02
+42660373,GoDaddy,GoDaddy Inc,GDDY,2026-06-02
+79032879,Wynn Resorts,Wynn Resorts Ltd,WYNN,2026-06-02
+48875354,Federal Realty Investment Trust,Federal Realty Investment Trust,FRT,2026-06-02
+99459577,Skyworks Solutions,Skyworks Solutions Inc,SWKS,2026-06-02
+41501248,The AES Corporation,AES Corp/The,AES,2026-06-02
+79038307,Insulet Corporation,Insulet Corp,PODD,2026-06-02
+20099,Bxp,BXP Inc,BXP,2026-06-02
+2859385,Fox,Fox Corp,"FOX,FOXA",2026-06-02
 42647418,Charles River Laboratories,Charles River Laboratories International Inc,CRL,2026-06-02
 34275004,Norwegian Cruise Line,Norwegian Cruise Line Holdings Ltd,NCLH,2026-06-02
-38661056,Builders FirstSource,Builders FirstSource Inc,BLDR,2026-06-02
-40933957,A.O. Smith,A O Smith Corp,AOS,2026-06-02
+2358186,Domino's Pizza,Domino's Pizza Inc,DPZ,2026-06-02
+1959414,Henry Schein,Henry Schein Inc,HSIC,2026-06-02
 1494241,Bio-Techne,Bio-Techne Corp,TECH,2026-06-02
+38661056,Builders FirstSource,Builders FirstSource Inc,BLDR,2026-06-02
+10106586,News Corp,News Corp,"NWSA,NWS",2026-06-02
+44693730,Jack Henry & Associates,Jack Henry & Associates Inc,JKHY,2026-06-02
+38390091,Alexandria Real Estate Equities,Alexandria Real Estate Equities Inc,ARE,2026-06-02
+37454624,Universal Health Services,Universal Health Services Inc,UHS,2026-06-02
+34223219,Gartner,Gartner Inc,IT,2026-06-02
+40374079,The Trade Desk,Trade Desk Inc/The,TTD,2026-06-02
+40933957,A.O. Smith,A O Smith Corp,AOS,2026-06-02
+38441795,FactSet Research Systems,FactSet Research Systems Inc,FDS,2026-06-02
 99459719,Molson Coors,Molson Coors Beverage Co,TAP,2026-06-02
+9469562,Mosaic,Mosaic Co/The,MOS,2026-06-02
 41153297,Conagra Brands,Conagra Brands Inc,CAG,2026-06-02
-33208531,EPAM Systems,EPAM Systems Inc,EPAM,2026-06-02
