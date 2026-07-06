@@ -45,9 +45,9 @@ GENAI_CUTOFF_YEAR = 2022.875
 FIG4B_YMAX = 0.2
 
 
-def add_panel_label(ax, label):
+def add_panel_label(ax, label, fontsize=16):
     ax.text(-0.06, 1.04, label, transform=ax.transAxes,
-            fontsize=16, fontweight="bold", va="bottom", ha="right")
+            fontsize=fontsize, fontweight="bold", va="bottom", ha="right")
 
 
 def plot_model_coefficients(ax, results):
@@ -165,16 +165,16 @@ def plot_salary_panel(ax, benefit_data, benefit, show_legend):
             ax.fill_between(subset["YEAR"], subset["CI_Lower"], subset["CI_Upper"],
                             color=color, alpha=0.2)
 
-    ax.set_title(benefits_labels_map[benefit], fontsize=12, fontweight="bold")
+    ax.set_title(benefits_labels_map[benefit], fontsize=24, fontweight="bold")
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"${x/1000:.0f}K"))
     years = sorted(benefit_data["YEAR"].unique())
     if years:
         ax.set_xticks(years)
         ax.set_xlim(min(years) - 0.5, max(years) + 0.5)
-    ax.tick_params(labelsize=9)
+    ax.tick_params(labelsize=20)
     ax.tick_params(axis="x", rotation=45)
     if show_legend:
-        ax.legend(fontsize=8, loc="upper left")
+        ax.legend(fontsize=18, loc="upper left")
     ax.grid(True, alpha=0.3)
 
 
@@ -201,11 +201,11 @@ def plot_wage_perk_yearly(ax, results):
     ax.axvline(GENAI_CUTOFF_YEAR, color="black", linewidth=1.0, linestyle=":", alpha=0.75)
     ax.set_ylim(top=FIG4B_YMAX)
     ax.text(GENAI_CUTOFF_YEAR + 0.03, ax.get_ylim()[1], "Nov. 2022",
-            ha="left", va="top", fontsize=9, color="black")
-    ax.set_xlabel("Year", fontsize=15)
-    ax.set_ylabel(r"AI Role $\times$ Benefit Interaction Coefficient", fontsize=15)
-    ax.tick_params(labelsize=13)
-    ax.legend(title="Benefit", fontsize=11, title_fontsize=12, loc="lower left")
+            ha="left", va="top", fontsize=14, color="black")
+    ax.set_xlabel("Year", fontsize=20)
+    ax.set_ylabel(r"AI Role $\times$ Benefit Interaction Coefficient", fontsize=20)
+    ax.tick_params(labelsize=18)
+    ax.legend(title="Benefit", fontsize=16, title_fontsize=17, loc="lower left")
     ax.grid(alpha=0.2)
 
 
@@ -222,7 +222,9 @@ def generate_figure4():
     salary_stats = pd.read_csv(SALARY_STATS_CSV)
     wage_perk = pd.read_csv(WAGE_PERK_CSV)
 
-    fig = plt.figure(figsize=(24, 12.5))
+    # Keep the combined canvas compact enough that type remains legible when
+    # the full figure is scaled to a two-column journal page.
+    fig = plt.figure(figsize=(20, 10.5), layout="constrained")
     subfig_a, subfig_b = fig.subfigures(1, 2, width_ratios=[1.6, 1])
 
     axes = subfig_a.subplots(2, 3)
@@ -231,12 +233,12 @@ def generate_figure4():
         plot_salary_panel(ax, salary_stats[salary_stats["Benefit"] == benefit],
                           benefit, show_legend=(i == 0))
         if i % 3 == 0:
-            ax.set_ylabel("Median Annual Salary (USD)", fontsize=11)
-    add_panel_label(axes[0][0], "(a)")
+            ax.set_ylabel("Median Annual Salary (USD)", fontsize=20)
+    add_panel_label(axes[0][0], "(a)", fontsize=24)
 
     ax_b = subfig_b.subplots(1, 1)
     plot_wage_perk_yearly(ax_b, wage_perk)
-    add_panel_label(ax_b, "(b)")
+    add_panel_label(ax_b, "(b)", fontsize=24)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output = OUTPUT_DIR / "figure4_combined.png"

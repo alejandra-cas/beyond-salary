@@ -208,9 +208,10 @@ def generate_combined_figure(salary_stats):
                               color=color, alpha=0.2)
         
         # Customize subplot
-        ax.set_title(benefits_labels_map[benefit], fontsize=14, fontweight='bold')
-        ax.set_xlabel('Year', fontsize=12)
-        ax.set_ylabel('Median Annual Salary (USD)', fontsize=12)
+        ax.set_title(benefits_labels_map[benefit], fontsize=20, fontweight='bold')
+        ax.set_xlabel('Year', fontsize=16)
+        ax.set_ylabel('Median Annual Salary (USD)', fontsize=16)
+        ax.tick_params(labelsize=14)
         
         # Format y-axis to show salary in thousands
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x/1000:.0f}K'))
@@ -222,7 +223,7 @@ def generate_combined_figure(salary_stats):
         
         # Add legend only to first subplot
         if i == 0:
-            ax.legend(bbox_to_anchor=(.05, 1), loc='upper left', fontsize=10)
+            ax.legend(bbox_to_anchor=(.05, 1), loc='upper left', fontsize=14)
         
         # Add grid
         ax.grid(True, alpha=0.3)
