@@ -245,6 +245,21 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - Firm category (SMEs, Large firms, S&P 500 firms) defines H2 subsamples only; they are not included as H2 controls.
 - A negative `AI ROLE x PERK` coefficient means the AI wage premium is smaller when the perk is present. This is consistent with substitution between monetary and non-monetary compensation, but it is not a causal estimate and does not imply that AI jobs with the perk pay less in absolute terms.
 
+## Paper Figure Mapping
+
+Paper figure numbers map to repo outputs as follows (note: "Figure 1" in script/file names is an internal name and corresponds to paper Figure 5):
+
+| Paper figure | Content | Output file(s) (`results/figures_2026/`) | Generating script |
+|---|---|---|---|
+| Figure 2 | Benefit prevalence by role type (left); AI vs non-AI benefit gap over time (right) | `descriptive/pct_jobs_by_benefit_and_role_type/figure2a_benefits_ai_role_keyword.png`; `descriptive/benefits_over_time/benefit_diffs_time_keyword.png` | `analysis/descriptive_analysis.py` |
+| Figure 3 | Odds ratios for benefit inclusion in AI vs non-AI roles (3a); yearly Model 1 AI-role coefficients (3b) | `regression/model_coefficients_plot_industry_converged.png`; `regression/yearly_model1_ai_role_coefficients.png` | `analysis/regression_models.py` |
+| Figure 4 | Median salary by benefit and role type over time (left, 4a); yearly AI×benefit wage interaction coefficients, full sample (right, 4b) | `salary/salary_by_benefit_combined.png`; `wage_perk_interactions/wage_perk_interaction_beta3_yearly_full_sample_all_perks.png` | `analysis/salary_analysis.py`; `analysis/wage_perk_interaction_analysis.py` |
+| Figure 5 | AI demand (upper) and AI wage premium (lower) over time, with before/after-2022 firm-category insets | `descriptive/figure1_ai_demand_wage_beta.png` | `analysis/descriptive_analysis.py` |
+| Figure 6 | Benefit-provision logit coefficients for AI vacancies by firm size | `regression/firm_category_ai_role_logit_coefficients.png` | `analysis/firm_category_yearly_regression.py` |
+| Figure 7 | AI×benefit wage interaction coefficients by firm size, before vs after GenAI | `wage_perk_interactions/wage_perk_interaction_beta3_heatmap_period_comparison.png` (and `..._through_2022.png` / `..._post_2022.png`) | `analysis/wage_perk_interaction_analysis.py` |
+
+The benefit previously labeled "Workplace Culture" is now labeled **"Inclusive Workplace"** (`CULTURE` internally).
+
 ## Generated Outputs
 
 ### Regression Tables

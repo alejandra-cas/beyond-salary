@@ -280,7 +280,14 @@ def main():
         
         # Calculate salary statistics
         salary_stats = calculate_salary_stats(usdf_salary)
-        
+
+        # Export stats so figures can be rebuilt without the raw data
+        # (consumed by scripts/generate_combined_figures.py for paper Figure 4a)
+        stats_path = REPO_ROOT / "results" / "tables_2026" / "salary" / "salary_by_benefit_stats.csv"
+        os.makedirs(stats_path.parent, exist_ok=True)
+        salary_stats.to_csv(stats_path, index=False)
+        print(f"Salary statistics saved to: {stats_path}")
+
         # Generate the combined figure
         output_path = generate_combined_figure(salary_stats)
         

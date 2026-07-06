@@ -344,6 +344,8 @@ def plot_yearly_full_sample_all_perks(results):
 
     ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_genai_year_line(ax)
+    # Cap the top so a single wide CI band does not blow up the scale
+    ax.set_ylim(top=0.2)
     ax.set_xlabel("Year", fontsize=11)
     ax.set_ylabel(r"$\beta_3$ Interaction Coefficient", fontsize=11)
     ax.set_title(
