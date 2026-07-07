@@ -544,11 +544,17 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
         ha="center",
         va="top",
         fontsize=15,
+        fontweight="bold",
         bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="none", alpha=0.7),
     )
     add_genai_quarter_line(demand_ax, pct_df_all.index)
+    if GENAI_CUTOFF in pct_df_all.index:
+        cutoff_x = list(pct_df_all.index).index(GENAI_CUTOFF) + 2 / 3
+        demand_ax.text(
+            cutoff_x + 0.15, 0.34, "ChatGPT", transform=demand_ax.get_xaxis_transform(),
+            rotation=90, ha="left", va="bottom", fontsize=11, fontweight="bold", color="black",
+        )
     demand_ax.grid(alpha=0.25)
-    add_firm_category_demand_inset(demand_ax, usdf)
 
     plotted = wage_betas[wage_betas["status"] == "ok"].copy()
     quarter_position_map = {quarter: idx for idx, quarter in enumerate(pct_df_all.index)}
@@ -578,7 +584,6 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
         plotted.loc[post_2021, "lower_ci"],
         plotted.loc[post_2021, "upper_ci"],
     )
-    add_firm_category_wage_inset(wage_ax, usdf)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.text(
         0.5,
@@ -588,6 +593,7 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
         ha="center",
         va="top",
         fontsize=15,
+        fontweight="bold",
         bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="none", alpha=0.7),
     )
     wage_ax.grid(alpha=0.25)
@@ -1083,7 +1089,12 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
         )
 
     demand_ax.set_ylabel("% AI Roles", fontsize=15)
-    demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
+    demand_ax.text(
+        0.5, 0.96, "Demand for AI Skills by Firm Category",
+        transform=demand_ax.transAxes, ha="center", va="top",
+        fontsize=15, fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="none", alpha=0.7),
+    )
     add_genai_quarter_line(demand_ax, demand_wide.index)
     demand_ax.legend(title=None, fontsize=11)
     demand_ax.grid(alpha=0.25)
@@ -1123,7 +1134,12 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
         post_ci["upper_ci"],
     )
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
-    wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
+    wage_ax.text(
+        0.5, 0.96, "Adjusted AI-Skills Wage Premium by Firm Category",
+        transform=wage_ax.transAxes, ha="center", va="top",
+        fontsize=15, fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="none", alpha=0.7),
+    )
     wage_ax.grid(alpha=0.25)
     wage_ax.legend(title=None, fontsize=11)
 
