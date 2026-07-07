@@ -137,6 +137,32 @@ def status_row(sample, period, perk, data, status, detail=""):
     }
 
 
+# When enabled via --save-full-params, every fitted model's complete
+# coefficient vector (incl. fixed effects) is collected here and written to
+# wage_perk_interaction_full_params.csv, so regression tables can be built
+# without refitting.
+COLLECT_FULL_PARAMS = False
+FULL_PARAMS_ROWS = []
+
+
+def collect_full_params(model, sample, period, perk):
+    conf_int = model.conf_int()
+    for term in model.params.index:
+        FULL_PARAMS_ROWS.append({
+            "sample": sample,
+            "period": period,
+            "perk": perk,
+            "term": term,
+            "coef": model.params[term],
+            "se": model.bse[term],
+            "pvalue": model.pvalues[term],
+            "lower_ci": conf_int.loc[term, 0],
+            "upper_ci": conf_int.loc[term, 1],
+            "nobs": int(model.nobs),
+            "r_squared": model.rsquared,
+        })
+
+
 def fit_interaction_model(data, sample, period, perk, include_year_fe):
     """Fit one log-wage interaction model and return a tidy result row."""
     model_data = data.dropna(subset=[perk]).copy()
@@ -177,6 +203,8 @@ def fit_interaction_model(data, sample, period, perk, include_year_fe):
         beta_ai_with_perk_se = np.sqrt(beta1_se**2 + beta3_se**2 + 2 * beta1_beta3_cov)
         beta_perk_for_ai_role = beta2 + beta3
         beta_perk_for_ai_role_se = np.sqrt(beta2_se**2 + beta3_se**2 + 2 * beta2_beta3_cov)
+        if COLLECT_FULL_PARAMS:
+            collect_full_params(model, sample, period, perk)
         return {
             "sample": sample,
             "period": period,
@@ -790,7 +818,17 @@ def main():
         action="store_true",
         help="Skip model fitting; regenerate plots from existing results CSV.",
     )
+    parser.add_argument(
+        "--save-full-params",
+        action="store_true",
+        help="Also save every model's full coefficient vector (incl. fixed "
+             "effects) to wage_perk_interaction_full_params.csv.",
+    )
     args = parser.parse_args()
+
+    if args.save_full_params:
+        global COLLECT_FULL_PARAMS
+        COLLECT_FULL_PARAMS = True
 
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
     output = TABLES_DIR / "wage_perk_interaction_results.csv"
@@ -808,6 +846,11 @@ def main():
     results = run_models(data)
     results.to_csv(output, index=False)
     print(f"Saved: {output}")
+
+    if COLLECT_FULL_PARAMS and FULL_PARAMS_ROWS:
+        full_params_output = TABLES_DIR / "wage_perk_interaction_full_params.csv"
+        pd.DataFrame(FULL_PARAMS_ROWS).to_csv(full_params_output, index=False)
+        print(f"Saved: {full_params_output}")
     print(results.groupby(["period", "status"]).size().to_string())
     plot_all(results)
 

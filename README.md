@@ -260,6 +260,10 @@ Paper figure numbers map to repo outputs as follows (note: "Figure 1" in script/
 
 The benefit previously labeled "Workplace Culture" is now labeled **"Inclusive Workplace"** (`CULTURE` internally).
 
+Additional reproducibility tooling:
+- `scripts/plot_benefit_cooccurrence.py` — jobs by number of benefits offered + benefit correlation inset. Computes small aggregate CSVs (`results/tables_2026/descriptive/benefit_cooccurrence_{hist,corr}.csv`) from the labeled parquet on first run, then plots from the CSVs (re-runnable anywhere).
+- `analysis/wage_perk_interaction_analysis.py --save-full-params` — additionally exports every fitted model's complete coefficient vector (incl. fixed effects, with SEs, p-values, CIs) to `results/tables_2026/wage_perk_interactions/wage_perk_interaction_full_params.csv` for building regression tables without refitting.
+
 ## Generated Outputs
 
 ### Regression Tables
