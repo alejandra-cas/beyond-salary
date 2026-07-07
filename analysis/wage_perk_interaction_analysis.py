@@ -137,11 +137,11 @@ def status_row(sample, period, perk, data, status, detail=""):
     }
 
 
-# When enabled via --save-full-params, every fitted model's complete
-# coefficient vector (incl. fixed effects) is collected here and written to
-# wage_perk_interaction_full_params.csv, so regression tables can be built
-# without refitting.
-COLLECT_FULL_PARAMS = False
+# Every fitted model's complete coefficient vector (incl. fixed effects) is
+# collected here and written to wage_perk_interaction_full_params.csv, so
+# regression tables can be built without refitting. Disable with
+# --no-full-params.
+COLLECT_FULL_PARAMS = True
 FULL_PARAMS_ROWS = []
 
 
@@ -819,16 +819,16 @@ def main():
         help="Skip model fitting; regenerate plots from existing results CSV.",
     )
     parser.add_argument(
-        "--save-full-params",
+        "--no-full-params",
         action="store_true",
-        help="Also save every model's full coefficient vector (incl. fixed "
+        help="Skip saving every model's full coefficient vector (incl. fixed "
              "effects) to wage_perk_interaction_full_params.csv.",
     )
     args = parser.parse_args()
 
-    if args.save_full_params:
+    if args.no_full_params:
         global COLLECT_FULL_PARAMS
-        COLLECT_FULL_PARAMS = True
+        COLLECT_FULL_PARAMS = False
 
     TABLES_DIR.mkdir(parents=True, exist_ok=True)
     output = TABLES_DIR / "wage_perk_interaction_results.csv"
