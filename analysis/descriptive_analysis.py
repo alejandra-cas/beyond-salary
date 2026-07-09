@@ -590,7 +590,6 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
         pct_df_all["Industry Average"],
     )
     demand_ax.grid(alpha=0.25)
-    add_firm_category_demand_inset(demand_ax, usdf)
 
     plotted = wage_betas[wage_betas["status"] == "ok"].copy()
     quarter_position_map = {quarter: idx for idx, quarter in enumerate(pct_df_all.index)}
@@ -620,7 +619,6 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
         plotted.loc[post_2021, "upper_ci"],
     )
     wage_ax.set_ylim(0, 0.33)
-    add_firm_category_wage_inset(wage_ax, usdf)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.text(
         0.5,
@@ -1127,8 +1125,10 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
     demand_ax.set_ylabel("% AI Roles", fontsize=15)
     demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
     add_genai_quarter_line(demand_ax, demand_wide.index)
-    demand_ax.legend(title=None, fontsize=11)
+    set_zero_based_ylim(demand_ax, demand_wide.stack())
+    demand_ax.legend(title=None, fontsize=11, loc="lower right")
     demand_ax.grid(alpha=0.25)
+    add_firm_category_demand_inset(demand_ax, category_df)
 
     plotted = wage_betas[wage_betas["status"] == "ok"].copy()
     plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
@@ -1164,10 +1164,12 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
         post_ci["lower_ci"],
         post_ci["upper_ci"],
     )
+    wage_ax.set_ylim(bottom=-0.1)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
     wage_ax.grid(alpha=0.25)
-    wage_ax.legend(title=None, fontsize=11)
+    wage_ax.legend(title=None, fontsize=11, loc="upper left")
+    add_firm_category_wage_inset(wage_ax, category_df)
 
     tick_positions = list(range(0, len(demand_wide.index), 4))
     wage_ax.set_xticks(tick_positions)

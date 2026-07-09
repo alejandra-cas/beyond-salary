@@ -9,15 +9,18 @@ Usage:
     uv run python scripts/plot_firm_category_figure1.py
 """
 
+import os
 from pathlib import Path
 import sys
+
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 sys.path.append(str(Path(__file__).parent.parent / "src"))
-from package_files.config_utils import get_repo_root
+from package_files.config_utils import get_processed_dir, get_repo_root
 
 REPO_ROOT = get_repo_root()
 TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "descriptive"
@@ -36,6 +39,8 @@ FIRM_CATEGORY_MARKERS = {
     "S&P 500 firms": "o",
 }
 GENAI_CUTOFF = pd.Period("2022Q4", freq="Q")
+FIGURE1_DEMAND_INSET_BOUNDS = [0.04, 0.52, 0.34, 0.38]
+FIGURE1_WAGE_INSET_BOUNDS = [0.62, 0.08, 0.34, 0.38]
 
 
 def add_firm_category(df):
@@ -101,13 +106,26 @@ def set_tight_symmetric_ylim(ax, values, lower_values=None, upper_values=None, p
     ax.set_ylim(-limit, limit)
 
 
+def set_zero_based_ylim(ax, values, upper_values=None, pad=0.10, floor=0.02, min_upper=None):
+    pieces = [pd.Series(values).dropna()]
+    if upper_values is not None:
+        pieces.append(pd.Series(upper_values).dropna())
+    combined = pd.concat(pieces, ignore_index=True)
+    if combined.empty:
+        return
+    upper = max(float(combined.max()) * (1 + pad), floor)
+    if min_upper is not None:
+        upper = max(upper, min_upper)
+    ax.set_ylim(0, upper)
+
+
 def add_demand_inset(ax, demand_wide):
     """Add the Figure 1-style before/after demand inset from saved quarters."""
     period_means = {
         "Before": demand_wide[demand_wide.index.year <= 2022].mean(),
         "After": demand_wide[demand_wide.index.year > 2022].mean(),
     }
-    inset = ax.inset_axes([1.08, 0.22, 0.30, 0.52])
+    inset = ax.inset_axes(FIGURE1_DEMAND_INSET_BOUNDS)
     periods = ["Before", "After"]
     x = np.arange(len(periods))
     bar_width = 0.22
@@ -124,17 +142,17 @@ def add_demand_inset(ax, demand_wide):
         )
 
     inset.set_xticks(x)
-    inset.set_xticklabels(periods, fontsize=8)
-    inset.set_ylabel("% AI", fontsize=7)
-    inset.tick_params(axis="both", labelsize=7)
-    inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
+    inset.set_xticklabels(periods, fontsize=9)
+    inset.set_ylabel("% AI", fontsize=8)
+    inset.tick_params(axis="both", labelsize=8)
+    inset.legend(fontsize=6.5, loc="upper left", framealpha=0.7)
     inset.grid(axis="y", alpha=0.18)
     inset.text(
         0.98,
         0.97,
         "AI Vacancy Share\nby Firm Type",
         transform=inset.transAxes,
-        fontsize=7,
+        fontsize=8,
         ha="right",
         va="top",
         fontstyle="italic",
@@ -171,7 +189,7 @@ def add_wage_inset(ax, wage_betas):
     period_betas = summarize_wage_betas_by_period(wage_betas)
     if period_betas.empty:
         return
-    inset = ax.inset_axes([1.08, 0.22, 0.30, 0.52])
+    inset = ax.inset_axes(FIGURE1_WAGE_INSET_BOUNDS)
     periods = ["Before", "After"]
     x = np.arange(len(periods))
     bar_width = 0.22
@@ -181,29 +199,39 @@ def add_wage_inset(ax, wage_betas):
             period_betas[FIRM_CATEGORY] == category
         ].set_index("period")
         values = [category_data.loc[p, "ai_role_beta"] for p in periods]
+        yerr_lo = [
+            category_data.loc[p, "ai_role_beta"] - category_data.loc[p, "lower_ci"]
+            for p in periods
+        ]
+        yerr_hi = [
+            category_data.loc[p, "upper_ci"] - category_data.loc[p, "ai_role_beta"]
+            for p in periods
+        ]
         offset = (i - 1) * bar_width
         inset.bar(
             x + offset,
             values,
+            yerr=[yerr_lo, yerr_hi],
             width=bar_width,
             color=FIRM_CATEGORY_COLORS[category],
             alpha=0.85,
+            capsize=2,
             label=category,
         )
 
     inset.axhline(0, color="gray", linewidth=0.7, linestyle="--")
     inset.set_xticks(x)
-    inset.set_xticklabels(periods, fontsize=8)
-    inset.set_ylabel("Coef.", fontsize=7)
-    inset.tick_params(axis="both", labelsize=7)
-    inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
+    inset.set_xticklabels(periods, fontsize=9)
+    inset.set_ylabel("Coef.", fontsize=8)
+    inset.tick_params(axis="both", labelsize=8)
+    inset.legend(fontsize=6.5, loc="upper left", framealpha=0.7)
     inset.grid(axis="y", alpha=0.18)
     inset.text(
         0.98,
         0.97,
         "Wage Premium\nby Firm Type",
         transform=inset.transAxes,
-        fontsize=7,
+        fontsize=8,
         ha="right",
         va="top",
         fontstyle="italic",
@@ -211,21 +239,53 @@ def add_wage_inset(ax, wage_betas):
     )
 
 
-def main():
-    # --- Load pre-computed descriptive tables ---
+def load_demand_wide():
+    """Load cached demand by firm category, or compute it from minimal parquet columns."""
     demand_path = TABLES_DIR / "quarterly_ai_demand_by_firm_category.csv"
-    if not demand_path.exists():
-        raise FileNotFoundError(f"Demand table not found: {demand_path}")
-    demand_wide = pd.read_csv(demand_path)
-    demand_wide["QUARTER"] = demand_wide["QUARTER"].apply(
-        lambda x: pd.Period(x, freq="Q")
-    )
-    demand_wide = (
+    if demand_path.exists():
+        demand_wide = pd.read_csv(demand_path)
+        demand_wide["QUARTER"] = demand_wide["QUARTER"].apply(
+            lambda x: pd.Period(x, freq="Q")
+        )
+        print(f"Loaded demand table: {demand_path}")
+    else:
+        processed_path = get_processed_dir() / "labeled_v2.parquet"
+        print(f"Demand table not found; computing from {processed_path}")
+        columns = ["POSTED", "AI ROLE", "SP500", "FIRM_POSTING_COUNT"]
+        try:
+            demand_df = pd.read_parquet(processed_path, columns=columns)
+        except OSError:
+            import polars as pl
+
+            demand_df = pl.scan_parquet(processed_path).select(columns).collect().to_pandas()
+        demand_df["POSTED"] = pd.to_datetime(demand_df["POSTED"])
+        demand_df["QUARTER"] = demand_df["POSTED"].dt.to_period("Q")
+        demand_df = add_firm_category(demand_df).dropna(subset=[FIRM_CATEGORY])
+        demand_wide = (
+            demand_df.groupby(["QUARTER", FIRM_CATEGORY], observed=False)["AI ROLE"]
+            .mean()
+            .mul(100)
+            .reset_index(name="ai_role_share")
+            .pivot(index="QUARTER", columns=FIRM_CATEGORY, values="ai_role_share")
+            .reset_index()
+        )
+        TABLES_DIR.mkdir(parents=True, exist_ok=True)
+        demand_wide.assign(QUARTER=demand_wide["QUARTER"].astype(str)).to_csv(
+            demand_path,
+            index=False,
+        )
+        print(f"Saved demand table: {demand_path}")
+
+    return (
         demand_wide.set_index("QUARTER")
         .sort_index()
         .reindex(columns=FIRM_CATEGORY_ORDER)
     )
-    print(f"Loaded demand table: {demand_path}")
+
+
+def main():
+    # --- Load pre-computed descriptive tables ---
+    demand_wide = load_demand_wide()
 
     # --- Load pre-computed wage betas ---
     betas_path = TABLES_DIR / "quarterly_ai_wage_betas_by_firm_category.csv"
@@ -236,7 +296,7 @@ def main():
     print(f"Loaded {len(wage_betas)} wage beta rows from {betas_path}")
 
     # --- Plot ---
-    fig, (demand_ax, wage_ax) = plt.subplots(nrows=2, ncols=1, figsize=(17, 9), sharex=True)
+    fig, (demand_ax, wage_ax) = plt.subplots(nrows=2, ncols=1, figsize=(11, 9), sharex=True)
     quarter_positions = np.arange(len(demand_wide.index))
     quarter_position_map = {q: i for i, q in enumerate(demand_wide.index)}
 
@@ -256,7 +316,8 @@ def main():
     demand_ax.set_ylabel("% AI Roles", fontsize=15)
     demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
     add_chatgpt_quarter_line(demand_ax, demand_wide.index, add_label=True)
-    demand_ax.legend(title=None, fontsize=11)
+    set_zero_based_ylim(demand_ax, demand_wide.stack())
+    demand_ax.legend(title=None, fontsize=11, loc="lower right")
     demand_ax.grid(alpha=0.25)
     add_demand_inset(demand_ax, demand_wide)
 
@@ -278,11 +339,18 @@ def main():
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_chatgpt_quarter_line(wage_ax, demand_wide.index)
-    wage_ax.set_ylim(0, 0.4)
+    post_ci = plotted[plotted["QUARTER"] >= pd.Period("2022Q1", freq="Q")]
+    set_tight_symmetric_ylim(
+        wage_ax,
+        plotted["ai_role_beta"],
+        post_ci["lower_ci"],
+        post_ci["upper_ci"],
+    )
+    wage_ax.set_ylim(bottom=-0.1)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
     wage_ax.grid(alpha=0.25)
-    wage_ax.legend(title=None, fontsize=11)
+    wage_ax.legend(title=None, fontsize=11, loc="upper left")
     add_wage_inset(wage_ax, wage_betas)
 
     tick_positions = list(range(0, len(demand_wide.index), 4))
@@ -290,7 +358,7 @@ def main():
     wage_ax.set_xticklabels([str(demand_wide.index[i]) for i in tick_positions], rotation=45)
     wage_ax.set_xlabel("Quarter", fontsize=13)
 
-    plt.tight_layout(rect=[0, 0, 0.80, 1])
+    plt.tight_layout()
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     output_path = FIG_DIR / "figure1_ai_demand_wage_beta_by_firm_category.png"
     plt.savefig(output_path, bbox_inches="tight", dpi=300)
