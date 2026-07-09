@@ -13,8 +13,11 @@ Figure 4a requires ``results/tables_2026/salary/salary_by_benefit_stats.csv``,
 which ``analysis/salary_analysis.py`` exports on a full-data run.
 """
 
+import os
 import sys
 from pathlib import Path
+
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -161,20 +164,29 @@ def plot_salary_panel(ax, benefit_data, benefit, show_legend):
             label = (f"{'AI Role' if ai_role else 'Non-AI Role'}, "
                      f"{'With Benefit' if benefit_present else 'Without Benefit'}")
             ax.plot(subset["YEAR"], subset["Median_Salary"], color=color, alpha=alpha,
-                    linestyle=linestyle, marker="o", markersize=3, label=label)
+                    linestyle=linestyle, marker="o", markersize=2.6, label=label)
             ax.fill_between(subset["YEAR"], subset["CI_Lower"], subset["CI_Upper"],
                             color=color, alpha=0.2)
 
-    ax.set_title(benefits_labels_map[benefit], fontsize=24, fontweight="bold")
+    ax.set_title(benefits_labels_map[benefit], fontsize=18, fontweight="bold", pad=8)
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"${x/1000:.0f}K"))
     years = sorted(benefit_data["YEAR"].unique())
     if years:
         ax.set_xticks(years)
         ax.set_xlim(min(years) - 0.5, max(years) + 0.5)
-    ax.tick_params(labelsize=20)
+    ax.tick_params(labelsize=13)
     ax.tick_params(axis="x", rotation=45)
     if show_legend:
-        ax.legend(fontsize=18, loc="upper left")
+        ax.legend(
+            fontsize=9.5,
+            loc="upper left",
+            framealpha=0.88,
+            borderpad=0.35,
+            labelspacing=0.25,
+            handlelength=1.5,
+            handletextpad=0.45,
+            borderaxespad=0.4,
+        )
     ax.grid(True, alpha=0.3)
 
 
@@ -222,18 +234,29 @@ def generate_figure4():
     salary_stats = pd.read_csv(SALARY_STATS_CSV)
     wage_perk = pd.read_csv(WAGE_PERK_CSV)
 
-    # Keep the combined canvas compact enough that type remains legible when
-    # the full figure is scaled to a two-column journal page.
-    fig = plt.figure(figsize=(20, 10.5), layout="constrained")
-    subfig_a, subfig_b = fig.subfigures(1, 2, width_ratios=[1.6, 1])
+    fig = plt.figure(figsize=(20, 8), layout="constrained")
+    subfig_a, subfig_b = fig.subfigures(
+        1,
+        2,
+        width_ratios=[1.75, 1.1],
+        wspace=0.015,
+    )
 
-    axes = subfig_a.subplots(2, 3)
+    axes = subfig_a.subplots(
+        2,
+        3,
+        sharex=True,
+        sharey=True,
+        gridspec_kw={"wspace": 0.08, "hspace": 0.08},
+    )
     for i, benefit in enumerate(benefits4):
         ax = axes.flatten()[i]
         plot_salary_panel(ax, salary_stats[salary_stats["Benefit"] == benefit],
                           benefit, show_legend=(i == 0))
         if i % 3 == 0:
-            ax.set_ylabel("Median Annual Salary (USD)", fontsize=20)
+            ax.set_ylabel("Median Annual Salary (USD)", fontsize=15)
+        if i // 3 == 1:
+            ax.set_xlabel("Year", fontsize=14)
     add_panel_label(axes[0][0], "(a)", fontsize=24)
 
     ax_b = subfig_b.subplots(1, 1)
