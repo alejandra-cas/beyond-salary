@@ -101,6 +101,8 @@ FIRM_CATEGORY_MARKERS = {
 }
 GENAI_CUTOFF = pd.Period("2022Q4", freq="Q")
 GENAI_CUTOFF_YEAR = 2022.875
+FIGURE1_DEMAND_INSET_BOUNDS = [0.04, 0.52, 0.34, 0.38]
+FIGURE1_WAGE_INSET_BOUNDS = [0.62, 0.08, 0.34, 0.38]
 
 
 def format_benefit_label(benefit_key, label):
@@ -156,6 +158,20 @@ def set_tight_symmetric_ylim(ax, values, lower_values=None, upper_values=None, p
         return
     limit = max(float(combined.abs().max()) * (1 + pad), floor)
     ax.set_ylim(-limit, limit)
+
+
+def set_zero_based_ylim(ax, values, upper_values=None, pad=0.10, floor=0.02, min_upper=None):
+    """Use a zero-based y-axis with a small amount of headroom."""
+    pieces = [pd.Series(values).dropna()]
+    if upper_values is not None:
+        pieces.append(pd.Series(upper_values).dropna())
+    combined = pd.concat(pieces, ignore_index=True)
+    if combined.empty:
+        return
+    upper = max(float(combined.max()) * (1 + pad), floor)
+    if min_upper is not None:
+        upper = max(upper, min_upper)
+    ax.set_ylim(0, upper)
 
 
 def load_data():
@@ -354,10 +370,15 @@ def compute_firm_category_ai_share_by_period(usdf):
     df["GENAI_PERIOD"] = np.where(df["YEAR"] <= 2022, "Before", "After")
     shares = (
         df.groupby([FIRM_CATEGORY, "GENAI_PERIOD"], observed=False)["AI ROLE"]
-        .mean()
-        .mul(100)
-        .reset_index(name="ai_share")
+        .agg(ai_share="mean", postings="size")
+        .reset_index()
     )
+    share = shares["ai_share"].astype(float)
+    n = shares["postings"].astype(float)
+    shares["ai_share"] = share * 100
+    shares["ai_share_se"] = np.sqrt(share * (1 - share) / n).fillna(0) * 100
+    shares["lower_ci"] = (shares["ai_share"] - 1.96 * shares["ai_share_se"]).clip(lower=0)
+    shares["upper_ci"] = shares["ai_share"] + 1.96 * shares["ai_share_se"]
     return shares
 
 
@@ -366,7 +387,7 @@ def add_firm_category_demand_inset(ax, usdf):
     shares = compute_firm_category_ai_share_by_period(usdf)
     if shares.empty:
         return
-    inset = ax.inset_axes([0.55, 0.38, 0.42, 0.55])
+    inset = ax.inset_axes(FIGURE1_DEMAND_INSET_BOUNDS)
     periods = ["Before", "After"]
     n_categories = len(FIRM_CATEGORY_ORDER)
     bar_width = 0.22
@@ -375,25 +396,29 @@ def add_firm_category_demand_inset(ax, usdf):
     for i, category in enumerate(FIRM_CATEGORY_ORDER):
         cat_data = shares[shares[FIRM_CATEGORY] == category].set_index("GENAI_PERIOD")
         vals = [cat_data.loc[p, "ai_share"] if p in cat_data.index else 0 for p in periods]
+        yerr_lo = [cat_data.loc[p, "ai_share"] - cat_data.loc[p, "lower_ci"] if p in cat_data.index else 0 for p in periods]
+        yerr_hi = [cat_data.loc[p, "upper_ci"] - cat_data.loc[p, "ai_share"] if p in cat_data.index else 0 for p in periods]
         offset = (i - (n_categories - 1) / 2) * bar_width
         inset.bar(
             x + offset,
             vals,
+            yerr=[yerr_lo, yerr_hi],
             width=bar_width,
             color=FIRM_CATEGORY_COLORS[category],
             alpha=0.85,
+            capsize=2,
             label=category,
         )
 
     inset.set_xticks(x)
-    inset.set_xticklabels(periods, fontsize=8)
-    inset.set_ylabel("% AI", fontsize=7)
-    inset.tick_params(axis="both", labelsize=7)
-    inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
+    inset.set_xticklabels(periods, fontsize=9)
+    inset.set_ylabel("% AI", fontsize=8)
+    inset.tick_params(axis="both", labelsize=8)
+    inset.legend(fontsize=6.5, loc="upper left", framealpha=0.7)
     inset.grid(axis="y", alpha=0.18)
     inset.text(
         0.98, 0.97, "AI Vacancy Share\nby Firm Type",
-        transform=inset.transAxes, fontsize=7, ha="right", va="top",
+        transform=inset.transAxes, fontsize=8, ha="right", va="top",
         fontstyle="italic", color="#333333",
     )
 
@@ -411,11 +436,21 @@ def estimate_period_ai_wage_betas_by_firm_category(usdf, min_ai_wage_postings=10
 
 def add_firm_category_wage_inset(ax, usdf):
     """Add a before/after GenAI wage premium inset grouped by firm category."""
-    period_betas = estimate_period_ai_wage_betas_by_firm_category(usdf)
+    period_betas_path = TABLES_DIR / "genai_period_ai_wage_betas_by_firm_category.csv"
+    if period_betas_path.exists():
+        period_betas = pd.read_csv(period_betas_path)
+        period_betas["period"] = pd.Categorical(
+            period_betas["period"],
+            ["Before GenAI", "After GenAI"],
+            ordered=True,
+        )
+    else:
+        period_betas = estimate_period_ai_wage_betas_by_firm_category(usdf)
+        period_betas.to_csv(period_betas_path, index=False)
     ok = period_betas[period_betas["status"] == "ok"].copy()
     if ok.empty:
         return
-    inset = ax.inset_axes([0.55, 0.08, 0.42, 0.55])
+    inset = ax.inset_axes(FIGURE1_WAGE_INSET_BOUNDS)
     periods = ["Before GenAI", "After GenAI"]
     period_labels = ["Before", "After"]
     n_categories = len(FIRM_CATEGORY_ORDER)
@@ -441,14 +476,14 @@ def add_firm_category_wage_inset(ax, usdf):
 
     inset.axhline(0, color="gray", linewidth=0.7, linestyle="--")
     inset.set_xticks(x)
-    inset.set_xticklabels(period_labels, fontsize=8)
-    inset.set_ylabel("Coef.", fontsize=7)
-    inset.tick_params(axis="both", labelsize=7)
-    inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
+    inset.set_xticklabels(period_labels, fontsize=9)
+    inset.set_ylabel("Coef.", fontsize=8)
+    inset.tick_params(axis="both", labelsize=8)
+    inset.legend(fontsize=6.5, loc="upper left", framealpha=0.7)
     inset.grid(axis="y", alpha=0.18)
     inset.text(
         0.98, 0.97, "Wage Premium\nby Firm Type",
-        transform=inset.transAxes, fontsize=7, ha="right", va="top",
+        transform=inset.transAxes, fontsize=8, ha="right", va="top",
         fontstyle="italic", color="#333333",
     )
 
@@ -533,7 +568,7 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
     demand_ax.legend(
         title=None,
         labels=["Overall", "Industry Average"],
-        loc="upper left",
+        loc="lower right",
         fontsize=16,
     )
     demand_ax.set_xlabel(None)
@@ -549,6 +584,11 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
         bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="none", alpha=0.7),
     )
     add_genai_quarter_line(demand_ax, pct_df_all.index)
+    set_zero_based_ylim(
+        demand_ax,
+        pct_df_all["% AI Roles"],
+        pct_df_all["Industry Average"],
+    )
     demand_ax.grid(alpha=0.25)
     add_firm_category_demand_inset(demand_ax, usdf)
 
@@ -574,12 +614,12 @@ def generate_ai_roles_over_time_plot(usdf, wage_betas=None):
     )
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_genai_quarter_line(wage_ax, pct_df_all.index)
-    set_tight_symmetric_ylim(
+    set_zero_based_ylim(
         wage_ax,
         plotted["ai_role_beta"],
-        plotted.loc[post_2021, "lower_ci"],
         plotted.loc[post_2021, "upper_ci"],
     )
+    wage_ax.set_ylim(0, 0.33)
     add_firm_category_wage_inset(wage_ax, usdf)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.text(
