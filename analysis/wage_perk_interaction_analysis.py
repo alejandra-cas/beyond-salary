@@ -805,6 +805,16 @@ def plot_all(results):
     plot_yearly_results(results)
     plot_yearly_full_sample_all_perks(results)
     plot_heatmap(results)
+    plot_heatmap(
+        results,
+        period="Through 2022",
+        output_name="wage_perk_interaction_beta3_heatmap_through_2022.png",
+    )
+    plot_heatmap(
+        results,
+        period="Post-2022",
+        output_name="wage_perk_interaction_beta3_heatmap_post_2022.png",
+    )
     plot_period_comparison_heatmaps(results)
     plot_yearly_single_perk(results, perk="REMOTE_KW")
 
