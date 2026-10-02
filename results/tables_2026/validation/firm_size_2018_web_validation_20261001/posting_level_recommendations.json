@@ -1,0 +1,108 @@
+{
+  "2018 postings": {
+    "accuracy_post_weighted": {
+      "cutoff": 5.0,
+      "accuracy_post_weighted": 0.9047189660354674,
+      "combined_f1_post_weighted": 0.8215916195719251,
+      "support_weighted_f1_post_weighted": 0.9067321778608725
+    },
+    "combined_f1_post_weighted": {
+      "cutoff": 6.0,
+      "accuracy_post_weighted": 0.9039675383228133,
+      "combined_f1_post_weighted": 0.8283156060163063,
+      "support_weighted_f1_post_weighted": 0.9079924883096889
+    },
+    "support_weighted_f1_post_weighted": {
+      "cutoff": 6.0,
+      "accuracy_post_weighted": 0.9039675383228133,
+      "combined_f1_post_weighted": 0.8283156060163063,
+      "support_weighted_f1_post_weighted": 0.9079924883096889
+    },
+    "posting_total": 6654,
+    "comparisons": [
+      {
+        "cutoff": 2,
+        "accuracy_post_weighted": 0.8944995491433724,
+        "combined_f1_post_weighted": 0.742831603574971,
+        "support_weighted_f1_post_weighted": 0.8809058272118014
+      },
+      {
+        "cutoff": 5,
+        "accuracy_post_weighted": 0.9047189660354674,
+        "combined_f1_post_weighted": 0.8215916195719251,
+        "support_weighted_f1_post_weighted": 0.9067321778608725
+      },
+      {
+        "cutoff": 6,
+        "accuracy_post_weighted": 0.9039675383228133,
+        "combined_f1_post_weighted": 0.8283156060163063,
+        "support_weighted_f1_post_weighted": 0.9079924883096889
+      },
+      {
+        "cutoff": 7,
+        "accuracy_post_weighted": 0.8976555455365194,
+        "combined_f1_post_weighted": 0.8226661537937134,
+        "support_weighted_f1_post_weighted": 0.9032879819396652
+      },
+      {
+        "cutoff": 50,
+        "accuracy_post_weighted": 0.7165614667868951,
+        "combined_f1_post_weighted": 0.657352690624099,
+        "support_weighted_f1_post_weighted": 0.756933032890667
+      }
+    ]
+  },
+  "All 2018-2025 postings": {
+    "accuracy_post_weighted": {
+      "cutoff": 2.0,
+      "accuracy_post_weighted": 0.9130714997168135,
+      "combined_f1_post_weighted": 0.6831982684683349,
+      "support_weighted_f1_post_weighted": 0.9014924578731573
+    },
+    "combined_f1_post_weighted": {
+      "cutoff": 7.0,
+      "accuracy_post_weighted": 0.8941858875456516,
+      "combined_f1_post_weighted": 0.7701036750780544,
+      "support_weighted_f1_post_weighted": 0.9067270410613972
+    },
+    "support_weighted_f1_post_weighted": {
+      "cutoff": 5.0,
+      "accuracy_post_weighted": 0.9010800148428803,
+      "combined_f1_post_weighted": 0.7591505667396232,
+      "support_weighted_f1_post_weighted": 0.9087098149711607
+    },
+    "posting_total": 51203,
+    "comparisons": [
+      {
+        "cutoff": 2,
+        "accuracy_post_weighted": 0.9130714997168135,
+        "combined_f1_post_weighted": 0.6831982684683349,
+        "support_weighted_f1_post_weighted": 0.9014924578731573
+      },
+      {
+        "cutoff": 5,
+        "accuracy_post_weighted": 0.9010800148428803,
+        "combined_f1_post_weighted": 0.7591505667396232,
+        "support_weighted_f1_post_weighted": 0.9087098149711607
+      },
+      {
+        "cutoff": 6,
+        "accuracy_post_weighted": 0.8940491768060466,
+        "combined_f1_post_weighted": 0.7560972220678919,
+        "support_weighted_f1_post_weighted": 0.9044776109039682
+      },
+      {
+        "cutoff": 7,
+        "accuracy_post_weighted": 0.8941858875456516,
+        "combined_f1_post_weighted": 0.7701036750780544,
+        "support_weighted_f1_post_weighted": 0.9067270410613972
+      },
+      {
+        "cutoff": 50,
+        "accuracy_post_weighted": 0.7248403413862469,
+        "combined_f1_post_weighted": 0.6152165446982522,
+        "support_weighted_f1_post_weighted": 0.7813529528585176
+      }
+    ]
+  }
+}

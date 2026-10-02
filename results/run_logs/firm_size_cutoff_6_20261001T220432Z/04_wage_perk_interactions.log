@@ -1,0 +1,30 @@
+Wage sample rows: 3,515,252
+Saved: /home/scro4406/beyond-salary/results/tables_2026/wage_perk_interactions/wage_perk_interaction_results.csv
+Saved: /home/scro4406/beyond-salary/results/tables_2026/wage_perk_interactions/wage_perk_interaction_full_params.csv
+period            status                          
+2018              ok                                  21
+                  skipped_sparse_interaction_cells     3
+2019              ok                                  23
+                  skipped_sparse_interaction_cells     1
+2020              ok                                  22
+                  skipped_sparse_interaction_cells     2
+2021              ok                                  24
+2022              ok                                  24
+2023              ok                                  24
+2024              ok                                  24
+2025              ok                                  24
+Pooled 2018-2025  ok                                  24
+Post-2022         ok                                  24
+Through 2022      ok                                  24
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/ai_role_wage_premium_beta1_pooled_by_firm_category.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/ai_role_wage_premium_beta1_yearly_by_firm_category.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/perk_wage_coefficient_beta2_pooled_by_firm_category.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/perk_wage_coefficient_beta2_yearly_by_firm_category.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_pooled.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_yearly.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_yearly_full_sample_all_perks.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_heatmap.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_heatmap_through_2022.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_heatmap_post_2022.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_heatmap_period_comparison.png
+Saved: /home/scro4406/beyond-salary/results/figures_2026/wage_perk_interactions/wage_perk_interaction_beta3_timeseries_remote_kw.png

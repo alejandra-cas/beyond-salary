@@ -18,6 +18,7 @@ import statsmodels.formula.api as smf
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 from package_files.benefits_defns import benefit_colors, benefits4, benefits_labels_map
 from package_files.config_utils import get_processed_dir, get_repo_root
+from package_files.firm_size import FIRM_SIZE_CUTOFF
 
 
 REPO_ROOT = get_repo_root()
@@ -36,9 +37,9 @@ PERIOD_COMPARISON_FILTERS = {
 
 SAMPLE_FILTERS = {
     "Full sample": lambda df: pd.Series(True, index=df.index),
-    "SMEs": lambda df: (~df["sp500"]) & (df["firm_posting_count"] < 50),
-    "Large firms": lambda df: (~df["sp500"]) & (df["firm_posting_count"] >= 50),
-    "S&P 500 firms": lambda df: df["sp500"],
+    "SMEs": lambda df: (~df["sp500"]) & (df["firm_posting_count"] < FIRM_SIZE_CUTOFF),
+    "Large firms": lambda df: (~df["sp500"]) & (df["firm_posting_count"] >= FIRM_SIZE_CUTOFF),
+    "S&P 500 firms": lambda df: df["sp500"] & df["firm_posting_count"].notna(),
 }
 SAMPLE_COLORS = {
     "Full sample": "#9467bd",

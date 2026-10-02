@@ -15,6 +15,7 @@ which ``analysis/salary_analysis.py`` exports on a full-data run.
 
 import os
 import sys
+import argparse
 from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
@@ -24,6 +25,9 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT))
+
+from analysis.regression_models import load_five_model_plot_results  # noqa: E402
 
 from package_files.benefits_defns import (  # noqa: E402
     benefit_colors,
@@ -56,6 +60,13 @@ def add_panel_label(ax, label, fontsize=16):
 def plot_model_coefficients(ax, results):
     """Panel 3a: AI-role log-odds coefficients across model specifications."""
     results = results.copy()
+    results['model_label'] = results['model_label'].replace({
+        'M1: Baseline': 'M1: Baseline (Year+NAICS3)',
+        'M2: +Indiv Controls': 'M2: M1 + Individ. + State',
+        'M3: +Salary': 'M3: M2 + Salary',
+        'M4: +S&P 500': 'M4: M3 + S&P 500',
+        'M5: M4 + 2-digit SOC FE': 'M5: M4 + SOC2',
+    })
     results["lower_ci"] = results["ai_role_coef"] - 1.96 * results["ai_role_se"]
     results["upper_ci"] = results["ai_role_coef"] + 1.96 * results["ai_role_se"]
 
@@ -87,14 +98,14 @@ def plot_model_coefficients(ax, results):
         if positions:
             benefit_ticks.append((min(positions) + max(positions)) / 2)
             benefit_tick_labels.append(benefits4_labels[benefits4.index(benefit)])
-        current_pos += len(model_labels) + 1
+        current_pos += len(model_labels) * 0.2 + 0.6
 
     ax.set_xticks(benefit_ticks)
     ax.set_xticklabels(benefit_tick_labels, rotation=45, fontsize=15, ha="right")
     ax.tick_params(axis="y", labelsize=14)
     ax.set_ylabel("AI-Role Log-Odds Coefficient (95% CI)", fontsize=16)
     ax.axhline(0, color="grey", linewidth=0.8)
-    ax.legend(handles, labels, title="Model", loc="upper left", fontsize=12, title_fontsize=12)
+    ax.legend(handles, labels, title="Model", loc="upper left", fontsize=11, title_fontsize=12)
     ax.grid(alpha=0.2)
 
 
@@ -124,16 +135,20 @@ def plot_yearly_model1(ax, results):
     ax.grid(alpha=0.2)
 
 
-def generate_figure3():
-    if not (MODEL_PANELS_CSV.exists() and YEARLY_MODEL1_CSV.exists()):
+def generate_figure3(output_dir=None, model_panels_csv=MODEL_PANELS_CSV, m5_results=None):
+    if not (model_panels_csv.exists() and YEARLY_MODEL1_CSV.exists()):
         print("Skipping Figure 3: regression results CSVs not found.")
         return
-    panels = pd.read_csv(MODEL_PANELS_CSV)
-    panels = panels[(panels["panel"] == "Main") & (panels["model_status"] == "ok")]
+    panels = load_five_model_plot_results(model_panels_csv, m5_results)[
+        ['Label', 'Coefficient', 'Error', 'Model Iteration']
+    ].rename(columns={
+        'Label': 'benefit', 'Coefficient': 'ai_role_coef', 'Error': 'ai_role_se',
+        'Model Iteration': 'model_label',
+    })
     yearly = pd.read_csv(YEARLY_MODEL1_CSV)
 
     fig, (ax_a, ax_b) = plt.subplots(
-        1, 2, figsize=(18, 8.5), gridspec_kw={"width_ratios": [1.6, 1]}
+        1, 2, figsize=(16, 7.5), gridspec_kw={"width_ratios": [1.25, 1]}
     )
     plot_model_coefficients(ax_a, panels)
     plot_yearly_model1(ax_b, yearly)
@@ -141,8 +156,9 @@ def generate_figure3():
     add_panel_label(ax_b, "(b)")
 
     plt.tight_layout()
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output = OUTPUT_DIR / "figure3_combined.png"
+    output_dir = output_dir or OUTPUT_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output = output_dir / "figure3_combined.png"
     plt.savefig(output, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"Saved: {output}")
@@ -221,7 +237,7 @@ def plot_wage_perk_yearly(ax, results):
     ax.grid(alpha=0.2)
 
 
-def generate_figure4():
+def generate_figure4(output_dir=None):
     if not WAGE_PERK_CSV.exists():
         print("Skipping Figure 4: wage-perk interaction results CSV not found.")
         return
@@ -263,16 +279,25 @@ def generate_figure4():
     plot_wage_perk_yearly(ax_b, wage_perk)
     add_panel_label(ax_b, "(b)", fontsize=24)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output = OUTPUT_DIR / "figure4_combined.png"
+    output_dir = output_dir or OUTPUT_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output = output_dir / "figure4_combined.png"
     plt.savefig(output, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"Saved: {output}")
 
 
 def main():
-    generate_figure3()
-    generate_figure4()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--figure', choices=['3', '4', 'all'], default='all', help='Which paper figure to regenerate.')
+    parser.add_argument('--output-dir', type=Path, default=OUTPUT_DIR, help='Directory for the combined PNGs.')
+    parser.add_argument('--results-csv', type=Path, default=MODEL_PANELS_CSV, help='Main-model summary CSV for Figure 3.')
+    parser.add_argument('--m5-results', type=Path, help='Optional M5 run directory or summary CSV for Figure 3.')
+    args = parser.parse_args()
+    if args.figure in ('3', 'all'):
+        generate_figure3(args.output_dir, args.results_csv, args.m5_results)
+    if args.figure in ('4', 'all'):
+        generate_figure4(args.output_dir)
 
 
 if __name__ == "__main__":

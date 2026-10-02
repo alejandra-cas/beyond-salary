@@ -21,6 +21,7 @@ import pandas as pd
 
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 from package_files.config_utils import get_processed_dir, get_repo_root
+from package_files.firm_size import FIRM_SIZE_CUTOFF
 
 REPO_ROOT = get_repo_root()
 TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "descriptive"
@@ -56,9 +57,9 @@ def add_firm_category(df):
         fpc = pd.Series(np.nan, index=df.index)
 
     df[FIRM_CATEGORY] = pd.NA
-    df.loc[fpc < 50, FIRM_CATEGORY] = "SMEs"
-    df.loc[fpc >= 50, FIRM_CATEGORY] = "Large firms"
-    df.loc[sp500, FIRM_CATEGORY] = "S&P 500 firms"
+    df.loc[fpc < FIRM_SIZE_CUTOFF, FIRM_CATEGORY] = "SMEs"
+    df.loc[fpc >= FIRM_SIZE_CUTOFF, FIRM_CATEGORY] = "Large firms"
+    df.loc[sp500 & fpc.notna(), FIRM_CATEGORY] = "S&P 500 firms"
     df[FIRM_CATEGORY] = pd.Categorical(
         df[FIRM_CATEGORY], categories=FIRM_CATEGORY_ORDER, ordered=True
     )

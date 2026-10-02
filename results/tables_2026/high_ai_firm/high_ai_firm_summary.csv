@@ -1,0 +1,5 @@
+ai_share_quartile,n_firms,median_ai_share
+High-AI (>4%),2098,6.9
+Low-AI (0–1%],2100,0.5
+Mid-AI (1–4%],4201,2.2
+Zero-AI (0%),13594,0.0

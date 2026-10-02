@@ -162,12 +162,14 @@ This repository contains the reproducible code and analysis for the paper Beyond
 Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Stephany (2024), *Skills or Degree? The Rise of Skill-Based Hiring for AI and Green Jobs*. The cited UK analysis explains log asking wages using AI-skill indicators, education, experience, and fixed effects. This US extension plots quarterly `AI ROLE` coefficients directly in log points and intentionally omits occupation fixed effects.
 
 ### Data Preparation (`scripts/`)
-- **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, NAICS 3-digit industry, posting-volume firm-size buckets, optional S&P 500 snapshot membership, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
+  - **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, NAICS 3-digit industry, first-year posting-volume firm-size buckets, optional S&P 500 snapshot membership, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
 - **label_benefits.py**: Processes and labels workplace benefits from job posting text. Also computes `{BENEFIT}_POSITION` columns (0–100 prominence score, 100 = top of posting) for each benefit.
 - **label_benefits_remote.py**: Labels remote work benefits using keyword matching; merges `REMOTE_KW` and `REMOTE_KW_POSITION` directly into `labeled_v1.parquet`
 - **occ_year_analysis.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
 - **export_samples.py**: Creates balanced samples for regression analysis
-- **validate_firm_size_cutoffs.py**: Iterates posting-count cutoffs (default `5, 10, ..., 100`), excludes S&P 500 firms when `SP500` is available, draws stratified random firm samples at each threshold, optionally labels sampled firms with the OpenAI Responses API as true SMEs or large firms, and writes false-positive, false-negative, SME sensitivity, large-firm sensitivity, precision, accuracy, and recall-plot outputs to `results/tables_2026/validation/firm_size_cutoff_validation/`.
+- **validate_firm_size_cutoffs.py**: Iterates posting-count cutoffs (default `5, 10, ..., 100`), excludes S&P 500 firms when `SP500` is available, draws one random sample of firms observed in 2018 for all thresholds, optionally obtains SME/large judgments through the OpenAI Responses API, and writes false-positive, false-negative, SME sensitivity, large-firm sensitivity, precision, accuracy, and recall-plot outputs to `results/tables_2026/validation/firm_size_cutoff_validation/`.
+
+  LLM reviews use `gpt-6-luna` and require web search by default. Each review saves supporting URLs, an evidence explanation, its evidence period, and the number of completed search calls. Reviews without search or from another model are not reused. Use `--no-web-search` to reproduce the earlier review method. For the 2018 definition, compare fine-grained cutoffs with `--cutoffs 1:100:1`; use `--output-dir` and `--plot-output` to preserve earlier results.
 
 ### Core Analysis (`analysis/`)
 - **descriptive_analysis.py**: Generates descriptive statistics and exploratory data analysis. Figure 1 combines quarterly AI demand with quarterly adjusted `AI ROLE` log-wage coefficients and 95% confidence intervals. Quarterly wage models control for education, experience, NAICS 3-digit industry, and state fixed effects; quarters with fewer than 10 AI wage postings are suppressed. Also generates firm-category analyses: sample composition, AI demand over time, pooled and annual/period-group AI wage premiums, benefit gap (AI minus non-AI perk prevalence), and benefit prevalence by role type — all broken out by SMEs, Large firms, and S&P 500 firms.
@@ -179,7 +181,45 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
    2. **M2 (+ Individual/State Controls):** M1 + State FE + Education FE + Experience FE
    3. **M3 (+ Salary):** M2 + Log Salary
    4. **M4 (+ S&P 500):** M3 + S&P 500 indicator. This is the preferred specification.
+   5. **M5 (+ Occupation):** M4 + 2-digit SOC occupation fixed effects using the existing `occupation = 'SOC_MAJOR_GROUP'` field. Missing occupations are retained as `Unknown SOC`. M5 uses the same salary sample, sparse industry/state grouping, and parental-leave year exclusion as M4.
+
+  To run **only M5** for the six keyword benefits, without overwriting any existing results:
+  ```bash
+  uv run python analysis/regression_models.py --m5-only
+  ```
+  Each invocation creates a new `results/m5/<UTC timestamp>/` directory containing an AI-role summary (CSV and HTML), full coefficients including fixed effects (CSV), individual benefit coefficient tables (HTML), a coefficient plot (PNG), and a compact model cache. Failed models are recorded in the summary. This mode skips M1–M4, yearly models, and firm-category models.
+
+  To choose the destination explicitly:
+  ```bash
+  uv run python analysis/regression_models.py --m5-only --output-dir results/m5/soc_occupation_run
+  ```
+  The destination must not already exist; an existing directory is rejected before fitting or writing. A normal run estimates M1–M5 and includes M5 in the coefficient plot, panel-summary CSVs, and combined LaTeX summary; the legacy HTML tables retain M1–M3. The LaTeX summary keeps grouped benefit headings, numbered model columns, booktabs rules, and the original caption/notes format.
+
+  To update only the LaTeX model summary from saved full-coefficient caches:
+  ```bash
+  uv run python analysis/regression_models.py --latex-only
+  ```
+  This saves `results/tables_2026/regression/complete_wide_table.tex` with M1–M5, without refitting or changing HTML tables, figures, or CSVs. It uses the latest main-model cache plus the latest standalone M5 run when needed. Use `--cache-path <main-cache.pkl>` and `--m5-results <M5-run-directory>` to select fits explicitly, or `--latex-output <path>` for another destination.
+
+  To plot **all five models across the six benefits** from saved coefficients, without refitting:
+  ```bash
+  uv run python analysis/regression_models.py --plot-only
+  ```
+  This reads the main panel-summary CSV and, if it contains only M1–M4, adds the latest standalone M5 summary. It saves `results/figures_2026/regression/model_coefficients_plot_m1_m5.png`, preserving the original coefficient figure and all tables. Use `--m5-results results/m5/<run-directory>` to select a particular M5 run, `--results-csv <path>` for a different main-model summary, or `--plot-output <path>` to choose the output PNG. The figure displays log-odds coefficients with 95% confidence intervals.
 - **firm_category_yearly_regression.py**: Runs the preferred firm-category H1 logit specification separately by firm category and calendar year, then also runs the same firm-category split for `Through 2022` (`YEAR <= 2022`) and `Post-2022` (`YEAR >= 2023`) period groups. Yearly models omit year fixed effects; period-group models include year fixed effects. The default run produces both yearly and period-group outputs. Use `--yearly-only` or `--period-only` for narrower reruns. Sparse or singular cells are recorded as errors rather than changing controls or reference categories.
+
+  To estimate pooled benefit coefficients using only firms explicitly labeled SME/large by the LLM:
+  ```bash
+  uv run python analysis/regression_models.py --firm-only --llm-only
+  ```
+  This uses the saved `gpt-6-luna` web-search reviews by default and assigns SME/large categories from their LLM labels. Unknown/failed reviews, unmatched employers, and firms absent in 2018 are excluded. All available posting years are retained for eligible firms. The run reads only model columns for labeled employers and saves a sample audit, coefficient CSV, and plot separately under `results/firm_llm_labeled/`. No new LLM calls are made. Use `--llm-labels <CSV>` to choose another label file or `--firm-output-dir <directory>` for another output root.
+
+  For yearly and pre/post-2022 models on the same labeled-firm sample:
+  ```bash
+  uv run python analysis/firm_category_yearly_regression.py --llm-only
+  ```
+  Add `--yearly-only`, `--period-only`, or `--pooled-only` to select one model group. Runs without `--llm-only` use the standard 2018 posting-count categories.
+
 - **wage_perk_interaction_analysis.py**: Runs H2 log-wage models for every perk: `LOG_SALARY ~ AI_ROLE + PERK + AI_ROLE:PERK + Education FE + Experience FE + NAICS 3-digit FE + State FE + Year FE`. Models are estimated for the full wage sample, SMEs, Large firms, and S&P 500 firm subsamples. Calendar-year models omit year FE. The `AI_ROLE:PERK` coefficient captures complementarity when positive and substitution when negative. Firm-split charts show only SMEs, Large firms, and S&P 500 firms. Outputs include pooled and yearly AI-role wage premium (β₁) by firm category, β₃ heatmaps across all perks and firm types for pooled/through-2022/post-2022 models, and per-perk time-series plots with 95% CI ribbons. Use `--plot-only` to regenerate all plots from the existing results CSV without re-running models.
 - **occupation_year_prevalence_analysis.py**: OLS regressions on AI benefit prevalence at occupation-year level
 - **salary_analysis.py**: Analyzes salary premiums for AI vs non-AI roles
@@ -218,12 +258,24 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
 - H1 is fitted with a binomial GLM solver. This preserves the logit specification while converging reliably with the fixed-effect design.
 
 ### Firm-size categories
-- Firm size is a posting-volume proxy. `FIRM_POSTING_COUNT` is calculated from each firm's total observations in the complete labeled dataset.
+- Firm size is a posting-volume proxy frozen at the **2018 in the complete posting dataset**. `FIRM_POSTING_COUNT` counts only that year's postings for each firm and is carried unchanged into all later years. `FIRM_SIZE_BASE_YEAR` records the baseline year. Baseline counts are calculated before filtering by salary, benefit, occupation, or firm category.
+- Firms absent from the baseline year have missing posting counts and unknown size; their postings remain in full-sample analyses but are excluded from all firm analyses, including the S&P 500 subsample.
 - `COMPANY == 0` represents `Unclassified` employers. These 12,855 postings are retained in full-sample analyses but are excluded from firm-category subsamples so they are not treated as one large employer.
 - Three mutually exclusive firm categories are used:
-  - **SMEs**: firms with fewer than 10 postings
-  - **Large firms**: firms with 10 or more postings (excluding S&P 500)
-  - **S&P 500 firms**: firms matched to the S&P 500 snapshot (override Large)
+  - **SMEs**: firms with 1–5 postings in 2018
+  - **Large firms**: firms with 6 or more postings in 2018 (excluding S&P 500)
+  - **S&P 500 firms**: firms observed in 2018 and matched to the S&P 500 snapshot (override SME/large classification)
+
+The shared cutoff is `FIRM_SIZE_CUTOFF = 6` in `src/package_files/firm_size.py`, used by data preparation, relabeling, descriptive plots, and H1/H2 firm-category models. It maximizes macro F1 weighted by 2018 postings in the `gpt-6-luna` validation with web search.
+
+To refresh existing processed datasets without repeating benefit labeling:
+```bash
+uv run python scripts/relabel_firm_size.py --dry-run
+uv run python scripts/relabel_firm_size.py
+```
+The script calculates one baseline mapping from the complete `labeled_v2.parquet` (or `data_v1.parquet` if unavailable), applies it to all three processed Parquets, and saves `firm_size_relabel_audit.csv`. It writes in batches and replaces each original only after a successful write. Use `--source <complete-posting-dataset.parquet>` to select the baseline source, or `--processed-dir <path>` for a different destination directory. Re-estimate firm-category analyses after refreshing; saved figures, model results, and cutoff-validation metrics still describe the previous definition until rerun.
+
+The following sample composition is from the previous firm-size definition and needs recalculation using baseline counts:
 
 | Firm category | Postings | AI vacancies | Firms | AI share |
 | --- | ---: | ---: | ---: | ---: |
@@ -261,6 +313,7 @@ Paper figure numbers map to repo outputs as follows (note: "Figure 1" in script/
 The benefit previously labeled "Workplace Culture" is now labeled **"Inclusive Workplace"** (`CULTURE` internally).
 
 Additional reproducibility tooling:
+- `scripts/generate_combined_figures.py --figure 3 --output-dir results/figures_2026_paper` — regenerates `results/figures_2026_paper/figure3_combined.png` with M1–M5 in panel (a) and the saved yearly Model 1 coefficients in panel (b). Reads saved summaries without refitting; if M5 is absent from the main summary, it uses the latest standalone M5 run. Use `--m5-results <M5-run-directory>` to select a particular run. `--figure 3` updates only Figure 3.
 - `scripts/plot_benefit_cooccurrence.py` — jobs by number of benefits offered + benefit correlation inset. Computes small aggregate CSVs (`results/tables_2026/descriptive/benefit_cooccurrence_{hist,corr}.csv`) from the labeled parquet on first run, then plots from the CSVs (re-runnable anywhere).
 - `analysis/wage_perk_interaction_analysis.py` — every fitting run also exports each fitted model's complete coefficient vector (incl. fixed effects, with SEs, p-values, CIs) to `results/tables_2026/wage_perk_interactions/wage_perk_interaction_full_params.csv` for building regression tables without refitting (disable with `--no-full-params`).
 

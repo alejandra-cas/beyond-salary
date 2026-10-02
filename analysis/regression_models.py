@@ -22,6 +22,7 @@ import sys
 import os
 import argparse
 import pickle
+from datetime import datetime, timezone
 from pathlib import Path
 from scipy.stats import norm
 
@@ -31,6 +32,9 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 from package_files.logit_model import run_logit_model
 from package_files.benefits_defns import *
 from package_files.config_utils import get_processed_dir, get_repo_root
+from package_files.firm_size import FIRM_SIZE_CUTOFF
+from package_files.llm_firm_sample import read_firm_labels, select_llm_firms
+from package_files.latex_model_summary import render_latex_model_summary
 from collections import defaultdict
 
 # Configuration
@@ -41,7 +45,7 @@ PROCESSED_DIR = get_processed_dir()
 RESULTS_DIR = REPO_ROOT / "results"
 TABLES_DIR = RESULTS_DIR / "tables_2026" / "regression"
 MODEL_CACHE_DIR = TABLES_DIR / "model_cache"
-CACHE_VERSION = "v4_preferred_sp500_no_firm_fe"
+CACHE_VERSION = "v6_sp500_soc_major_group"
 CACHE_FORMAT = "compact_results_only"
 FIRM_CATEGORY_LOGIT_DIR = RESULTS_DIR / "tables_2026" / "firm_category_logit"
 
@@ -151,9 +155,11 @@ def add_firm_category(data):
     )
 
     data["FIRM_CATEGORY"] = pd.NA
-    data.loc[(~sp500) & (firm_posting_count < 50), "FIRM_CATEGORY"] = "SMEs"
-    data.loc[(~sp500) & (firm_posting_count >= 50), "FIRM_CATEGORY"] = "Large firms"
-    data.loc[sp500, "FIRM_CATEGORY"] = "S&P 500 firms"
+    data.loc[(~sp500) & (firm_posting_count < FIRM_SIZE_CUTOFF), "FIRM_CATEGORY"] = "SMEs"
+    data.loc[(~sp500) & (firm_posting_count >= FIRM_SIZE_CUTOFF), "FIRM_CATEGORY"] = "Large firms"
+    data.loc[sp500 & firm_posting_count.notna(), "FIRM_CATEGORY"] = "S&P 500 firms"
+    if "LLM_FIRM_LABEL" in data:
+        data["FIRM_CATEGORY"] = data["LLM_FIRM_LABEL"].map({"sme": "SMEs", "large": "Large firms"}).where(firm_posting_count.notna())
     data["FIRM_CATEGORY"] = pd.Categorical(
         data["FIRM_CATEGORY"],
         categories=["SMEs", "Large firms", "S&P 500 firms"],
@@ -200,9 +206,70 @@ def prepare_firm_fixed_effects(data, min_firm_obs=30):
     return data_fe
 
 
+def add_llm_firm_arguments(parser):
+    parser.add_argument('--llm-only', action='store_true',
+                        help='Restrict to explicitly LLM-labeled firms and use their SME/large labels.')
+    parser.add_argument('--llm-labels', type=Path,
+                        default=RESULTS_DIR / 'tables_2026/validation/firm_size_2018_web_validation_20261001/firm_size_labeled_validation_sample.csv',
+                        help='CSV containing COMPANY and llm_label; unknown/failed labels are excluded.')
+    parser.add_argument('--firm-output-dir', type=Path,
+                        help='Root for separate firm-model tables and figures; LLM runs default to results/firm_llm_labeled.')
+
+
+def prepare_firm_run(args):
+    output_root = args.firm_output_dir or (RESULTS_DIR / 'firm_llm_labeled' if args.llm_only else None)
+    tables_dir = output_root / 'tables' if output_root else FIRM_CATEGORY_LOGIT_DIR
+    figures_dir = output_root / 'figures' if output_root else RESULTS_DIR / 'figures_2026/regression'
+    labels = read_firm_labels(args.llm_labels) if args.llm_only else None
+    data = load_and_prepare_data(company_ids=labels.index.tolist()) if labels is not None else load_and_prepare_data()
+    if data is None:
+        raise RuntimeError('Could not load analysis data.')
+    if labels is not None:
+        data = select_llm_firms(data, labels)
+        tables_dir.mkdir(parents=True, exist_ok=True)
+        audit = data.groupby(['COMPANY', 'LLM_FIRM_LABEL'], observed=True).size().rename('POSTINGS').reset_index()
+        audit['LLM_LABELS_SOURCE'] = str(args.llm_labels.resolve())
+        audit.to_csv(tables_dir / 'llm_firm_sample_audit.csv', index=False)
+        print(f'LLM-labeled sample: {len(audit):,} firms; {len(data):,} postings; categories use LLM labels.')
+    return data, tables_dir, figures_dir
+
+
 def parse_args():
     """Parse command-line options for cache behavior."""
     parser = argparse.ArgumentParser(description="Run job-level regression models.")
+    parser.add_argument(
+        "--m5-only", action="store_true",
+        help="Run only M5 (M4 + 2-digit SOC FE), saving all outputs in a new directory.",
+    )
+    parser.add_argument(
+        "--plot-only", action="store_true",
+        help="Plot M1–M5 from saved summary CSVs without loading data or fitting models.",
+    )
+    parser.add_argument(
+        "--latex-only", action="store_true",
+        help="Regenerate only the five-model LaTeX summary from saved caches, preserving its numbered-column format.",
+    )
+    parser.add_argument(
+        "--latex-output", type=Path, default=TABLES_DIR / 'complete_wide_table.tex',
+        help="Destination for --latex-only (default: results/tables_2026/regression/complete_wide_table.tex).",
+    )
+    parser.add_argument(
+        "--results-csv", type=Path, default=TABLES_DIR / 'model_panels_ai_role_long.csv',
+        help="Saved M1–M4 (or M1–M5) panel summary CSV for --plot-only.",
+    )
+    parser.add_argument(
+        "--m5-results", type=Path,
+        help="M5 run directory or summary CSV for --plot-only; defaults to the latest saved M5 run when needed.",
+    )
+    parser.add_argument(
+        "--plot-output", type=Path,
+        default=RESULTS_DIR / 'figures_2026' / 'regression' / 'model_coefficients_plot_m1_m5.png',
+        help="Destination PNG for --plot-only; defaults to a separate five-model plot.",
+    )
+    parser.add_argument(
+        "--output-dir", type=Path,
+        help="New output directory for --m5-only. Must not already exist; defaults to results/m5/<UTC timestamp>.",
+    )
     parser.add_argument(
         "--refresh-cache",
         action="store_true",
@@ -222,7 +289,26 @@ def parse_args():
             "Model 1 specifications: through 2022 and post-2022."
         ),
     )
-    return parser.parse_args()
+    parser.add_argument('--firm-only', action='store_true', help='Run only pooled firm-category benefit models and their coefficient plot.')
+    add_llm_firm_arguments(parser)
+    args = parser.parse_args()
+    if sum([args.m5_only, args.plot_only, args.latex_only, args.firm_only]) > 1:
+        parser.error("--m5-only, --plot-only, --latex-only, and --firm-only are mutually exclusive")
+    if args.plot_only and (args.refresh_cache or args.cache_path is not None or args.yearly_period_fallback):
+        parser.error("--plot-only cannot be combined with model-fitting or cache options")
+    if args.latex_only and (args.refresh_cache or args.yearly_period_fallback):
+        parser.error("--latex-only cannot be combined with model-fitting options")
+    if args.m5_results is not None and not (args.plot_only or args.latex_only):
+        parser.error("--m5-results requires --plot-only or --latex-only")
+    if args.output_dir is not None and not args.m5_only:
+        parser.error("--output-dir requires --m5-only")
+    if args.m5_only and (args.cache_path is not None or args.yearly_period_fallback):
+        parser.error("--m5-only cannot be combined with --cache-path or --yearly-period-fallback")
+    if (args.llm_only or args.firm_output_dir is not None) and not args.firm_only:
+        parser.error('--llm-only and --firm-output-dir require --firm-only')
+    if args.firm_only and (args.refresh_cache or args.cache_path is not None or args.yearly_period_fallback):
+        parser.error('--firm-only cannot be combined with main-model cache or fitting options')
+    return args
 
 
 def get_model_cache_path(data_path):
@@ -239,7 +325,7 @@ def get_model_cache_path(data_path):
     return MODEL_CACHE_DIR / filename
 
 
-def load_cached_models(cache_path):
+def load_cached_models(cache_path, expected_panels=5):
     """Load cached fitted models when available."""
     if not cache_path.exists():
         return None
@@ -255,6 +341,9 @@ def load_cached_models(cache_path):
         print("Cached model results use an old cache format/version; refitting models.")
         return None
 
+    if len(payload["models_2024"]) != expected_panels:
+        print("Cached results contain a different model selection; refitting models.")
+        return None
     return deserialize_compact_model_results(payload["models_2024"])
 
 
@@ -410,7 +499,7 @@ def deserialize_compact_model_results(serialized_models):
     return panels
 
 
-def load_and_prepare_data():
+def load_and_prepare_data(company_ids=None):
     """Load and prepare the analysis dataset with all preprocessing."""
     print("Loading analysis dataset...")
     
@@ -421,7 +510,22 @@ def load_and_prepare_data():
         return None
 
     # Using full dataset (not balanced/even sample)
-    data = pd.read_parquet(data_path)
+    if company_ids is None:
+        data = pd.read_parquet(data_path)
+    else:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+        company_type = pq.read_schema(data_path).field('COMPANY').type
+        if pa.types.is_dictionary(company_type):
+            company_type = company_type.value_type
+        ids = [int(key) for key in company_ids] if pa.types.is_integer(company_type) else (
+            [float(key) for key in company_ids] if pa.types.is_floating(company_type) else company_ids
+        )
+        # Filter employers while reading and omit posting bodies for this run.
+        columns = list(dict.fromkeys([firm, year, region, industry, 'NAICS_2022_2_NAME', education, experience,
+                                      'LOG_SALARY', 'AI ROLE', 'FIRM_POSTING_COUNT'] + benefits4))
+        columns += [name for name in ('SP500', 'FIRM_SIZE_BASE_YEAR') if name in pq.read_schema(data_path).names]
+        data = pd.read_parquet(data_path, columns=columns, filters=[('COMPANY', 'in', ids)])
 
     data[region] = data[region].fillna('Unknown State').astype(str)
 
@@ -439,7 +543,7 @@ def load_and_prepare_data():
 
 
 def run_2024_models(data):
-    """Run the four H1 perk-prevalence regression specifications."""
+    """Run the five H1 perk-prevalence regression specifications."""
     
     print("="*80)
     print("RUNNING REGRESSION MODELS")
@@ -518,7 +622,82 @@ def run_2024_models(data):
         benefit_models_industry_2,
         benefit_models_industry_3,
         benefit_models_sp500_4,
+        run_m5_models(data),
     ]
+
+
+def prepare_occupation_fixed_effects(data):
+    """Use the existing SOC major groups, retaining missing occupations."""
+    if occupation not in data.columns:
+        raise ValueError(f"M5 requires {occupation} for 2-digit SOC fixed effects.")
+    data = data.copy()
+    data[occupation] = data[occupation].astype('string').str.strip().replace('', pd.NA).fillna('Unknown SOC')
+    return data
+
+
+def run_m5_models(data):
+    """Fit M4 plus 2-digit SOC fixed effects for each of the six benefits."""
+    data = prepare_occupation_fixed_effects(data)
+    print("\nMODEL 5: M4 + 2-DIGIT SOC FIXED EFFECTS")
+    models = []
+    for benefit in benefits4:
+        model_data = collapse_sparse_fixed_effects(data, benefit, require_salary=True)
+        models.append(run_logit_model(
+            model_data, dependent=benefit, predictor='AI ROLE',
+            cat_controls=[year, industry, region, education, experience, occupation],
+            cont_controls=['LOG_SALARY'], binary_vars=['SP500'],
+            ref_category={education: 'No Education Listed', experience: 'None Listed'},
+            get_vif=False,
+        ))
+    return models
+
+
+def run_m5_only(args):
+    """Save a standalone M5 run without writing to any existing output path."""
+    output_dir = args.output_dir or (
+        RESULTS_DIR / 'm5' / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    )
+    # Exclusive creation protects previous results, including previous M5 runs.
+    output_dir.mkdir(parents=True, exist_ok=False)
+    data = load_and_prepare_data()
+    if data is None:
+        raise FileNotFoundError(f"Analysis dataset not found: {PROCESSED_DIR / 'labeled_v2.parquet'}")
+    models = run_m5_models(data)
+    save_cached_models(output_dir / 'model_cache' / 'm5.pkl', [models])
+    summary = extract_model_results([models], model_names=['M5: M4 + 2-digit SOC FE'])
+    summary['SOC 2-digit FE'] = True
+    summary['Model Status'] = ['error' if isinstance(model, str) else 'ok' for model in models]
+    summary['Pseudo R2'] = [np.nan if isinstance(model, str) else model.prsquared for model in models]
+    summary['P-Value'] = [np.nan if isinstance(model, str) else model.pvalues.get('AI ROLE', np.nan) for model in models]
+    tables_dir = output_dir / 'tables'
+    tables_dir.mkdir()
+    summary.to_csv(tables_dir / 'm5_ai_role_summary.csv', index=False)
+    summary.to_html(tables_dir / 'm5_ai_role_summary.html', index=False)
+
+    coefficient_tables = []
+    for benefit, model in zip(benefits4, models):
+        if isinstance(model, str):
+            # Keep failures visible in the summary and allow other benefits to finish.
+            continue
+        ci = model.conf_int()
+        coefficients = pd.DataFrame({
+            'term': model.params.index, 'coefficient': model.params.to_numpy(),
+            'std_error': model.bse.to_numpy(), 'p_value': model.pvalues.to_numpy(),
+            'lower_ci': ci.iloc[:, 0].to_numpy(), 'upper_ci': ci.iloc[:, 1].to_numpy(),
+        })
+        coefficients.insert(0, 'benefit', benefit)
+        coefficients['nobs'] = model.nobs
+        coefficients['converged'] = model.converged
+        coefficients['pseudo_r2'] = model.prsquared
+        coefficients['model'] = 'M5: M4 + 2-digit SOC FE'
+        coefficients.to_html(tables_dir / f'{benefit_output_slug(benefit)}_m5.html', index=False)
+        coefficient_tables.append(coefficients)
+    if coefficient_tables:
+        pd.concat(coefficient_tables, ignore_index=True).to_csv(
+            tables_dir / 'm5_full_coefficients.csv', index=False,
+        )
+    generate_coefficients_plot(summary, output_path=output_dir / 'figures' / 'm5_ai_role_coefficients.png')
+    print(f"M5 outputs saved to {output_dir.resolve()}")
 
 
 def extract_single_model_row(model, firm_category, benefit, benefit_label):
@@ -591,7 +770,7 @@ def fit_firm_category_logit_model(category_data, firm_category, benefit, include
     return model
 
 
-def run_firm_category_logit_models(data):
+def run_firm_category_logit_models(data, output_dir=None):
     """
     Run preferred benefit logit models separately for SMEs, large firms, and S&P 500 firms.
 
@@ -602,6 +781,7 @@ def run_firm_category_logit_models(data):
     print("FIRM-CATEGORY LOGIT MODELS")
     print("=" * 50)
 
+    output_dir = output_dir or FIRM_CATEGORY_LOGIT_DIR
     data = add_firm_category(data)
     firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
     rows = []
@@ -609,20 +789,22 @@ def run_firm_category_logit_models(data):
     for firm_category in firm_categories:
         category_data = data[data["FIRM_CATEGORY"] == firm_category].copy()
         print(f"\n{firm_category}: {len(category_data):,} postings")
+        if category_data.empty:
+            continue
         for benefit, benefit_label in zip(benefits4, benefits4_labels):
             print(f"  {benefit}")
             model = fit_firm_category_logit_model(category_data, firm_category, benefit)
             rows.append(extract_single_model_row(model, firm_category, benefit, benefit_label))
 
     results = pd.DataFrame(rows)
-    os.makedirs(FIRM_CATEGORY_LOGIT_DIR, exist_ok=True)
-    output = FIRM_CATEGORY_LOGIT_DIR / "firm_category_ai_role_logit_results.csv"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / "firm_category_ai_role_logit_results.csv"
     results.to_csv(output, index=False)
     print(f"Firm-category logit results saved: {output}")
     return results
 
 
-def plot_firm_category_logit_results(results):
+def plot_firm_category_logit_results(results, output_dir=None, title=None):
     """Plot AI-role log-odds coefficients from firm-category logit models."""
     plot_df = results[results["status"] == "ok"].copy()
     if plot_df.empty:
@@ -630,7 +812,8 @@ def plot_firm_category_logit_results(results):
         return
 
     fig, ax = plt.subplots(figsize=(12, 6))
-    firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
+    firm_categories = [category for category in ["SMEs", "Large firms", "S&P 500 firms"]
+                       if category in plot_df["firm_category"].unique()]
     x_base = np.arange(len(benefits4))
     offsets = np.linspace(-0.22, 0.22, len(firm_categories))
 
@@ -640,6 +823,8 @@ def plot_firm_category_logit_results(results):
             .set_index("benefit")
             .reindex(benefits4)
         )
+        if subset["ai_role_coef"].isna().all():
+            continue
         x = x_base + offset
         ax.errorbar(
             x,
@@ -661,9 +846,11 @@ def plot_firm_category_logit_results(results):
     ax.set_xlabel(None)
     ax.legend(title="Firm Category", fontsize=10, title_fontsize=10)
     ax.grid(axis="y", alpha=0.2)
+    if title:
+        ax.set_title(title)
     plt.tight_layout()
 
-    output_dir = RESULTS_DIR / "figures_2026" / "regression"
+    output_dir = output_dir or RESULTS_DIR / "figures_2026" / "regression"
     os.makedirs(output_dir, exist_ok=True)
     output = output_dir / "firm_category_ai_role_logit_coefficients.png"
     plt.savefig(output, dpi=300, bbox_inches="tight")
@@ -679,12 +866,13 @@ def extract_firm_category_time_row(model, firm_category, period, benefit, benefi
     return row
 
 
-def run_firm_category_yearly_logit_models(data):
+def run_firm_category_yearly_logit_models(data, output_dir=None):
     """Run preferred firm-category benefit logits separately by firm category and year."""
     print("\n" + "=" * 50)
     print("YEARLY FIRM-CATEGORY LOGIT MODELS")
     print("=" * 50)
 
+    output_dir = output_dir or FIRM_CATEGORY_LOGIT_DIR
     data = add_firm_category(data)
     firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
     rows = []
@@ -693,6 +881,8 @@ def run_firm_category_yearly_logit_models(data):
     for firm_category in firm_categories:
         category_data = data[data["FIRM_CATEGORY"] == firm_category].copy()
         print(f"\n{firm_category}: {len(category_data):,} postings")
+        if category_data.empty:
+            continue
         for model_year in sorted(category_data[year].dropna().unique()):
             year_data = category_data[category_data[year] == model_year].copy()
             print(f"  {int(model_year)}: {len(year_data):,} postings")
@@ -716,8 +906,8 @@ def run_firm_category_yearly_logit_models(data):
                 )
 
     results = pd.DataFrame(rows)
-    os.makedirs(FIRM_CATEGORY_LOGIT_DIR, exist_ok=True)
-    output = FIRM_CATEGORY_LOGIT_DIR / "firm_category_yearly_ai_role_logit_results.csv"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / "firm_category_yearly_ai_role_logit_results.csv"
     results.to_csv(output, index=False)
     print(f"Yearly firm-category logit results saved: {output}")
     return results
@@ -738,12 +928,13 @@ def firm_category_yearly_needs_period_fallback(results):
     return len(ok_rows) < expected_rows
 
 
-def run_firm_category_period_logit_models(data):
+def run_firm_category_period_logit_models(data, output_dir=None):
     """Run firm-category benefit logits through 2022 and post-2022."""
     print("\n" + "=" * 50)
     print("PERIOD FIRM-CATEGORY LOGIT MODELS")
     print("=" * 50)
 
+    output_dir = output_dir or FIRM_CATEGORY_LOGIT_DIR
     data = add_firm_category(data)
     firm_categories = ["SMEs", "Large firms", "S&P 500 firms"]
     periods = [
@@ -756,6 +947,8 @@ def run_firm_category_period_logit_models(data):
     for firm_category in firm_categories:
         category_data = data[data["FIRM_CATEGORY"] == firm_category].copy()
         print(f"\n{firm_category}: {len(category_data):,} postings")
+        if category_data.empty:
+            continue
         for period_label, period_filter in periods:
             period_data = category_data[period_filter(category_data)].copy()
             print(f"  {period_label}: {len(period_data):,} postings")
@@ -779,14 +972,14 @@ def run_firm_category_period_logit_models(data):
                 )
 
     results = pd.DataFrame(rows)
-    os.makedirs(FIRM_CATEGORY_LOGIT_DIR, exist_ok=True)
-    output = FIRM_CATEGORY_LOGIT_DIR / "firm_category_period_ai_role_logit_results.csv"
+    os.makedirs(output_dir, exist_ok=True)
+    output = output_dir / "firm_category_period_ai_role_logit_results.csv"
     results.to_csv(output, index=False)
     print(f"Period firm-category logit results saved: {output}")
     return results
 
 
-def plot_firm_category_time_logit_results(results, output_name, title, period_order=None):
+def plot_firm_category_time_logit_results(results, output_name, title, period_order=None, output_dir=None):
     """Plot firm-category coefficients over time with shaded confidence bands."""
     plot_df = results[results["status"] == "ok"].copy()
     if plot_df.empty:
@@ -851,7 +1044,7 @@ def plot_firm_category_time_logit_results(results, output_name, title, period_or
 
     fig.suptitle(title, fontsize=14)
     plt.tight_layout()
-    output_dir = RESULTS_DIR / "figures_2026" / "regression"
+    output_dir = output_dir or RESULTS_DIR / "figures_2026" / "regression"
     os.makedirs(output_dir, exist_ok=True)
     output = output_dir / output_name
     plt.savefig(output, dpi=300, bbox_inches="tight")
@@ -1118,15 +1311,16 @@ def benefit_label_for_plot(benefit):
     """Return the display label for a benefit key."""
     return benefits4_labels[benefits4.index(benefit)]
 
-def extract_model_results(models_2024):
+def extract_model_results(models_2024, model_names=None):
     """Extract coefficients, standard errors, p-values, and model statistics."""
     results_dfs = []
     
-    model_names = [
+    model_names = model_names or [
         'M1: Baseline',
         'M2: +Indiv Controls',
         'M3: +Salary',
         'M4: +S&P 500',
+        'M5: M4 + 2-digit SOC FE',
     ]
     
     for model_idx, models in enumerate(models_2024):
@@ -1170,9 +1364,48 @@ def extract_model_results(models_2024):
     
     return pd.concat(results_dfs, ignore_index=True)
 
-def generate_coefficients_plot(results_df):
+def load_five_model_plot_results(results_csv, m5_results=None):
+    """Combine saved main-model and standalone M5 coefficients for plotting."""
+    panels = pd.read_csv(results_csv)
+    panels = panels.loc[panels['panel'].eq('Main') & panels['model_idx'].isin(range(5))].copy()
+    panels = panels.rename(columns={
+        'benefit': 'Label', 'ai_role_coef': 'Coefficient', 'ai_role_se': 'Error',
+        'nobs': 'Observations',
+    })
+    panels['Converged'] = panels['model_status'].eq('ok')
+    if m5_results is not None or not panels['model_idx'].eq(4).any():
+        if m5_results is None:
+            candidates = sorted((RESULTS_DIR / 'm5').glob('*/tables/m5_ai_role_summary.csv'))
+            if not candidates:
+                raise FileNotFoundError('No saved M5 summary found. Run --m5-only first or provide --m5-results.')
+            m5_results = candidates[-1]
+        elif m5_results.is_dir():
+            m5_results = m5_results / 'tables' / 'm5_ai_role_summary.csv'
+        m5 = pd.read_csv(m5_results)
+        m5['model_idx'] = 4
+        panels = pd.concat([panels.loc[panels['model_idx'].ne(4)], m5], ignore_index=True)
+        print(f"Using M5 summary: {m5_results}")
+    expected = pd.MultiIndex.from_product([range(5), benefits4], names=['model_idx', 'Label'])
+    actual = pd.MultiIndex.from_frame(panels[['model_idx', 'Label']])
+    if actual.has_duplicates or len(expected.difference(actual)):
+        raise ValueError('Plot summaries must contain one row per model (M1–M5) and benefit, including failed fits.')
+    panels = panels.set_index(['model_idx', 'Label']).reindex(expected).reset_index()
+    model_names = ['M1: Baseline', 'M2: +Indiv Controls', 'M3: +Salary', 'M4: +S&P 500', 'M5: M4 + 2-digit SOC FE']
+    panels['Model Iteration'] = panels['model_idx'].map(dict(enumerate(model_names)))
+    return panels
+
+
+def generate_coefficients_plot(results_df, output_path=None):
     """Generate the model coefficients plot with confidence intervals."""
     print("\nGenerating model coefficients plot...")
+    results_df = results_df.copy()
+    results_df['Model Iteration'] = results_df['Model Iteration'].replace({
+        'M1: Baseline': 'M1: Baseline (Year+NAICS3)',
+        'M2: +Indiv Controls': 'M2: M1 + Individ. + State',
+        'M3: +Salary': 'M3: M2 + Salary',
+        'M4: +S&P 500': 'M4: M3 + S&P 500',
+        'M5: M4 + 2-digit SOC FE': 'M5: M4 + SOC2',
+    })
     
     # Calculate 95% confidence intervals
     results_df['Coefficient'] = pd.to_numeric(results_df['Coefficient'], errors='coerce')
@@ -1180,7 +1413,7 @@ def generate_coefficients_plot(results_df):
     results_df['Lower_CI'] = results_df['Coefficient'] - 1.96 * results_df['Error']
     results_df['Upper_CI'] = results_df['Coefficient'] + 1.96 * results_df['Error']
     
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(9, 6))
     
     model_iterations = results_df['Model Iteration'].unique()
     markers = ['o', 's', '^', 'D', 'P', 'X', 'v']  # Different markers for model iterations
@@ -1205,9 +1438,7 @@ def generate_coefficients_plot(results_df):
                     continue
 
                 handle = ax.errorbar(
-                    pos, model_data['Coefficient'].values,
-                    yerr=[model_data['Coefficient'].values - model_data['Lower_CI'].values,
-                          model_data['Upper_CI'].values - model_data['Coefficient'].values],
+                    pos, coefficient, yerr=1.96 * error,
                     fmt=markers[i % len(markers)], color=colors[i % len(colors)], label=model if benefit == benefits4[0] else ""
                 )
                 benefit_positions.append(pos)
@@ -1218,13 +1449,13 @@ def generate_coefficients_plot(results_df):
                     labels.append(model)
                 
                 # Mark non-converged models
-                if model_data['Converged'].values[0] is False:
+                if pd.notna(model_data['Converged'].values[0]) and not bool(model_data['Converged'].values[0]):
                     ax.plot(pos, model_data['Coefficient'].values[0], 'rx', markersize=12, label='Did Not Converge')
 
         if benefit_positions:
             benefit_ticks.append((min(benefit_positions) + max(benefit_positions)) / 2)
             benefit_tick_labels.append(benefits4_labels[benefits4.index(benefit)])
-        current_pos += len(model_iterations) + 1  # Add space between different benefits
+        current_pos += len(model_iterations) * 0.2 + 0.6
     
     # Customize plot
     ax.set_xticks(benefit_ticks, labels=benefit_tick_labels)
@@ -1233,16 +1464,18 @@ def generate_coefficients_plot(results_df):
     ax.set_xlabel(None)
     ax.set_ylabel('Log-Odds Coefficient (with 95% CI)', fontsize=16)
     ax.axhline(0, color='grey', linewidth=0.8)
-    ax.legend(handles, labels, title='Model', bbox_to_anchor=(0, 1), loc='upper left', fontsize=12, title_fontsize=12)
+    ax.legend(handles, labels, title='Model', loc='upper left', fontsize=11, title_fontsize=12)
     
     plt.tight_layout()
     
     # Save plot
-    os.makedirs(RESULTS_DIR / "figures_2026/regression", exist_ok=True)
-    plt.savefig(RESULTS_DIR / "figures_2026/regression" / "model_coefficients_plot_industry_converged.png", dpi=300, bbox_inches='tight')
+    output_path = output_path or RESULTS_DIR / "figures_2026/regression" / "model_coefficients_plot_industry_converged.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close(fig)
     # plt.show()
     
-    print(f"Model coefficients plot saved to {RESULTS_DIR / 'figures_2026' / 'regression' / 'model_coefficients_plot_industry_converged.png'}")
+    print(f"Model coefficients plot saved to {output_path}")
 
 # Update the function to use the requested labels
 def create_clean_formatted_table_updated(models, benefit_name):
@@ -1682,7 +1915,7 @@ def generate_panel_summaries(models_2024):
     os.makedirs(TABLES_DIR, exist_ok=True)
 
     panel_map = {
-        'Main': [0, 1, 2, 3],
+        'Main': [0, 1, 2, 3, 4],
     }
 
     model_labels = {
@@ -1690,6 +1923,7 @@ def generate_panel_summaries(models_2024):
         1: 'M2 + Individual+State Controls',
         2: 'M3 + Salary',
         3: 'M4 + S&P 500 (Preferred)',
+        4: 'M5 M4 + 2-digit SOC FE',
     }
 
     rows = []
@@ -1742,7 +1976,7 @@ def generate_panel_summaries(models_2024):
     print(f"Panel long summary saved: {long_out}")
     print(f"Panel wide summary saved: {wide_out}")
 
-def generate_wide_table(models_2024):
+def generate_wide_table(models_2024, latex_models=None):
     """Generate the wide table with all benefits."""
     print("\nGenerating wide table with all benefits...")
     
@@ -1773,7 +2007,7 @@ def generate_wide_table(models_2024):
 </html>""")
     
     # Generate and save LaTeX version
-    latex_table = html_to_latex_table_dynamic(models_2024)
+    latex_table = html_to_latex_table_dynamic(latex_models if latex_models is not None else models_2024)
     latex_filename = TABLES_DIR / "complete_wide_table.tex"
     
     with open(latex_filename, 'w') as f:
@@ -1783,119 +2017,88 @@ def generate_wide_table(models_2024):
     print(f"Wide LaTeX table saved: {latex_filename}")
 
 def html_to_latex_table_dynamic(models_2024):
-    """Generate LaTeX table dynamically from actual model results"""
-    latex_lines = []
-    latex_lines.append("\\begin{table}[!htbp]")
-    latex_lines.append("\\centering")
-    latex_lines.append("\\tiny")  # Use tiny font for wide table
-    latex_lines.append("\\begin{tabular}{l" + "c" * 18 + "}")
-    latex_lines.append("\\toprule")
-    
-    # Header row
-    latex_lines.append(" & \\multicolumn{3}{c}{\\textbf{Tuition Assistance}} & \\multicolumn{3}{c}{\\textbf{Paid Leave}} & \\multicolumn{3}{c}{\\textbf{Health \\& Wellbeing}} & \\multicolumn{3}{c}{\\textbf{Parental Leave}} & \\multicolumn{3}{c}{\\textbf{Inclusive Workplace}} & \\multicolumn{3}{c}{\\textbf{Remote Work}} \\\\")
-    latex_lines.append("\\cmidrule(lr){2-4} \\cmidrule(lr){5-7} \\cmidrule(lr){8-10} \\cmidrule(lr){11-13} \\cmidrule(lr){14-16} \\cmidrule(lr){17-19}")
-    
-    # Column numbers
-    latex_lines.append(" & (1) & (2) & (3) & (1) & (2) & (3) & (1) & (2) & (3) & (1) & (2) & (3) & (1) & (2) & (3) & (1) & (2) & (3) \\\\")
-    latex_lines.append("\\midrule")
-    
-    # Get all model progressions for each benefit
-    all_model_progressions = []
-    for i, benefit in enumerate(benefits4):
-        model_progression = [models_2024[j][i] for j in range(len(models_2024))]
-        all_model_progressions.append(model_progression)
-    
-    # AI ROLE row - dynamically generated
-    ai_row = "\\textbf{AI ROLE}"
-    ai_se_row = ""
-    
-    for models in all_model_progressions:
-        for model in models:
-            coeff = f"{model.params['AI ROLE']:.2f}"
-            se = f"({model.bse['AI ROLE']:.2f})"
-            pval = model.pvalues['AI ROLE']
-            
-            if pval < 0.01:
-                stars = "$^{***}$"
-            elif pval < 0.05:
-                stars = "$^{**}$"
-            elif pval < 0.1:
-                stars = "$^{*}$"
-            else:
-                stars = ""
-            
-            if coeff.startswith('-'):
-                ai_row += f" & $-${coeff[1:]}{stars}"
-            else:
-                ai_row += f" & {coeff}{stars}"
-            ai_se_row += f" & {se}"
-    
-    ai_row += " \\\\\\\\"
-    ai_se_row += " \\\\\\\\"
-    latex_lines.append(ai_row)
-    latex_lines.append(ai_se_row)
-    
-    # Experience section
-    latex_lines.append("\\textbf{Experience (ref. None Listed)} & & & & & & & & & & & & & & & & & & \\\\")
-    latex_lines.append("\\quad 0 years & & 0.003 & 0.005 & & $-$0.088 & $-$0.091 & & $-$0.058 & $-$0.034 & & 0.008 & 0.065 & & $-$0.365$^{**}$ & $-$0.308$^{*}$ & & $-$0.294$^{*}$ & $-$0.224 \\\\")
-    latex_lines.append(" & & (0.167) & (0.167) & & (0.097) & (0.097) & & (0.215) & (0.215) & & (0.200) & (0.201) & & (0.181) & (0.182) & & (0.163) & (0.165) \\\\")
-    latex_lines.append("\\quad 1-2 years & & $-$0.158$^{**}$ & $-$0.159$^{**}$ & & 0.101$^{**}$ & 0.103$^{**}$ & & 0.035 & 0.030 & & $-$0.078 & $-$0.073 & & $-$0.030 & $-$0.024 & & 0.166$^{***}$ & 0.174$^{***}$ \\\\")
-    latex_lines.append(" & & (0.077) & (0.077) & & (0.045) & (0.045) & & (0.095) & (0.095) & & (0.090) & (0.090) & & (0.069) & (0.069) & & (0.063) & (0.064) \\\\")
-    latex_lines.append("\\quad 3-5 years & & 0.076 & 0.070 & & 0.176$^{***}$ & 0.184$^{***}$ & & 0.317$^{***}$ & 0.265$^{***}$ & & 0.198$^{***}$ & 0.129$^{*}$ & & 0.164$^{***}$ & 0.074 & & 0.338$^{***}$ & 0.235$^{***}$ \\\\")
-    latex_lines.append(" & & (0.069) & (0.070) & & (0.043) & (0.044) & & (0.082) & (0.084) & & (0.072) & (0.073) & & (0.059) & (0.059) & & (0.054) & (0.054) \\\\")
-    latex_lines.append("\\quad 6-10 years & & 0.014 & 0.003 & & 0.121$^{**}$ & 0.137$^{**}$ & & 0.574$^{***}$ & 0.480$^{***}$ & & 0.092 & $-$0.045 & & 0.199$^{***}$ & 0.023 & & 0.336$^{***}$ & 0.135$^{**}$ \\\\")
-    latex_lines.append(" & & (0.082) & (0.086) & & (0.053) & (0.055) & & (0.091) & (0.095) & & (0.082) & (0.085) & & (0.066) & (0.069) & & (0.061) & (0.063) \\\\")
-    latex_lines.append("\\quad 11-20 years & & $-$0.140 & $-$0.156 & & $-$0.255$^{**}$ & $-$0.233$^{*}$ & & $-$0.198 & $-$0.336 & & $-$0.201 & $-$0.404$^{**}$ & & 0.863$^{***}$ & 0.608$^{***}$ & & 0.098 & $-$0.196 \\\\")
-    latex_lines.append(" & & (0.173) & (0.177) & & (0.118) & (0.120) & & (0.233) & (0.237) & & (0.169) & (0.173) & & (0.119) & (0.122) & & (0.130) & (0.133) \\\\")
-    
-    # Education section
-    latex_lines.append("\\textbf{Education (ref. No Education Listed)} & & & & & & & & & & & & & & & & & & \\\\")
-    latex_lines.append("\\quad High school or GED & & 0.844$^{***}$ & 0.853$^{***}$ & & 0.328$^{***}$ & 0.316$^{***}$ & & 0.089 & 0.166 & & 0.006 & 0.137 & & $-$0.009 & 0.171$^{**}$ & & $-$0.643$^{***}$ & $-$0.422$^{***}$ \\\\")
-    latex_lines.append(" & & (0.073) & (0.076) & & (0.045) & (0.047) & & (0.098) & (0.102) & & (0.097) & (0.101) & & (0.076) & (0.079) & & (0.079) & (0.082) \\\\")
-    latex_lines.append("\\quad Associate degree & & 0.313$^{**}$ & 0.315$^{**}$ & & 0.082 & 0.080 & & 0.321$^{**}$ & 0.344$^{**}$ & & 0.218 & 0.261$^{*}$ & & 0.453$^{***}$ & 0.509$^{***}$ & & $-$0.367$^{***}$ & $-$0.287$^{**}$ \\\\")
-    latex_lines.append(" & & (0.130) & (0.130) & & (0.080) & (0.080) & & (0.150) & (0.150) & & (0.148) & (0.148) & & (0.103) & (0.104) & & (0.116) & (0.117) \\\\")
-    latex_lines.append("\\quad Bachelor's degree & & 0.277$^{***}$ & 0.273$^{***}$ & & 0.023 & 0.028 & & 0.295$^{***}$ & 0.267$^{***}$ & & 0.381$^{***}$ & 0.337$^{***}$ & & 0.162$^{***}$ & 0.116$^{**}$ & & 0.109$^{**}$ & 0.073 \\\\")
-    latex_lines.append(" & & (0.071) & (0.072) & & (0.042) & (0.042) & & (0.081) & (0.081) & & (0.072) & (0.072) & & (0.058) & (0.057) & & (0.050) & (0.050) \\\\")
-    latex_lines.append("\\quad Master's degree & & 0.161 & 0.153 & & $-$0.154$^{*}$ & $-$0.143$^{*}$ & & 0.247$^{*}$ & 0.183 & & 0.341$^{***}$ & 0.233$^{*}$ & & 0.316$^{***}$ & 0.192$^{**}$ & & 0.224$^{**}$ & 0.092 \\\\")
-    latex_lines.append(" & & (0.122) & (0.123) & & (0.079) & (0.079) & & (0.133) & (0.134) & & (0.118) & (0.119) & & (0.093) & (0.094) & & (0.087) & (0.088) \\\\")
-    latex_lines.append("\\quad Ph.D. or professional degree & & 0.023 & 0.011 & & $-$0.271$^{**}$ & $-$0.255$^{*}$ & & $-$0.302 & $-$0.396 & & $-$0.380 & $-$0.526$^{**}$ & & 0.383$^{***}$ & 0.217 & & 0.199 & 0.015 \\\\")
-    latex_lines.append(" & & (0.209) & (0.210) & & (0.132) & (0.133) & & (0.284) & (0.286) & & (0.243) & (0.244) & & (0.146) & (0.147) & & (0.143) & (0.144) \\\\")
-    
-    # log(Salary)
-    latex_lines.append("log(Salary) & & & 0.027 & & & $-$0.036 & & & 0.225$^{***}$ & & & 0.363$^{***}$ & & & 0.463$^{***}$ & & & 0.549$^{***}$ \\\\")
-    latex_lines.append(" & & & (0.061) & & & (0.036) & & & (0.072) & & & (0.066) & & & (0.053) & & & (0.048) \\\\")
-    
-    # Constant
-    latex_lines.append("const & $-$3.187$^{***}$ & $-$3.441$^{***}$ & $-$3.724$^{***}$ & $-$0.951$^{***}$ & $-$1.059$^{***}$ & $-$0.682$^{*}$ & $-$3.367$^{***}$ & $-$3.434$^{***}$ & $-$5.807$^{***}$ & $-$4.912$^{***}$ & $-$4.940$^{***}$ & $-$8.784$^{***}$ & $-$4.608$^{***}$ & $-$4.621$^{***}$ & $-$9.545$^{***}$ & $-$3.559$^{***}$ & $-$3.483$^{***}$ & $-$9.324$^{***}$ \\\\")
-    latex_lines.append(" & (0.228) & (0.231) & (0.684) & (0.117) & (0.118) & (0.390) & (0.255) & (0.258) & (0.800) & (0.519) & (0.521) & (0.875) & (0.277) & (0.278) & (0.628) & (0.196) & (0.199) & (0.549) \\\\")
-    
-    # Fixed Effects
-    latex_lines.append("\\midrule")
-    latex_lines.append("\\textbf{Fixed Effects} & & & & & & & & & & & & & & & & & & \\\\")
-    latex_lines.append("\\quad Year & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\\\")
-    latex_lines.append("\\quad Industry & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\\\")
-    
-    # Statistics
-    latex_lines.append("\\midrule")
-    latex_lines.append("Observations & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 & 20000 \\\\")
-    latex_lines.append("Pseudo R$^2$ & 0.060 & 0.071 & 0.071 & 0.041 & 0.045 & 0.045 & 0.075 & 0.084 & 0.085 & 0.117 & 0.123 & 0.125 & 0.128 & 0.134 & 0.139 & 0.111 & 0.122 & 0.129 \\\\")
-    
-    latex_lines.append("\\bottomrule")
-    latex_lines.append("\\end{tabular}")
-    latex_lines.append("\\caption{Regression Results - All Benefits}")
-    latex_lines.append("\\label{tab:results_all_benefits}")
-    latex_lines.append("\\begin{tablenotes}")
-    latex_lines.append("\\small")
-    latex_lines.append("\\item Note: *p$<$0.1; **p$<$0.05; ***p$<$0.01")
-    latex_lines.append("\\end{tablenotes}")
-    latex_lines.append("\\end{table}")
-    
-    return "\\n".join(latex_lines)
+    """Render all LaTeX coefficients and statistics from fitted results."""
+    return render_latex_model_summary(models_2024, benefits4_labels)
+
+
+def load_latex_summary_models(args):
+    """Read existing full-coefficient caches without refitting or altering them."""
+    cache_path = args.cache_path
+    if cache_path is None:
+        candidates = list(MODEL_CACHE_DIR.glob('job_level_models_*.pkl'))
+        if not candidates:
+            raise FileNotFoundError('No main-model cache found. Supply --cache-path with saved fits.')
+        cache_path = max(candidates, key=lambda path: path.stat().st_mtime_ns)
+    with cache_path.open('rb') as stream:
+        payload = pickle.load(stream)
+    if payload.get('cache_format') != CACHE_FORMAT or payload.get('cache_version') not in {
+        CACHE_VERSION, 'v4_preferred_sp500_no_firm_fe',
+    }:
+        raise ValueError('Unsupported model cache; LaTeX regeneration will not refit models.')
+    models = deserialize_compact_model_results(payload['models_2024'])
+    if len(models) not in (4, 5) or any(len(panel) != len(benefits4) for panel in models):
+        raise ValueError('Main-model cache must contain four or five models for each benefit.')
+    # Validate against the summary so the full coefficient tables match the plotted fits.
+    summaries = pd.read_csv(args.results_csv)
+    summaries = summaries[summaries['panel'].eq('Main')]
+    for index, panel in enumerate(models[:4]):
+        for benefit, model in zip(benefits4, panel):
+            rows = summaries[summaries['model_idx'].eq(index) & summaries['benefit'].eq(benefit)]
+            if len(rows) != 1:
+                raise ValueError(f'Missing or duplicate saved summary for M{index + 1}, {benefit}.')
+            row = rows.iloc[0]
+            matches = row['model_status'] != 'ok' if isinstance(model, str) else (
+                np.isclose(model.params.get('AI ROLE', np.nan), row['ai_role_coef'], equal_nan=True)
+                and np.isclose(model.nobs, row['nobs'])
+            )
+            if not matches:
+                raise ValueError(f'Cache and saved summary disagree for M{index + 1}, {benefit}. Select matching --cache-path and --results-csv.')
+    print(f'Using main-model cache: {cache_path}')
+    if len(models) == 4 or args.m5_results is not None:
+        m5_run = args.m5_results
+        if m5_run is None:
+            candidates = sorted((RESULTS_DIR / 'm5').glob('*/model_cache/m5.pkl'))
+            if not candidates:
+                raise FileNotFoundError('No M5 cache found. Run --m5-only first or supply --m5-results.')
+            m5_cache = candidates[-1]
+        elif m5_run.is_dir():
+            m5_cache = m5_run / 'model_cache' / 'm5.pkl'
+        elif m5_run.suffix == '.csv':
+            m5_cache = m5_run.parent.parent / 'model_cache' / 'm5.pkl'
+        else:
+            m5_cache = m5_run
+        m5 = load_cached_models(m5_cache, expected_panels=1)
+        if m5 is None or len(m5[0]) != len(benefits4):
+            raise ValueError('A current M5 cache containing all six benefits is required.')
+        models = models[:4] + m5
+    for benefit, m4_model, m5_model in zip(benefits4, models[3], models[4]):
+        if not isinstance(m4_model, str) and not isinstance(m5_model, str) and m4_model.nobs != m5_model.nobs:
+            raise ValueError(f'M4/M5 sample sizes differ for {benefit}; select matching caches.')
+    return models
 
 
 def main():
     """Main execution function."""
     args = parse_args()
+    if args.firm_only:
+        data, tables_dir, figures_dir = prepare_firm_run(args)
+        results = run_firm_category_logit_models(data, output_dir=tables_dir)
+        plot_firm_category_logit_results(results, output_dir=figures_dir,
+                                        title='LLM-labeled firms' if args.llm_only else None)
+        return
+    if args.m5_only:
+        run_m5_only(args)
+        return
+    if args.plot_only:
+        results = load_five_model_plot_results(args.results_csv, args.m5_results)
+        generate_coefficients_plot(results, output_path=args.plot_output)
+        return
+    if args.latex_only:
+        models = load_latex_summary_models(args)
+        args.latex_output.parent.mkdir(parents=True, exist_ok=True)
+        args.latex_output.write_text(html_to_latex_table_dynamic(models))
+        print(f'LaTeX summary saved: {args.latex_output}')
+        return
 
     print("BEYOND SALARY: REGRESSION MODELS ANALYSIS")
     print("=" * 80)
@@ -1934,7 +2137,7 @@ def main():
     generate_coefficients_plot(results_df)
     # Keep legacy tables as 3-model outputs for backward compatibility.
     generate_individual_tables(models_2024[:3])
-    generate_wide_table(models_2024[:3])
+    generate_wide_table(models_2024[:3], latex_models=models_2024)
     generate_panel_summaries(models_2024)
     yearly_model1_results = run_yearly_model1_ai_role_coefficients(data)
     plot_yearly_model1_ai_role_coefficients(yearly_model1_results)

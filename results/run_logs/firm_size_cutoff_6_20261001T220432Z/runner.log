@@ -1,0 +1,13 @@
+Waiting for all three Parquets to finish relabeling with cutoff 6.
+Relabel audit confirmed. Starting the five analyses.
+Starting 01_descriptive; log: /home/scro4406/beyond-salary/results/run_logs/firm_size_cutoff_6_20261001T220432Z/01_descriptive.log
+Completed 01_descriptive.
+Starting 02_pooled_firm_logit; log: /home/scro4406/beyond-salary/results/run_logs/firm_size_cutoff_6_20261001T220432Z/02_pooled_firm_logit.log
+Completed 02_pooled_firm_logit.
+Starting 03_yearly_period_firm_logit; log: /home/scro4406/beyond-salary/results/run_logs/firm_size_cutoff_6_20261001T220432Z/03_yearly_period_firm_logit.log
+Completed 03_yearly_period_firm_logit.
+Starting 04_wage_perk_interactions; log: /home/scro4406/beyond-salary/results/run_logs/firm_size_cutoff_6_20261001T220432Z/04_wage_perk_interactions.log
+Completed 04_wage_perk_interactions.
+Starting 05_high_ai_firms; log: /home/scro4406/beyond-salary/results/run_logs/firm_size_cutoff_6_20261001T220432Z/05_high_ai_firms.log
+Completed 05_high_ai_firms.
+All five analyses completed successfully.

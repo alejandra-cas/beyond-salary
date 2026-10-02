@@ -1,0 +1,72 @@
+{
+  "model": "gpt-6-luna",
+  "web_search": true,
+  "reviewed_firms": 1000,
+  "failed_reviews": 0,
+  "label_counts": {
+    "sme": 576,
+    "large": 337,
+    "unknown": 87
+  },
+  "evidence_periods": {
+    "current": 478,
+    "2018": 306,
+    "other_historical": 138,
+    "unclear": 78
+  },
+  "total_completed_web_search_calls": 1424,
+  "labels_changed_from_reviews_without_web": 198,
+  "best_firm_balanced_accuracy_cutoff": 2,
+  "cutoffs_within_2_percentage_points": [
+    2,
+    3
+  ],
+  "best_macro_f1_cutoff": 3,
+  "best_2018_posting_weighted_balanced_accuracy_cutoff": 13,
+  "comparison": [
+    {
+      "cutoff": 2,
+      "n_labeled": 913,
+      "balanced_accuracy": 0.6844424868117376,
+      "accuracy": 0.696604600219058,
+      "sme_recall": 0.7309027777777778,
+      "large_recall": 0.6379821958456974,
+      "combined_f1": 0.6803306144478868,
+      "balanced_accuracy_post_weighted": 0.6994989797041805
+    },
+    {
+      "cutoff": 3,
+      "n_labeled": 913,
+      "balanced_accuracy": 0.6819130192878338,
+      "accuracy": 0.7283680175246441,
+      "sme_recall": 0.859375,
+      "large_recall": 0.5044510385756676,
+      "combined_f1": 0.6889540953699735,
+      "balanced_accuracy_post_weighted": 0.7654646786081423
+    },
+    {
+      "cutoff": 50,
+      "n_labeled": 913,
+      "balanced_accuracy": 0.5207715133531158,
+      "accuracy": 0.6462212486308871,
+      "sme_recall": 1.0,
+      "large_recall": 0.0415430267062314,
+      "combined_f1": 0.430394514462311,
+      "balanced_accuracy_post_weighted": 0.833185918981072
+    }
+  ],
+  "historical_2018_evidence_subset": {
+    "cutoff": 2.0,
+    "n_labeled": 301.0,
+    "balanced_accuracy": 0.6834363047955281,
+    "accuracy": 0.6877076411960132,
+    "sme_recall": 0.6699029126213593,
+    "large_recall": 0.696969696969697,
+    "combined_f1": 0.6703867660764213,
+    "balanced_accuracy_post_weighted": 0.653221680510413
+  },
+  "limitations": "Web-supported qualitative employer-scale judgments; many sources describe current size. Evidence period is model-reported, not independently audited. Cutoffs selected and scored on the same sample.",
+  "threshold_applied_to_analysis": false,
+  "posting_level_recommendations": "posting_level_recommendations.json",
+  "metric_note": "Macro F1 includes zero F1 for an observed class with no predictions. Default weights are 2018 posting counts; full-period weights are saved separately."
+}

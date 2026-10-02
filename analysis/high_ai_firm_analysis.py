@@ -58,8 +58,8 @@ def load_data():
 
 def compute_firm_stats(df):
     """Compute per-firm AI share and perk prevalence for AI and non-AI postings."""
-    # Only keep firms with non-null COMPANY identifier
-    df = df[df[firm].notna()].copy()
+    # Firm analyses require an observed 2018 size, including S&P 500 firms.
+    df = df[df[firm].notna() & df[firm].ne(0) & df["FIRM_POSTING_COUNT"].notna()].copy()
     df[firm] = df[firm].astype(str)
 
     # Firm-level summary: total postings, AI share

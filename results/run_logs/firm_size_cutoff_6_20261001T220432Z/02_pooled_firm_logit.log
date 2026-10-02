@@ -1,0 +1,134 @@
+Loading analysis dataset...
+Processing industry categories...
+Final dataset shape: (9999673, 51)
+Year distribution:
+YEAR
+2018    1022168
+2019    1083362
+2020    1062166
+2021    1398000
+2022    1563042
+2023    1321415
+2024    1228966
+2025    1320554
+dtype: int64
+
+==================================================
+FIRM-CATEGORY LOGIT MODELS
+==================================================
+
+SMEs: 1,171,004 postings
+  EDU_ASSISTANCE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.278198
+         Iterations 8
+Logit fit: converged=True nobs=448,861 AI ROLE=-0.1686
+  PAID LEAVE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.625529
+         Iterations 6
+Logit fit: converged=True nobs=448,861 AI ROLE=0.0282
+  HEALTH_WELLBEING
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.189163
+         Iterations 8
+Logit fit: converged=True nobs=448,861 AI ROLE=0.1518
+  PARENTAL_LEAVE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.198982
+         Iterations 9
+Logit fit: converged=True nobs=403,409 AI ROLE=0.3278
+  CULTURE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.260713
+         Iterations 8
+Logit fit: converged=True nobs=448,861 AI ROLE=0.2272
+  REMOTE_KW
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.230039
+         Iterations 8
+Logit fit: converged=True nobs=448,861 AI ROLE=0.3509
+
+Large firms: 4,339,449 postings
+  EDU_ASSISTANCE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.373971
+         Iterations 10
+Logit fit: converged=True nobs=1,251,740 AI ROLE=0.0682
+  PAID LEAVE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.618326
+         Iterations 7
+Logit fit: converged=True nobs=1,251,740 AI ROLE=0.1154
+  HEALTH_WELLBEING
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.281152
+         Iterations 8
+Logit fit: converged=True nobs=1,251,740 AI ROLE=0.1493
+  PARENTAL_LEAVE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.252099
+         Iterations 11
+Logit fit: converged=True nobs=1,168,191 AI ROLE=0.0636
+  CULTURE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.355428
+         Iterations 9
+Logit fit: converged=True nobs=1,251,740 AI ROLE=0.1867
+  REMOTE_KW
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.245763
+         Iterations 10
+Logit fit: converged=True nobs=1,251,740 AI ROLE=0.1430
+
+S&P 500 firms: 1,249,038 postings
+  EDU_ASSISTANCE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.412501
+         Iterations 10
+Logit fit: converged=True nobs=312,980 AI ROLE=-0.1288
+  PAID LEAVE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.582507
+         Iterations 8
+Logit fit: converged=True nobs=312,980 AI ROLE=-0.4833
+  HEALTH_WELLBEING
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.334721
+         Iterations 10
+Logit fit: converged=True nobs=312,980 AI ROLE=-0.4004
+  PARENTAL_LEAVE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.370129
+         Iterations 10
+Logit fit: converged=True nobs=304,640 AI ROLE=-0.0475
+  CULTURE
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.444174
+         Iterations 10
+Logit fit: converged=True nobs=312,980 AI ROLE=0.2739
+  REMOTE_KW
+Number of NAs in dependent: 0
+Optimization terminated successfully.
+         Current function value: 0.278441
+         Iterations 9
+Logit fit: converged=True nobs=312,980 AI ROLE=-0.0611
+Firm-category logit results saved: /home/scro4406/beyond-salary/results/tables_2026/firm_category_logit/firm_category_ai_role_logit_results.csv
+Firm-category logit plot saved: /home/scro4406/beyond-salary/results/figures_2026/regression/firm_category_ai_role_logit_coefficients.png

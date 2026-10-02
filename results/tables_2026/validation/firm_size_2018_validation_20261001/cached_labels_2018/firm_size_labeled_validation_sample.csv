@@ -1,0 +1,179 @@
+COMPANY,COMPANY_NAME,llm_label,llm_confidence,llm_model,labeled_at,FIRM_POSTING_COUNT,FIRM_SIZE_BASE_YEAR,SP500
+100112128,True Expansion Solutions,sme,0.77,gpt-5.4-mini,2026-07-02T22:36:23.577320+00:00,1,2018,False
+100373809,Cindy S,unknown,0.94,gpt-5.4-mini,2026-07-02T22:35:44.949416+00:00,1,2018,False
+101284520,Plantek Consultants,sme,0.92,gpt-5.4-mini,2026-07-02T22:34:38.749364+00:00,1,2018,False
+10570960,Quintiles,large,0.98,gpt-5.4-mini,2026-07-02T22:35:11.795661+00:00,43,2018,False
+107229269,Springbone Kitchen,sme,0.82,gpt-5.4-mini,2026-07-02T22:36:05.935529+00:00,1,2018,False
+108775687,ActiveUnited Nations Development Programme,large,0.99,gpt-5.4-mini,2026-07-02T22:35:01.137255+00:00,1,2018,False
+17856095,Xad,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:21.485882+00:00,2,2018,False
+1967817,Celanese,large,0.99,gpt-5.4-mini,2026-07-02T22:35:49.766197+00:00,17,2018,False
+1998045,Virtuoso,large,0.86,gpt-5.4-mini,2026-07-02T22:36:00.769339+00:00,2,2018,False
+2288810,Ld Management,sme,0.84,gpt-5.4-mini,2026-07-02T22:35:20.837082+00:00,1,2018,False
+31574267,Sixthman,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:19.870476+00:00,1,2018,False
+32507871,Car Source,sme,0.96,gpt-5.4-mini,2026-07-02T22:34:35.642301+00:00,1,2018,False
+3281223,Moduslink,large,0.91,gpt-5.4-mini,2026-07-02T22:35:48.331812+00:00,1,2018,False
+33143082,Aey Global,sme,0.78,gpt-5.4-mini,2026-07-02T22:34:41.084334+00:00,6,2018,False
+34175087,Ap Property Management,sme,0.86,gpt-5.4-mini,2026-07-02T22:34:47.337331+00:00,5,2018,False
+34364918,Inreach (Formerly Residential & Support Services),sme,0.7,gpt-5.4-mini,2026-07-02T22:36:22.032037+00:00,2,2018,False
+34839825,Maestro Construction,sme,0.92,gpt-5.4-mini,2026-07-02T22:35:59.328090+00:00,1,2018,False
+34926947,Calcare,sme,0.78,gpt-5.4-mini,2026-07-02T22:36:13.596663+00:00,1,2018,False
+35014011,Delphi Technologies,large,0.98,gpt-5.4-mini,2026-07-02T22:34:51.243002+00:00,4,2018,False
+35029318,"Interior Systems, Inc. (Isi)",sme,0.85,gpt-5.4-mini,2026-07-02T22:35:57.067608+00:00,1,2018,False
+35483356,Hello Heart,large,0.87,gpt-5.4-mini,2026-07-02T22:35:47.206424+00:00,2,2018,False
+35618745,Excel Group,sme,0.89,gpt-5.4-mini,2026-07-02T22:34:46.479346+00:00,1,2018,False
+35808629,The Draftsman Ltd,sme,0.88,gpt-5.4-mini,2026-07-02T22:35:42.462401+00:00,1,2018,False
+35846826,Nicholson Early Childhood Education Center,sme,0.96,gpt-5.4-mini,2026-07-02T22:34:46.632781+00:00,1,2018,False
+35954538,Ilink Systems,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:40.871590+00:00,2,2018,False
+3596824,Promega,large,0.94,gpt-5.4-mini,2026-07-02T22:36:10.549098+00:00,6,2018,False
+36185713,Sterling Securities,sme,0.88,gpt-5.4-mini,2026-07-02T22:35:04.250182+00:00,1,2018,False
+36245475,Western Iowa Tech Community College,large,0.96,gpt-5.4-mini,2026-07-02T22:36:15.121123+00:00,3,2018,False
+36426209,Superior Communications,sme,0.82,gpt-5.4-mini,2026-07-02T22:35:46.651397+00:00,3,2018,False
+36579571,Featherlite,large,0.86,gpt-5.4-mini,2026-07-02T22:35:11.415815+00:00,1,2018,False
+36673416,Strategic Software Solutions,sme,0.89,gpt-5.4-mini,2026-07-02T22:35:30.512496+00:00,1,2018,False
+36792534,American International School Of Utah,sme,0.93,gpt-5.4-mini,2026-07-02T22:35:37.928956+00:00,1,2018,False
+36953265,Kate Spade,large,0.98,gpt-5.4-mini,2026-07-02T22:35:02.795636+00:00,100,2018,False
+36966882,Techniplas,large,0.87,gpt-5.4-mini,2026-07-02T22:35:34.395226+00:00,2,2018,False
+37077074,Montgomery Heights Steam School,sme,0.97,gpt-5.4-mini,2026-07-02T22:35:35.749742+00:00,1,2018,False
+37202297,Summit Building Services,sme,0.93,gpt-5.4-mini,2026-07-02T22:35:48.352575+00:00,2,2018,False
+37312186,Delta Furniture Manufacturing,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:23.753503+00:00,1,2018,False
+37423202,Weblinc,sme,0.88,gpt-5.4-mini,2026-07-02T22:35:35.352579+00:00,1,2018,False
+37731571,National Immigration Law Center,large,0.95,gpt-5.4-mini,2026-07-02T22:35:38.975087+00:00,1,2018,False
+37821237,Texas Music Partners,sme,0.82,gpt-5.4-mini,2026-07-02T22:35:49.396130+00:00,1,2018,False
+37948436,Creospan,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:42.008478+00:00,3,2018,False
+38008062,103 Service Corp.,sme,0.73,gpt-5.4-mini,2026-07-02T22:35:13.925469+00:00,3,2018,False
+38116228,Kgpco,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:48.946135+00:00,7,2018,False
+38148268,Finex Credit Union,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:18.207345+00:00,1,2018,False
+38294064,Maxgen Energy Services,sme,0.89,gpt-5.4-mini,2026-07-02T22:35:36.206808+00:00,17,2018,False
+38370644,The Fortune Society,sme,0.77,gpt-5.4-mini,2026-07-02T22:35:18.190506+00:00,3,2018,False
+38390615,Cranel,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:26.025787+00:00,1,2018,False
+38415661,Mcginnis Lochridge,sme,0.96,gpt-5.4-mini,2026-07-02T22:36:19.701824+00:00,2,2018,False
+38461275,Doctors Hospital,sme,0.72,gpt-5.4-mini,2026-07-02T22:35:55.049992+00:00,6,2018,False
+38780688,Buildasign.Com,large,0.91,gpt-5.4-mini,2026-07-02T22:36:06.703923+00:00,2,2018,False
+38867689,Takashi,sme,0.94,gpt-5.4-mini,2026-07-02T22:35:22.884271+00:00,2,2018,False
+38964583,Credere Group,sme,0.67,gpt-5.4-mini,2026-07-02T22:35:54.431292+00:00,1,2018,False
+38976705,Wildcat Movers,sme,0.97,gpt-5.4-mini,2026-07-02T22:34:38.957030+00:00,1,2018,False
+38992587,Assurex Health,large,0.86,gpt-5.4-mini,2026-07-02T22:35:32.830042+00:00,10,2018,False
+39115190,Homepro Operating,sme,0.79,gpt-5.4-mini,2026-07-02T22:35:31.854520+00:00,1,2018,False
+39142035,Vision Forward,sme,0.78,gpt-5.4-mini,2026-07-02T22:36:15.700800+00:00,1,2018,False
+39389474,Bridgeport Village - Pastini's,sme,0.88,gpt-5.4-mini,2026-07-02T22:34:56.863659+00:00,1,2018,False
+39521190,Cobblestone Construction,sme,0.95,gpt-5.4-mini,2026-07-02T22:35:53.339995+00:00,1,2018,False
+39578444,Guthrie Clinic,large,0.97,gpt-5.4-mini,2026-07-02T22:35:20.728647+00:00,9,2018,False
+40079851,American Discount Mortgage,sme,0.95,gpt-5.4-mini,2026-07-02T22:35:43.673849+00:00,1,2018,False
+40161568,Servicetitan,large,0.98,gpt-5.4-mini,2026-07-02T22:35:20.167734+00:00,24,2018,False
+40431759,University of Evansville,sme,0.89,gpt-5.4-mini,2026-07-02T22:34:50.365748+00:00,1,2018,False
+40505683,Palm Beach County,large,0.99,gpt-5.4-mini,2026-07-02T22:35:22.024930+00:00,3,2018,False
+40542954,Archdiocese Of Chicago,large,0.98,gpt-5.4-mini,2026-07-02T22:35:14.845848+00:00,7,2018,False
+40586717,Ormat Technologies,large,0.98,gpt-5.4-mini,2026-07-02T22:36:06.913627+00:00,4,2018,False
+40636445,Prominent Business Solutions,sme,0.88,gpt-5.4-mini,2026-07-02T22:35:20.528115+00:00,7,2018,False
+40727712,Midwest Petroleum,sme,0.91,gpt-5.4-mini,2026-07-02T22:35:40.063103+00:00,4,2018,False
+41020073,Visual Consultants,sme,0.92,gpt-5.4-mini,2026-07-02T22:35:45.808042+00:00,6,2018,False
+41071995,Christian Community Home Of Osceola,sme,0.94,gpt-5.4-mini,2026-07-02T22:36:07.325332+00:00,1,2018,False
+41214989,Emmert International,sme,0.71,gpt-5.4-mini,2026-07-02T22:35:42.638799+00:00,1,2018,False
+41227187,The Urban Helper,sme,0.83,gpt-5.4-mini,2026-07-02T22:36:21.247928+00:00,2,2018,False
+41371240,Mind Over Machines,sme,0.92,gpt-5.4-mini,2026-07-02T22:34:53.341141+00:00,3,2018,False
+41415713,Plum Tree Care Center,sme,0.92,gpt-5.4-mini,2026-07-02T22:35:39.240356+00:00,1,2018,False
+41452933,Coresite,large,0.97,gpt-5.4-mini,2026-07-02T22:35:05.982252+00:00,3,2018,False
+41468478,Unesco,large,0.99,gpt-5.4-mini,2026-07-02T22:35:39.622947+00:00,2,2018,False
+41560273,CompuGain,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:54.639025+00:00,30,2018,False
+41626774,Gerstel Gmbh & Co.Kg,large,0.94,gpt-5.4-mini,2026-07-02T22:35:56.114206+00:00,1,2018,False
+42188755,Health Leads,sme,0.88,gpt-5.4-mini,2026-07-02T22:35:56.855446+00:00,1,2018,False
+42287638,Evonik Industries,large,0.99,gpt-5.4-mini,2026-07-02T22:35:04.416988+00:00,10,2018,False
+42365702,Rolling Hills Hospital,sme,0.91,gpt-5.4-mini,2026-07-02T22:35:21.098771+00:00,1,2018,False
+42456953,Harperrand,sme,0.78,gpt-5.4-mini,2026-07-02T22:35:48.399830+00:00,1,2018,False
+42520722,Hackettstown Regional Medical Center,large,0.94,gpt-5.4-mini,2026-07-02T22:35:25.873269+00:00,1,2018,False
+42914392,Gbc International Bank,large,0.86,gpt-5.4-mini,2026-07-02T22:34:58.670499+00:00,1,2018,False
+43057871,Plaza La Reina,sme,0.95,gpt-5.4-mini,2026-07-02T22:35:47.873699+00:00,3,2018,False
+43948263,Degryse Electric,sme,0.97,gpt-5.4-mini,2026-07-02T22:35:20.938913+00:00,1,2018,False
+44126658,Chacho's,sme,0.88,gpt-5.4-mini,2026-07-02T22:34:36.921284+00:00,1,2018,False
+44737625,Crown Seating,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:09.785769+00:00,2,2018,False
+44959279,Medical Recovery Systems,sme,0.82,gpt-5.4-mini,2026-07-02T22:35:12.761194+00:00,1,2018,False
+45184908,Vc Defense,sme,0.76,gpt-5.4-mini,2026-07-02T22:35:13.376207+00:00,3,2018,False
+45306779,Anacapa Technologies,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:31.923258+00:00,1,2018,False
+45413099,Lafayette Federal Credit Union,large,0.95,gpt-5.4-mini,2026-07-02T22:35:57.101734+00:00,2,2018,False
+46078596,Winegardner & Hammons,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:19.119758+00:00,2,2018,False
+46565135,Emerging Forms,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:06.511027+00:00,1,2018,False
+46565839,Econo Lodge Inn & Suites,large,0.9,gpt-5.4-mini,2026-07-02T22:36:08.184746+00:00,1,2018,False
+46926579,Artemis Distribution,sme,0.79,gpt-5.4-mini,2026-07-02T22:34:47.463492+00:00,1,2018,False
+47088164,Eddie Bauer,large,0.98,gpt-5.4-mini,2026-07-02T22:35:29.107906+00:00,56,2018,False
+47441652,New York Society For The Prevention Of Cruelty To Children,large,0.95,gpt-5.4-mini,2026-07-02T22:35:57.106347+00:00,1,2018,False
+47917801,Sunrise Home Health,sme,0.95,gpt-5.4-mini,2026-07-02T22:36:00.194892+00:00,1,2018,False
+49069270,Amsterdam Hospitality Group,sme,0.86,gpt-5.4-mini,2026-07-02T22:34:53.579539+00:00,2,2018,False
+49426707,Cozen O Connor Public Strategies,large,0.93,gpt-5.4-mini,2026-07-02T22:36:13.374650+00:00,1,2018,False
+49557693,Fox Run At Orchard Park,sme,0.92,gpt-5.4-mini,2026-07-02T22:34:51.656138+00:00,1,2018,False
+49805298,Consortium Of Universities Of The Washington Metropolitan Area,large,0.95,gpt-5.4-mini,2026-07-02T22:36:12.100729+00:00,1,2018,False
+49922976,Dance Iquail,sme,0.84,gpt-5.4-mini,2026-07-02T22:36:16.057462+00:00,1,2018,False
+50010189,The Fruitguys,sme,0.91,gpt-5.4-mini,2026-07-02T22:35:45.748512+00:00,2,2018,False
+50384562,Central Florida Health,sme,0.74,gpt-5.4-mini,2026-07-02T22:35:41.392104+00:00,33,2018,False
+50474380,Advanced Extraction,sme,0.78,gpt-5.4-mini,2026-07-02T22:36:00.862065+00:00,1,2018,False
+50636331,Advanced Orthodontics,sme,0.95,gpt-5.4-mini,2026-07-02T22:34:40.101232+00:00,1,2018,False
+51241382,Greater Elgin Family Care Center,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:21.833208+00:00,2,2018,False
+51320274,State Of West Virginia,large,0.99,gpt-5.4-mini,2026-07-02T22:35:41.053983+00:00,16,2018,False
+51839641,"Buddy Platform, Ltd.",sme,0.86,gpt-5.4-mini,2026-07-02T22:36:11.767880+00:00,1,2018,False
+5202201,Kinetics,sme,0.87,gpt-5.4-mini,2026-07-02T22:35:44.465396+00:00,5,2018,False
+52312686,Lorenz Bus Service,sme,0.96,gpt-5.4-mini,2026-07-02T22:35:20.189044+00:00,1,2018,False
+52514869,Education Minnesota,large,0.93,gpt-5.4-mini,2026-07-02T22:34:56.652650+00:00,3,2018,False
+5324427,Trek,sme,0.84,gpt-5.4-mini,2026-07-02T22:35:47.504085+00:00,1,2018,False
+54226622,Golfview Developmental Center,sme,0.9,gpt-5.4-mini,2026-07-02T22:34:44.774420+00:00,1,2018,False
+55725898,Turn Out Uniforms,sme,0.94,gpt-5.4-mini,2026-07-02T22:35:48.879503+00:00,1,2018,False
+57842671,Prevalent Group,sme,0.82,gpt-5.4-mini,2026-07-02T22:35:50.986131+00:00,1,2018,False
+57909429,Midwest Eminence Care,sme,0.92,gpt-5.4-mini,2026-07-02T22:36:12.014510+00:00,1,2018,False
+57930900,Ridgeway Mechanical,sme,0.97,gpt-5.4-mini,2026-07-02T22:36:06.773835+00:00,1,2018,False
+60802083,Tennessee Oncology,large,0.92,gpt-5.4-mini,2026-07-02T22:34:57.758399+00:00,1,2018,False
+61509987,Calvert County Public Schools,large,0.99,gpt-5.4-mini,2026-07-02T22:36:20.850461+00:00,1,2018,False
+61795539,Central Desert Behavioral Health Center,sme,0.93,gpt-5.4-mini,2026-07-02T22:35:37.852243+00:00,1,2018,False
+62386575,Dept Of Aviation,large,0.82,gpt-5.4-mini,2026-07-02T22:36:13.369303+00:00,1,2018,False
+62616749,Midfield Concessions Enterprises.,sme,0.87,gpt-5.4-mini,2026-07-02T22:34:47.124153+00:00,2,2018,False
+63365684,The Douglaston Companies,sme,0.82,gpt-5.4-mini,2026-07-02T22:35:14.479652+00:00,1,2018,False
+64090742,Three Deep Marketing,sme,0.93,gpt-5.4-mini,2026-07-02T22:35:21.297177+00:00,1,2018,False
+64468989,Investment Firm,unknown,0.74,gpt-5.4-mini,2026-07-02T22:35:24.873063+00:00,5,2018,False
+64507183,Q&A Residential Hotel,sme,0.95,gpt-5.4-mini,2026-07-02T22:36:03.291569+00:00,1,2018,False
+6698070,Canton Agency,sme,0.92,gpt-5.4-mini,2026-07-02T22:35:07.215184+00:00,1,2018,False
+75229293,New International Education Service,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:03.458492+00:00,1,2018,False
+75300834,The William Everett Group,sme,0.87,gpt-5.4-mini,2026-07-02T22:36:14.244699+00:00,1,2018,False
+75414088,Bergen Medical Associates,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:40.910212+00:00,1,2018,False
+75435688,Central Greene School District,large,0.96,gpt-5.4-mini,2026-07-02T22:35:28.429695+00:00,1,2018,False
+75463326,Cecelia Place,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:00.085606+00:00,1,2018,False
+75470362,The Faulkner Organization,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:05.829362+00:00,4,2018,False
+75481802,Crankyape.Com,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:55.316247+00:00,1,2018,False
+75496899,Choctaw Casino,large,0.98,gpt-5.4-mini,2026-07-02T22:35:25.729142+00:00,1,2018,False
+75575047,Arch City Executives,sme,0.9,gpt-5.4-mini,2026-07-02T22:35:10.787753+00:00,1,2018,False
+75595604,Synap Software Labs,sme,0.95,gpt-5.4-mini,2026-07-02T22:34:59.646526+00:00,2,2018,False
+75659895,Historic Hotel Bethlehem,sme,0.98,gpt-5.4-mini,2026-07-02T22:34:39.085149+00:00,1,2018,False
+75709740,Holistic Occupational And Physical Therapy,sme,0.95,gpt-5.4-mini,2026-07-02T22:35:01.228175+00:00,2,2018,False
+75847353,Falls Lake Insurance Companies,large,0.92,gpt-5.4-mini,2026-07-02T22:36:12.541463+00:00,1,2018,False
+75920136,Monkeypod Kitchen By Merriman,sme,0.92,gpt-5.4-mini,2026-07-02T22:36:04.385959+00:00,1,2018,False
+767713,Arise Virtual Solutions,large,0.91,gpt-5.4-mini,2026-07-02T22:35:45.438204+00:00,3,2018,False
+79037484,Tecomet,large,0.91,gpt-5.4-mini,2026-07-02T22:35:03.451009+00:00,14,2018,False
+79037983,Draeger Medical Systems,large,0.97,gpt-5.4-mini,2026-07-02T22:36:09.722676+00:00,3,2018,False
+79038970,Gulden Ophthalmics,sme,0.86,gpt-5.4-mini,2026-07-02T22:35:51.203105+00:00,1,2018,False
+79039069,Radiometer Medical Aps,large,0.89,gpt-5.4-mini,2026-07-02T22:35:14.370244+00:00,1,2018,False
+80448873,Keane Fire & Safety,sme,0.91,gpt-5.4-mini,2026-07-02T22:34:47.471779+00:00,1,2018,False
+83834086,Hazelnuts Creperie,sme,0.98,gpt-5.4-mini,2026-07-02T22:34:45.659484+00:00,1,2018,False
+83860528,BobbyG's,sme,0.93,gpt-5.4-mini,2026-07-02T22:35:42.096111+00:00,1,2018,False
+84088063,Crackers & Co Cafe,sme,0.98,gpt-5.4-mini,2026-07-02T22:35:47.443309+00:00,1,2018,False
+86645032,Cmtc,sme,0.94,gpt-5.4-mini,2026-07-02T22:36:00.359829+00:00,1,2018,False
+8714435,Tmr,sme,0.95,gpt-5.4-mini,2026-07-02T22:35:40.039970+00:00,1,2018,False
+90337003,002.Co,unknown,0.92,gpt-5.4-mini,2026-07-02T22:35:51.728969+00:00,1,2018,False
+93552441,H & S Building Maintenance,sme,0.97,gpt-5.4-mini,2026-07-02T22:35:26.010581+00:00,1,2018,False
+93672472,Primrose School Of South Charlotte,sme,0.98,gpt-5.4-mini,2026-07-02T22:35:41.792549+00:00,1,2018,False
+96711611,A????Ropostale,large,0.91,gpt-5.4-mini,2026-07-02T22:35:44.364828+00:00,2,2018,False
+97900626,Joe R Montano,sme,0.72,gpt-5.4-mini,2026-07-02T22:34:49.725582+00:00,1,2018,False
+97907072,The Mccormick Law Firm,sme,0.94,gpt-5.4-mini,2026-07-02T22:35:04.454545+00:00,1,2018,False
+97925551,Rms Movers,sme,0.98,gpt-5.4-mini,2026-07-02T22:34:39.161285+00:00,1,2018,False
+97929154,Flux Marketing,sme,0.91,gpt-5.4-mini,2026-07-02T22:35:23.080085+00:00,2,2018,False
+97932294,River Front Chrysler Jeep Dodge Ram,sme,0.97,gpt-5.4-mini,2026-07-02T22:35:09.223921+00:00,1,2018,False
+97952224,American Council,unknown,0.92,gpt-5.4-mini,2026-07-02T22:35:17.620024+00:00,2,2018,False
+97962967,Premier Advisors Staffing And Sales,sme,0.84,gpt-5.4-mini,2026-07-02T22:36:20.981525+00:00,1,2018,False
+97975619,Aligned Traffic Management,sme,0.93,gpt-5.4-mini,2026-07-02T22:35:06.459289+00:00,1,2018,False
+98036715,Georgesville Nissan,sme,0.95,gpt-5.4-mini,2026-07-02T22:36:07.958924+00:00,1,2018,False
+9891300,Airtec USA Corp,sme,0.86,gpt-5.4-mini,2026-07-02T22:36:04.381094+00:00,2,2018,False
+99460580,Offerup,large,0.95,gpt-5.4-mini,2026-07-02T22:35:22.573450+00:00,4,2018,False
+99461311,Zume Pizza,sme,0.88,gpt-5.4-mini,2026-07-02T22:36:14.791604+00:00,3,2018,False
+99467709,Compressco,large,0.72,gpt-5.4-mini,2026-07-02T22:35:21.656259+00:00,2,2018,False
+99483671,Bd's Mongolian Grill,large,0.88,gpt-5.4-mini,2026-07-02T22:34:43.035413+00:00,3,2018,False
+99486849,Techstars,large,0.95,gpt-5.4-mini,2026-07-02T22:35:02.337917+00:00,8,2018,False
+99490777,Irving Tx,unknown,0.97,gpt-5.4-mini,2026-07-02T22:35:00.235708+00:00,3,2018,False
+99491824,"Brabazon Pump, Compressor, And Vacuum",sme,0.92,gpt-5.4-mini,2026-07-02T22:35:11.292113+00:00,3,2018,False
+99493854,Hr Solutions Partners,sme,0.84,gpt-5.4-mini,2026-07-02T22:35:35.014817+00:00,3,2018,False
+99501987,Kennelwood Pet Resorts,sme,0.98,gpt-5.4-mini,2026-07-02T22:34:49.266981+00:00,1,2018,False
+99526079,Periodontal Office,sme,0.96,gpt-5.4-mini,2026-07-02T22:35:23.086694+00:00,1,2018,False

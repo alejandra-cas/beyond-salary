@@ -1,44 +1,277 @@
-<table style='text-align:center'>
-<caption><strong>Dependent variable: Health and Wellbeing</strong></caption>
-<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>
-<tr><td></td><td>(1)</td><td>(2)</td><td>(3)</td></tr>
-<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>
-<tr><td style='text-align:left'>AI ROLE</td><td>0.15<sup>***</sup></td><td>0.06<sup>***</sup></td><td>-0.02<sup></sup></td></tr>
-<tr><td></td><td>(0.01)</td><td>(0.01)</td><td>(0.02)</td></tr>
-<tr><td style='text-align:left'><strong>Experience (ref. None Listed)</strong></td><td></td><td></td><td></td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;0 years</td><td></td><td>0.20<sup>***</sup></td><td>0.31<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.01)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;1-2 years</td><td></td><td>0.11<sup>***</sup></td><td>0.04<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.00)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;3-5 years</td><td></td><td>0.18<sup>***</sup></td><td>0.13<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.00)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;6-10 years</td><td></td><td>0.21<sup>***</sup></td><td>0.19<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.01)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;11-20 years</td><td></td><td>0.26<sup>***</sup></td><td>0.08<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.02)</td><td>(0.02)</td></tr>
-<tr><td style='text-align:left'><strong>Education (ref. No Education Listed)</strong></td><td></td><td></td><td></td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;Associate degree</td><td></td><td>0.19<sup>***</sup></td><td>0.07<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.01)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;Bachelor's degree</td><td></td><td>0.25<sup>***</sup></td><td>0.24<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.00)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;High school or GED</td><td></td><td>0.08<sup>***</sup></td><td>0.05<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.00)</td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;Master's degree</td><td></td><td>0.14<sup>***</sup></td><td>0.11<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.01)</td><td>(0.02)</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;Ph.D. or professional degree</td><td></td><td>0.10<sup>***</sup></td><td>-0.09<sup>***</sup></td></tr>
-<tr><td></td><td></td><td>(0.02)</td><td>(0.03)</td></tr>
-<tr><td style='text-align:left'>log(Salary)</td><td></td><td></td><td>0.16<sup>***</sup></td></tr>
-<tr><td></td><td></td><td></td><td>(0.01)</td></tr>
-<tr><td style='text-align:left'>const</td><td>-3.71<sup>***</sup></td><td>-3.99<sup>***</sup></td><td>-5.53<sup>***</sup></td></tr>
-<tr><td></td><td>(0.05)</td><td>(0.05)</td><td>(0.10)</td></tr>
-<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>
-<tr><td style='text-align:left'><strong>Fixed Effects</strong></td><td></td><td></td><td></td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;Year</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-<tr><td style='text-align:left'>&nbsp;&nbsp;&nbsp;&nbsp;Industry</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>
-<tr><td style='text-align:left'>Observations</td><td>9999673</td><td>9999673</td><td>3559853</td></tr>
-<tr><td style='text-align:left'>Pseudo R²</td><td>0.05</td><td>0.06</td><td>0.08</td></tr>
-<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>
-<tr><td colspan='4' style='border-bottom: 1px solid black'></td></tr>
-<tr><td colspan='4'><em>Note:</em> *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</td></tr>
-</table>
+<table style='border-collapse:collapse;text-align:center;font-family:Arial,sans-serif;font-size:12px'>
+<thead><tr><th></th>
+<th colspan='5' style='border-bottom:1px solid black'>Health and Wellbeing</th>
+</tr><tr><th></th>
+<th style='padding:8px;min-width:130px'>M1: Baseline (Year+NAICS3)</th>
+<th style='padding:8px;min-width:130px'>M2: M1 + Individ. + State</th>
+<th style='padding:8px;min-width:130px'>M3: M2 + Salary</th>
+<th style='padding:8px;min-width:130px'>M4: M3 + S&amp;P 500</th>
+<th style='padding:8px;min-width:130px'>M5: M4 + SOC2</th>
+</tr></thead><tbody>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>AI ROLE</td>
+<td style='padding:4px 8px;'>0.154<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.064<sup>***</sup></td>
+<td style='padding:4px 8px;'>-0.021</td>
+<td style='padding:4px 8px;'>-0.070<sup>***</sup></td>
+<td style='padding:4px 8px;'>-0.055<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.011)</td>
+<td style='padding:4px 8px;'>(0.012)</td>
+<td style='padding:4px 8px;'>(0.017)</td>
+<td style='padding:4px 8px;'>(0.017)</td>
+<td style='padding:4px 8px;'>(0.017)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;font-weight:bold;border-top:1px solid #999;'>Experience (ref. None Listed)</td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>0 years</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.197<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.310<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.262<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.242<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.008)</td>
+<td style='padding:4px 8px;'>(0.010)</td>
+<td style='padding:4px 8px;'>(0.010)</td>
+<td style='padding:4px 8px;'>(0.010)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>1-2 years</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.106<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.042<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.046<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.047<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.004)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>3-5 years</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.183<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.125<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.118<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.125<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.004)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>6-10 years</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.211<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.190<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.164<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.168<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.010)</td>
+<td style='padding:4px 8px;'>(0.010)</td>
+<td style='padding:4px 8px;'>(0.011)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>11-20 years</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.258<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.077<sup>***</sup></td>
+<td style='padding:4px 8px;'>-0.008</td>
+<td style='padding:4px 8px;'>-0.005</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.015)</td>
+<td style='padding:4px 8px;'>(0.024)</td>
+<td style='padding:4px 8px;'>(0.024)</td>
+<td style='padding:4px 8px;'>(0.024)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;font-weight:bold;border-top:1px solid #999;'>Education (ref. No Education Listed)</td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>High school or GED</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.084<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.052<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.048<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.063<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.004)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Associate degree</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.192<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.072<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.070<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.097<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.011)</td>
+<td style='padding:4px 8px;'>(0.011)</td>
+<td style='padding:4px 8px;'>(0.011)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Bachelor&#x27;s degree</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.246<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.240<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.228<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.264<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.004)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Master&#x27;s degree</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.136<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.109<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.112<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.127<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.011)</td>
+<td style='padding:4px 8px;'>(0.016)</td>
+<td style='padding:4px 8px;'>(0.016)</td>
+<td style='padding:4px 8px;'>(0.016)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Ph.D. or professional degree</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.097<sup>***</sup></td>
+<td style='padding:4px 8px;'>-0.092<sup>***</sup></td>
+<td style='padding:4px 8px;'>-0.083<sup>***</sup></td>
+<td style='padding:4px 8px;'>-0.063<sup>**</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.016)</td>
+<td style='padding:4px 8px;'>(0.025)</td>
+<td style='padding:4px 8px;'>(0.025)</td>
+<td style='padding:4px 8px;'>(0.026)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>log(Salary)</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.165<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.133<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.151<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.005)</td>
+<td style='padding:4px 8px;'>(0.005)</td>
+<td style='padding:4px 8px;'>(0.006)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>S&amp;P 500</td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>0.555<sup>***</sup></td>
+<td style='padding:4px 8px;'>0.541<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.007)</td>
+<td style='padding:4px 8px;'>(0.007)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Constant</td>
+<td style='padding:4px 8px;'>-3.714<sup>***</sup></td>
+<td style='padding:4px 8px;'>-3.992<sup>***</sup></td>
+<td style='padding:4px 8px;'>-5.527<sup>***</sup></td>
+<td style='padding:4px 8px;'>-5.160<sup>***</sup></td>
+<td style='padding:4px 8px;'>-5.444<sup>***</sup></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'></td>
+<td style='padding:4px 8px;'>(0.049)</td>
+<td style='padding:4px 8px;'>(0.051)</td>
+<td style='padding:4px 8px;'>(0.100)</td>
+<td style='padding:4px 8px;'>(0.101)</td>
+<td style='padding:4px 8px;'>(0.107)</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;font-weight:bold;border-top:1px solid #999;'>Fixed Effects</td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+<td style='padding:4px 8px;font-weight:bold;border-top:1px solid #999;'></td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Year</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>NAICS3</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>State</td>
+<td style='padding:4px 8px;'>No</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>SOC2</td>
+<td style='padding:4px 8px;'>No</td>
+<td style='padding:4px 8px;'>No</td>
+<td style='padding:4px 8px;'>No</td>
+<td style='padding:4px 8px;'>No</td>
+<td style='padding:4px 8px;'>Yes</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Observations</td>
+<td style='padding:4px 8px;'>9999673</td>
+<td style='padding:4px 8px;'>9999673</td>
+<td style='padding:4px 8px;'>3559853</td>
+<td style='padding:4px 8px;'>3559853</td>
+<td style='padding:4px 8px;'>3559853</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Pseudo R²</td>
+<td style='padding:4px 8px;'>0.051</td>
+<td style='padding:4px 8px;'>0.055</td>
+<td style='padding:4px 8px;'>0.081</td>
+<td style='padding:4px 8px;'>0.084</td>
+<td style='padding:4px 8px;'>0.086</td>
+</tr>
+<tr><td style='text-align:left;white-space:nowrap;padding:4px 8px;'>Converged</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+<td style='padding:4px 8px;'>Yes</td>
+</tr>
+</tbody><tfoot><tr><td colspan='6'>Standard errors in parentheses. *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01. Fixed-effect coefficients omitted.</td></tr></tfoot></table>

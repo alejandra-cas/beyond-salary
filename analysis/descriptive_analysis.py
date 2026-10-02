@@ -21,6 +21,7 @@ from matplotlib.colors import to_rgba
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from package_files.config_utils import get_processed_dir, get_repo_root
+from package_files.firm_size import FIRM_SIZE_CUTOFF
 
 # Benefit definitions and colors
 benefits4 = [
@@ -210,16 +211,10 @@ def add_firm_category(usdf):
         firm_posting_count = pd.to_numeric(usdf["FIRM_POSTING_COUNT"], errors="coerce")
     else:
         firm_posting_count = pd.Series(np.nan, index=usdf.index)
-    if firm_posting_count.isna().all() and "FIRM_SIZE_BUCKET" in usdf.columns:
-        old_bucket = usdf["FIRM_SIZE_BUCKET"].astype("string")
-        firm_posting_count = pd.Series(np.nan, index=usdf.index)
-        firm_posting_count.loc[old_bucket.isin(["Small (<=2)", "Medium (3-9)", "SMEs (<10)", "SMEs (<50)"])] = 1
-        firm_posting_count.loc[old_bucket.isin(["Large (>=10)", "Large firms (>=10)", "Large firms (>=50)"])] = 50
-
     usdf[FIRM_CATEGORY] = pd.NA
-    usdf.loc[firm_posting_count < 50, FIRM_CATEGORY] = "SMEs"
-    usdf.loc[firm_posting_count >= 50, FIRM_CATEGORY] = "Large firms"
-    usdf.loc[sp500, FIRM_CATEGORY] = "S&P 500 firms"
+    usdf.loc[firm_posting_count < FIRM_SIZE_CUTOFF, FIRM_CATEGORY] = "SMEs"
+    usdf.loc[firm_posting_count >= FIRM_SIZE_CUTOFF, FIRM_CATEGORY] = "Large firms"
+    usdf.loc[sp500 & firm_posting_count.notna(), FIRM_CATEGORY] = "S&P 500 firms"
     usdf[FIRM_CATEGORY] = pd.Categorical(
         usdf[FIRM_CATEGORY],
         categories=FIRM_CATEGORY_ORDER,

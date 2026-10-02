@@ -7,6 +7,10 @@ import pandas as pd
 import numpy as np
 import yaml
 from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).resolve().parents[1] / 'src'))
+from package_files.firm_size import add_baseline_firm_size
 
 
 def load_data_paths():
@@ -123,18 +127,10 @@ def add_industry_columns(df):
 
 
 def add_firm_size(df):
-    """Add posting-volume firm size buckets, excluding unclassified employers."""
-    df = df.copy()
-    classified_firms = df["COMPANY"].notna() & (df["COMPANY"] != 0)
-    firm_counts = df.loc[classified_firms, "COMPANY"].value_counts()
+    """Freeze posting-volume firm size at the first calendar year of the data."""
+    df = add_baseline_firm_size(df)
 
-    df["FIRM_POSTING_COUNT"] = df["COMPANY"].map(firm_counts).astype("Int64")
-    df["FIRM_SIZE_BUCKET"] = pd.cut(
-        df["FIRM_POSTING_COUNT"],
-        bins=[0, 49, np.inf],
-        labels=["SMEs (<50)", "Large firms (>=50)"],
-    )
-
+    print(f"Firm-size baseline year: {int(df['FIRM_SIZE_BASE_YEAR'].iloc[0])}")
     print("Firm size bucket distribution:")
     print(df["FIRM_SIZE_BUCKET"].value_counts(dropna=False))
     return df
@@ -163,7 +159,7 @@ def merge_sp500_snapshot(df, snapshot_path, audit_path):
     df["SP500"] = df["COMPANY"].isin(sp500_ids) & (df["COMPANY"] != 0)
     if "FIRM_SIZE_BUCKET" in df.columns:
         df["FIRM_SIZE_BUCKET"] = df["FIRM_SIZE_BUCKET"].astype("object")
-        df.loc[df["SP500"], "FIRM_SIZE_BUCKET"] = "S&P 500 firms"
+        df.loc[df["SP500"] & df["FIRM_POSTING_COUNT"].notna(), "FIRM_SIZE_BUCKET"] = "S&P 500 firms"
 
     audit_columns = ["COMPANY"]
     if "COMPANY_NAME" in snapshot.columns:
