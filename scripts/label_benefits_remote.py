@@ -163,7 +163,17 @@ def check_benefits(body_series, keywords, exclusions=None):
     return result
 
 
-def main():
+def get_remote_keywords(correct_missing_comma=False):
+    """Keep published labels by default; make the keyword correction explicit."""
+    if not correct_missing_comma:
+        return list(remote_keywords)
+    corrected = []
+    for keyword in remote_keywords:
+        corrected.extend(["remote available", ", remote"] if keyword == "remote available, remote" else [keyword])
+    return corrected
+
+
+def legacy_main():
     load_time = time.time()
     print("Loading the input parquet file...")
     # Only read ID and BODY columns for keyword labeling
@@ -207,6 +217,13 @@ def main():
     save_time = time.time()
     data.to_parquet(output_path, compression='gzip')
     print(f"Saved {output_path.name} with REMOTE_KW in {time.time() - save_time:.1f}s")
+
+
+def main():
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from scripts.full_data_pipeline import label_cli
+    return label_cli("remote", legacy_main)
 
 
 if __name__ == "__main__":

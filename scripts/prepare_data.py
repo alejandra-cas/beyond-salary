@@ -198,6 +198,63 @@ def merge_wham_data(df, wham_df):
     return df
 
 
+def add_group_names(df):
+    """Map NAICS and SOC groups consistently for both preparation paths."""
+    # Derive 2-digit NAICS industry name
+    NAICS_2_DIGIT = {
+        '11': 'Agriculture, Forestry, Fishing and Hunting',
+        '21': 'Mining, Quarrying, and Oil and Gas Extraction',
+        '22': 'Utilities',
+        '23': 'Construction',
+        '31': 'Manufacturing', '32': 'Manufacturing', '33': 'Manufacturing',
+        '42': 'Wholesale Trade',
+        '44': 'Retail Trade', '45': 'Retail Trade',
+        '48': 'Transportation and Warehousing', '49': 'Transportation and Warehousing',
+        '51': 'Information',
+        '52': 'Finance and Insurance',
+        '53': 'Real Estate and Rental and Leasing',
+        '54': 'Professional, Scientific, and Technical Services',
+        '55': 'Management of Companies and Enterprises',
+        '56': 'Administrative and Support and Waste Management and Remediation Services',
+        '61': 'Educational Services',
+        '62': 'Health Care and Social Assistance',
+        '71': 'Arts, Entertainment, and Recreation',
+        '72': 'Accommodation and Food Services',
+        '81': 'Other Services (except Public Administration)',
+        '92': 'Public Administration',
+    }
+    df['NAICS_2022_2_NAME'] = df['NAICS_2022_2_DIGIT'].map(NAICS_2_DIGIT)
+
+    # Derive SOC major group from ONET code
+    SOC_MAJOR_GROUPS = {
+        '11': 'Management Occupations',
+        '13': 'Business and Financial Operations Occupations',
+        '15': 'Computer and Mathematical Occupations',
+        '17': 'Architecture and Engineering Occupations',
+        '19': 'Life, Physical, and Social Science Occupations',
+        '21': 'Community and Social Service Occupations',
+        '23': 'Legal Occupations',
+        '25': 'Educational Instruction and Library Occupations',
+        '27': 'Arts, Design, Entertainment, Sports, and Media Occupations',
+        '29': 'Healthcare Practitioners and Technical Occupations',
+        '31': 'Healthcare Support Occupations',
+        '33': 'Protective Service Occupations',
+        '35': 'Food Preparation and Serving Related Occupations',
+        '37': 'Building and Grounds Cleaning and Maintenance Occupations',
+        '39': 'Personal Care and Service Occupations',
+        '41': 'Sales and Related Occupations',
+        '43': 'Office and Administrative Support Occupations',
+        '45': 'Farming, Fishing, and Forestry Occupations',
+        '47': 'Construction and Extraction Occupations',
+        '49': 'Installation, Maintenance, and Repair Occupations',
+        '51': 'Production Occupations',
+        '53': 'Transportation and Material Moving Occupations',
+    }
+    df['SOC_MAJOR_GROUP'] = df['ONET'].str[:2].map(SOC_MAJOR_GROUPS)
+
+    return df
+
+
 def main():
     """Main data preparation pipeline."""
     paths = load_data_paths()
@@ -250,57 +307,7 @@ def main():
     else:
         print("Warning: WHAM data not found, continuing without merge")
 
-    # Derive 2-digit NAICS industry name
-    NAICS_2_DIGIT = {
-        '11': 'Agriculture, Forestry, Fishing and Hunting',
-        '21': 'Mining, Quarrying, and Oil and Gas Extraction',
-        '22': 'Utilities',
-        '23': 'Construction',
-        '31': 'Manufacturing', '32': 'Manufacturing', '33': 'Manufacturing',
-        '42': 'Wholesale Trade',
-        '44': 'Retail Trade', '45': 'Retail Trade',
-        '48': 'Transportation and Warehousing', '49': 'Transportation and Warehousing',
-        '51': 'Information',
-        '52': 'Finance and Insurance',
-        '53': 'Real Estate and Rental and Leasing',
-        '54': 'Professional, Scientific, and Technical Services',
-        '55': 'Management of Companies and Enterprises',
-        '56': 'Administrative and Support and Waste Management and Remediation Services',
-        '61': 'Educational Services',
-        '62': 'Health Care and Social Assistance',
-        '71': 'Arts, Entertainment, and Recreation',
-        '72': 'Accommodation and Food Services',
-        '81': 'Other Services (except Public Administration)',
-        '92': 'Public Administration',
-    }
-    all_data['NAICS_2022_2_NAME'] = all_data['NAICS_2022_2_DIGIT'].map(NAICS_2_DIGIT)
-
-    # Derive SOC major group from ONET code
-    SOC_MAJOR_GROUPS = {
-        '11': 'Management Occupations',
-        '13': 'Business and Financial Operations Occupations',
-        '15': 'Computer and Mathematical Occupations',
-        '17': 'Architecture and Engineering Occupations',
-        '19': 'Life, Physical, and Social Science Occupations',
-        '21': 'Community and Social Service Occupations',
-        '23': 'Legal Occupations',
-        '25': 'Educational Instruction and Library Occupations',
-        '27': 'Arts, Design, Entertainment, Sports, and Media Occupations',
-        '29': 'Healthcare Practitioners and Technical Occupations',
-        '31': 'Healthcare Support Occupations',
-        '33': 'Protective Service Occupations',
-        '35': 'Food Preparation and Serving Related Occupations',
-        '37': 'Building and Grounds Cleaning and Maintenance Occupations',
-        '39': 'Personal Care and Service Occupations',
-        '41': 'Sales and Related Occupations',
-        '43': 'Office and Administrative Support Occupations',
-        '45': 'Farming, Fishing, and Forestry Occupations',
-        '47': 'Construction and Extraction Occupations',
-        '49': 'Installation, Maintenance, and Repair Occupations',
-        '51': 'Production Occupations',
-        '53': 'Transportation and Material Moving Occupations',
-    }
-    all_data['SOC_MAJOR_GROUP'] = all_data['ONET'].str[:2].map(SOC_MAJOR_GROUPS)
+    all_data = add_group_names(all_data)
 
     # Save processed data
     output_path = Path(paths["output_parquet"])

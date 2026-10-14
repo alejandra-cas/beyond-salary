@@ -277,7 +277,7 @@ def check_benefits(body_series, keywords, exclusions=None):
     return result
 
 
-def main():
+def legacy_main():
     load_time = time.time()
     print("Loading the input parquet file...")
     data = pd.read_parquet(input_path)
@@ -366,6 +366,13 @@ def main():
     print("Saving to parquet...")
     data.to_parquet(output_path, compression='gzip')
     print(f"Saved in {time.time() - save_time:.1f}s")
+
+
+def main():
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from scripts.full_data_pipeline import label_cli
+    return label_cli("benefits", legacy_main)
 
 
 if __name__ == "__main__":

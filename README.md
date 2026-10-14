@@ -28,6 +28,9 @@ This repository contains the reproducible code and analysis for the paper Beyond
 ├── scripts/            # Data preparation and processing scripts
 │   ├── build_sp500_snapshot.py              # Build fixed S&P 500 company-ID snapshot
 │   ├── export_samples.py                    # Export balanced samples for analysis
+│   ├── full_data_pipeline.py                # Shared streaming/checkpoint utilities
+│   ├── build_full_labeled_v2.py             # Assemble full labeled data without body text
+│   ├── label_ai_roles_full.py               # Stream AI-skill counts from full skills data
 │   ├── label_benefits.py                    # Benefit labeling and classification
 │   ├── label_benefits_remote.py             # Remote work benefit labeling
 │   ├── occ_year_analysis.py                 # Occupation-year and industry-year aggregation
@@ -157,6 +160,36 @@ This repository contains the reproducible code and analysis for the paper Beyond
    uv run python analysis/scatterplot_analysis.py
    ```
 
+5. **Optional full-data preparation**
+
+   The original commands above remain unchanged. For inputs that are too large
+   for the original in-memory preparation path, first write compact ID-keyed
+   label files and then assemble a separate full-data analysis parquet:
+
+   ```bash
+   uv run python scripts/label_ai_roles_full.py
+   uv run python scripts/label_benefits.py --stream --workers 6
+   uv run python scripts/label_benefits_remote.py --stream --workers 6
+   uv run python scripts/build_full_labeled_v2.py
+   ```
+
+   These commands read paths from `config.yaml` and default to
+   `data/processed/full/labeled_v2.parquet`, leaving the existing
+   `data/processed/labeled_v2.parquet` untouched. Labeling uses bounded-memory
+   batches, writes atomic checkpoint parts, and resumes only when the input,
+   code, and processing settings still match. Existing outputs require an
+   explicit `--overwrite` flag.
+
+   The builder checks unique posting IDs, label coverage, completed-output
+   metadata, and one-to-one joins. It uses the same 2018 posting-count firm-size
+   classification and cutoff as `prepare_data.py`, and retains benefit-position,
+   structured-benefit, S&P 500, and configured WHAM fields.
+
+   The historical remote keyword list contains a concatenated entry. Published
+   labels remain the default; pass `--correct-remote-keywords` to
+   `label_benefits_remote.py --stream` only when intentionally regenerating and
+   comparing labels and downstream results.
+
 ## Key Analysis Components
 
 Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Stephany (2024), *Skills or Degree? The Rise of Skill-Based Hiring for AI and Green Jobs*. The cited UK analysis explains log asking wages using AI-skill indicators, education, experience, and fixed effects. This US extension plots quarterly `AI ROLE` coefficients directly in log points and intentionally omits occupation fixed effects.
@@ -165,6 +198,9 @@ Figure 1 extends the AI-skills wage-premium analysis in Bone, Ehlinger, and Step
   - **prepare_data.py**: Loads posts, skills, and body CSVs; classifies AI roles using the SKILL_SUBCATEGORY_NAME field; adds experience buckets, log salary, year, NAICS 3-digit industry, first-year posting-volume firm-size buckets, optional S&P 500 snapshot membership, and WHAM remote work classification. Outputs `data/processed/data_v1.parquet`.
 - **label_benefits.py**: Processes and labels workplace benefits from job posting text. Also computes `{BENEFIT}_POSITION` columns (0–100 prominence score, 100 = top of posting) for each benefit.
 - **label_benefits_remote.py**: Labels remote work benefits using keyword matching; merges `REMOTE_KW` and `REMOTE_KW_POSITION` directly into `labeled_v1.parquet`
+- **full_data_pipeline.py**: Provides optional bounded-memory labeling, validated checkpoints, atomic output replacement, and shared full-data configuration.
+- **label_ai_roles_full.py**: Streams the skills input and saves compact AI-skill counts keyed by posting ID.
+- **build_full_labeled_v2.py**: Joins compact labels to structured postings, applies the current preparation rules, validates row preservation and coverage, and writes a separate audited full-data parquet.
 - **occ_year_analysis.py**: Aggregates data at occupation-year and industry-year levels. Computes AI demand share, salary premiums (mean and median), benefit prevalence by AI/non-AI role, and benefit differences. Uses a `run_analysis()` function that accepts any grouping column (SOC major group, NAICS 2-digit industry, or county). Outputs `occ_year_analysis_raw.parquet` and `ind_year_analysis_raw.parquet`.
 - **export_samples.py**: Creates balanced samples for regression analysis
 - **validate_firm_size_cutoffs.py**: Iterates posting-count cutoffs (default `5, 10, ..., 100`), excludes S&P 500 firms when `SP500` is available, draws one random sample of firms observed in 2018 for all thresholds, optionally obtains SME/large judgments through the OpenAI Responses API, and writes false-positive, false-negative, SME sensitivity, large-firm sensitivity, precision, accuracy, and recall-plot outputs to `results/tables_2026/validation/firm_size_cutoff_validation/`.
