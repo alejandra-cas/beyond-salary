@@ -1,14 +1,29 @@
-import pandas as pd
-import re
+"""Stream-label remote-work keyword mentions (REMOTE_KW) from body text.
+
+Reads the body file batch-by-batch (never fully into memory), writes checkpoint
+part files (safe to kill and rerun), and merges to a single ID + labels parquet.
+Shares its regex/labeling machinery with label_benefits.py.
+"""
+import argparse
+import sys
 import time
-import yaml
 from pathlib import Path
+
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+import yaml
+
+sys.path.insert(0, str(Path(__file__).parent))
+from label_benefits import check_benefit_position, check_benefits, iter_input_batches
 
 
 def load_processed_paths():
-    """Load processed parquet paths from config.yaml.
+    """Load input/output paths from config.yaml.
 
-    Falls back to repo-local defaults if config.yaml is not found.
+    The default input is data.body_csv, which may be an absolute path
+    (e.g. a full-size CSV in ~/Downloads); relative values resolve against
+    data.raw_dir. Falls back to repo-local defaults if config.yaml is missing.
     """
     repo_root = Path(__file__).parent.parent
     config_path = repo_root / "config.yaml"
@@ -19,16 +34,23 @@ def load_processed_paths():
         processed_dir = Path(cfg["processed_dir"])
         if not processed_dir.is_absolute():
             processed_dir = repo_root / processed_dir
+        raw_dir = Path(cfg.get("raw_dir", "data"))
+        if not raw_dir.is_absolute():
+            raw_dir = repo_root / raw_dir
+        body_csv = Path(cfg.get("body_csv", "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv")).expanduser()
+        if not body_csv.is_absolute():
+            body_csv = raw_dir / body_csv
     else:
         print(
             "Warning: config.yaml not found, using default processed paths. "
             "Copy config.example.yaml to config.yaml to configure."
         )
         processed_dir = repo_root / "data" / "processed"
+        body_csv = repo_root / "data" / "OII_US_10M_BODY_MAY26_SUBSAMPLE.csv"
 
     return {
-        "input_path": processed_dir / "labeled_v1.parquet",
-        "output_path": processed_dir / "labeled_v2.parquet",
+        "input_path": body_csv,
+        "output_path": processed_dir / "remote_labels_body.parquet",
     }
 
 
@@ -44,7 +66,7 @@ remote_keywords = [
     "remote position", "wfh", "Remote - us", "telework", "home office", "(remote)", "remote work flexibility", "remote work: hybrid",
     "remote: yes", "location: remote", "remote usa", "remote flexibility", "(remote", "- remote", "remote-flexibility",
     "remote,", "\nremote\n", "\n remote \n", "remotely", "us-remote", "remote work eligible", "remote - united states",
-    "remote - work at home", "can be remote", "remote within the us", "remote in north america", "remote available" ", remote",
+    "remote - work at home", "can be remote", "remote within the us", "remote in north america", "remote available", ", remote",
     "remote full-time", "us remote", "#li-remote", "open to remote",
     "hybrid work", "split time between office and remote", "office and remote options",
     "partially remote", "hybrid position", "3 days remote", "hybrid workplace",
@@ -64,149 +86,151 @@ remote_to_exclude = [
 ]
 
 
-def check_benefit_position(body_series, keywords, exclusions=None):
-    """Return the prominence score (0–100) of the first keyword match in each posting.
-
-    Score = (1 - match.start() / len(text)) * 100
-      - 100: match at the very start of the text (most prominent)
-      - 0:   match at the very end of the text (least prominent)
-      - NaN: no match (or empty body)
-    """
-    include_re = re.compile(
-        r"\b(?:" + "|".join(map(re.escape, keywords)) + r")\b", re.IGNORECASE
+def clean_body(series):
+    """Normalize body text the same way the original pipeline did before matching."""
+    return (
+        series.fillna("")
+        .str.strip()
+        .str.replace(r"\s+", " ", regex=True)
+        .str.lower()
     )
-    exclude_re = (
-        re.compile(
-            r"\b(?:" + "|".join(map(re.escape, exclusions)) + r")\b", re.IGNORECASE
+
+
+def process_batch(data, part_idx, parts_dir, skip_positions):
+    """Label one batch and write its checkpoint part file. Returns run stats."""
+    parts_dir = Path(parts_dir)
+    stats = {
+        "rows": len(data),
+        "empty_body": int(data["BODY"].isna().sum() + data["BODY"].str.strip().eq("").sum()),
+    }
+
+    body = clean_body(data["BODY"])
+    out = pd.DataFrame({"ID": data["ID"]})
+    out["REMOTE_KW"] = check_benefits(body, remote_keywords, remote_to_exclude, assume_lowered=True)
+    stats["remote_kw"] = int(out["REMOTE_KW"].sum())
+
+    if not skip_positions:
+        out["REMOTE_KW_POSITION"] = check_benefit_position(
+            body, remote_keywords, remote_to_exclude, assume_lowered=True
         )
-        if exclusions
-        else None
-    )
+        valid = out["REMOTE_KW_POSITION"].dropna()
+        stats["position_sum"] = float(valid.sum())
+        stats["position_count"] = len(valid)
 
-    body_filled = body_series.fillna("")
-    positions = pd.array([float("nan")] * len(body_series), dtype="Float64")
-
-    for i, text in enumerate(body_filled):
-        if not text:
-            continue
-        text_len = len(text)
-        for m in include_re.finditer(text):
-            if exclude_re:
-                skip = False
-                for exc in exclude_re.finditer(text):
-                    if exc.start() <= m.start() < exc.end() or exc.start() < m.end() <= exc.end():
-                        skip = True
-                        break
-                if skip:
-                    continue
-            positions[i] = (1 - m.start() / text_len) * 100
-            break
-
-    return positions
-
-
-def check_benefits(body_series, keywords, exclusions=None):
-    """Vectorized benefit labeling using compiled regex.
-
-    Uses pandas str.contains() for the bulk of rows, then falls back to
-    row-level overlap checking only for the small subset that matched
-    both inclusion and exclusion patterns.
-
-    Returns a boolean numpy array.
-    """
-    include_re = re.compile(
-        r"\b(?:" + "|".join(map(re.escape, keywords)) + r")\b", re.IGNORECASE
-    )
-
-    # Vectorized inclusion check
-    body_filled = body_series.fillna("")
-    included = body_filled.str.contains(include_re.pattern, regex=True, case=False, na=False)
-
-    if exclusions is None:
-        return included.to_numpy(dtype=bool)
-
-    # Only check exclusions on the subset that matched inclusion
-    exclude_re = re.compile(
-        r"\b(?:" + "|".join(map(re.escape, exclusions)) + r")\b", re.IGNORECASE
-    )
-    excluded = body_filled.str.contains(exclude_re.pattern, regex=True, case=False, na=False)
-
-    # Rows with inclusion but no exclusion are True
-    # Rows with both need overlap check
-    needs_overlap_check = included & excluded
-
-    if not needs_overlap_check.any():
-        return included.to_numpy(dtype=bool)
-
-    # Row-level overlap check only for the small subset with both matches
-    result = included.to_numpy(dtype=bool, copy=True)
-    check_idx = needs_overlap_check[needs_overlap_check].index
-
-    for idx in check_idx:
-        text = body_filled.iloc[idx]
-        include_matches = list(include_re.finditer(text))
-        exclude_matches = list(exclude_re.finditer(text))
-
-        # Check if any exclusion overlaps with an inclusion match
-        has_overlap = False
-        for exc in exclude_matches:
-            for inc in include_matches:
-                if inc.start() <= exc.start() < inc.end() or inc.start() <= exc.end() <= inc.end():
-                    has_overlap = True
-                    break
-            if has_overlap:
-                break
-
-        if has_overlap:
-            result[idx] = False
-
-    return result
+    # Atomic checkpoint write: tmp file then rename.
+    table = pa.Table.from_pandas(out, preserve_index=False)
+    part_path = parts_dir / f"part-{part_idx:05d}.parquet"
+    tmp_path = part_path.with_suffix(".tmp")
+    pq.write_table(table, tmp_path, compression="gzip")
+    tmp_path.rename(part_path)
+    return stats
 
 
 def main():
-    load_time = time.time()
-    print("Loading the input parquet file...")
-    # Only read ID and BODY columns for keyword labeling
-    body_df = pd.read_parquet(input_path, columns=['ID', 'BODY'])
-    print(f"Loaded {len(body_df):,} rows in {time.time() - load_time:.1f}s")
-
-    empty_body_count = body_df['BODY'].isna().sum() + body_df['BODY'].str.strip().eq("").sum()
-    print(f"Empty body text: {empty_body_count:,}")
-
-    # Clean body text
-    print("Cleaning body text...")
-    clean_time = time.time()
-    body_df['BODY'] = (
-        body_df['BODY']
-        .fillna("")
-        .str.strip()
-        .str.replace(r'\s+', ' ', regex=True)
-        .str.lower()
+    parser = argparse.ArgumentParser(
+        description="Stream-label REMOTE_KW; input is never fully loaded into memory."
     )
-    print(f"Cleaned in {time.time() - clean_time:.1f}s")
+    parser.add_argument("--input", type=Path, default=input_path,
+                        help="Input parquet or CSV with ID+BODY (default: data.body_csv from config.yaml)")
+    parser.add_argument("--output", type=Path, default=output_path,
+                        help="Output parquet (default: processed_dir/remote_labels_body.parquet)")
+    parser.add_argument("--parquet-batch-rows", type=int, default=100_000,
+                        help="Rows per batch for parquet inputs (default: 100000)")
+    parser.add_argument("--csv-block-mb", type=int, default=128,
+                        help="Read-buffer size in MB for CSV inputs (default: 128)")
+    parser.add_argument("--skip-positions", action="store_true",
+                        help="Skip the slow per-row prominence-position pass")
+    parser.add_argument("--workers", type=int, default=6,
+                        help="Parallel labeling processes (default: 6, one per M2 performance core)")
+    args = parser.parse_args()
 
-    print("Labeling remote work...")
     start = time.time()
-    body_df['REMOTE_KW'] = check_benefits(body_df['BODY'], remote_keywords, remote_to_exclude)
-    print(f"Labeled in {time.time() - start:.1f}s")
+    input_resolved = args.input.expanduser().resolve()
+    size_gb = input_resolved.stat().st_size / 1e9
+    print(f"Input body file: {input_resolved} ({size_gb:.1f} GB)")
+    print(f"Writing to {args.output} (ID + REMOTE_KW"
+          + ("" if args.skip_positions else " + REMOTE_KW_POSITION") + ")")
 
-    print("Computing remote work prominence position...")
-    pos_start = time.time()
-    body_df['REMOTE_KW_POSITION'] = check_benefit_position(body_df['BODY'], remote_keywords, remote_to_exclude)
-    valid = body_df['REMOTE_KW_POSITION'].dropna()
-    print(f"  REMOTE_KW_POSITION: {len(valid):,} matches, mean prominence {valid.mean():.1f} ({time.time() - pos_start:.1f}s)")
+    # Checkpointing: batch i always becomes part-i (batching is deterministic
+    # for the same input/settings), so a rerun relabels only the missing parts.
+    parts_dir = args.output.with_name(args.output.name + ".parts")
+    parts_dir.mkdir(parents=True, exist_ok=True)
+    done_indices = {int(p.stem.split("-")[1]) for p in parts_dir.glob("part-*.parquet")}
+    if done_indices:
+        print(f"Resuming: {len(done_indices)} checkpoint parts found; "
+              "relabeling only the missing batches (use the same batch-size flags "
+              f"as the original run, or delete {parts_dir} to start fresh).")
 
-    # Merge REMOTE_KW and REMOTE_KW_POSITION into the full labeled dataset.
-    print(f"Merging REMOTE_KW and REMOTE_KW_POSITION into {output_path.name}...")
-    data = pd.read_parquet(input_path)
-    for col in ['REMOTE_KW', 'REMOTE_KW_POSITION']:
-        if col in data.columns:
-            data = data.drop(columns=[col])
-    data = data.merge(body_df[['ID', 'REMOTE_KW', 'REMOTE_KW_POSITION']], on='ID', how='left')
+    total_rows = 0
+    empty_body_count = 0
+    remote_count = 0
+    position_sum = 0.0
+    position_count = 0
 
-    save_time = time.time()
-    data.to_parquet(output_path, compression='gzip')
-    print(f"Saved {output_path.name} with REMOTE_KW in {time.time() - save_time:.1f}s")
+    def merge_stats(stats):
+        nonlocal total_rows, empty_body_count, remote_count, position_sum, position_count
+        total_rows += stats["rows"]
+        empty_body_count += stats["empty_body"]
+        remote_count += stats["remote_kw"]
+        position_sum += stats.get("position_sum", 0.0)
+        position_count += stats.get("position_count", 0)
+        print(f"  {total_rows:,} new rows labeled ({time.time() - start:.0f}s)", flush=True)
+
+    batches = (
+        (i, data)
+        for i, data in enumerate(iter_input_batches(input_resolved, args.parquet_batch_rows, args.csv_block_mb))
+        if i not in done_indices
+    )
+
+    if args.workers <= 1:
+        for i, data in batches:
+            merge_stats(process_batch(data, i, parts_dir, args.skip_positions))
+    else:
+        import concurrent.futures as cf
+        # Bound in-flight batches so RAM stays capped at ~(workers+2) blocks.
+        with cf.ProcessPoolExecutor(max_workers=args.workers) as pool:
+            in_flight = set()
+            for i, data in batches:
+                while len(in_flight) >= args.workers + 2:
+                    done, in_flight = cf.wait(in_flight, return_when=cf.FIRST_COMPLETED)
+                    for fut in done:
+                        merge_stats(fut.result())
+                in_flight.add(pool.submit(process_batch, data, i, parts_dir, args.skip_positions))
+            for fut in cf.as_completed(in_flight):
+                merge_stats(fut.result())
+
+    # Merge parts into the single output parquet, streaming one part at a time.
+    print("Merging checkpoint parts into final output...")
+    all_parts = sorted(parts_dir.glob("part-*.parquet"))
+    indices = [int(p.stem.split("-")[1]) for p in all_parts]
+    if indices != list(range(len(all_parts))):
+        raise RuntimeError(f"Checkpoint parts in {parts_dir} are not contiguous; "
+                           "rerun to fill the gaps before merging.")
+    merged_rows = 0
+    writer = None
+    try:
+        for p in all_parts:
+            table = pq.read_table(p)
+            if writer is None:
+                writer = pq.ParquetWriter(args.output, table.schema, compression="gzip")
+            else:
+                table = table.cast(writer.schema)
+            writer.write_table(table)
+            merged_rows += table.num_rows
+    finally:
+        if writer is not None:
+            writer.close()
+    for p in all_parts:
+        p.unlink()
+    parts_dir.rmdir()
+
+    print(f"\nLabeled {total_rows:,} new rows ({merged_rows:,} total in output) "
+          f"in {time.time() - start:.1f}s")
+    print(f"Empty body text (this run): {empty_body_count:,}")
+    print(f"  REMOTE_KW: {remote_count:,} rows")
+    if position_count:
+        print(f"  REMOTE_KW_POSITION: {position_count:,} matches, "
+              f"mean prominence {position_sum / position_count:.1f}")
 
 
 if __name__ == "__main__":

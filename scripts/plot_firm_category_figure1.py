@@ -36,6 +36,8 @@ FIRM_CATEGORY_MARKERS = {
     "S&P 500 firms": "o",
 }
 GENAI_CUTOFF = pd.Period("2022Q4", freq="Q")
+# Years before this are shown as annual wage-beta estimates (sparse AI wage postings).
+ANNUAL_UNTIL = 2021
 
 
 def add_firm_category(df):
@@ -107,7 +109,7 @@ def add_demand_inset(ax, demand_wide):
         "Before": demand_wide[demand_wide.index.year <= 2022].mean(),
         "After": demand_wide[demand_wide.index.year > 2022].mean(),
     }
-    inset = ax.inset_axes([1.08, 0.22, 0.30, 0.52])
+    inset = ax.inset_axes([1.06, 0.12, 0.38, 0.70])
     periods = ["Before", "After"]
     x = np.arange(len(periods))
     bar_width = 0.22
@@ -123,24 +125,16 @@ def add_demand_inset(ax, demand_wide):
             label=category,
         )
 
+    inset.yaxis.tick_right()
+    inset.yaxis.set_label_position("right")
     inset.set_xticks(x)
-    inset.set_xticklabels(periods, fontsize=8)
-    inset.set_xlabel("relative to GenAI (ChatGPT, Nov. 2022)", fontsize=6, style="italic")
-    inset.set_ylabel("% AI", fontsize=7)
-    inset.tick_params(axis="both", labelsize=7)
-    inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
+    inset.set_xticklabels(periods, fontsize=11)
+    inset.set_xlabel("relative to GenAI (ChatGPT, Nov. 2022)", fontsize=9, style="italic")
+    inset.set_ylabel("% AI", fontsize=10)
+    inset.tick_params(axis="both", labelsize=10)
+    inset.legend(fontsize=8.5, loc="upper left", framealpha=0.7)
     inset.grid(axis="y", alpha=0.18)
-    inset.text(
-        0.98,
-        0.97,
-        "AI Vacancy Share\nby Firm Type",
-        transform=inset.transAxes,
-        fontsize=7,
-        ha="right",
-        va="top",
-        fontstyle="italic",
-        color="#333333",
-    )
+    inset.set_title("AI Vacancy Share by Firm Type", fontsize=10, style="italic", color="#333333")
 
 
 def summarize_wage_betas_by_period(wage_betas):
@@ -172,7 +166,7 @@ def add_wage_inset(ax, wage_betas):
     period_betas = summarize_wage_betas_by_period(wage_betas)
     if period_betas.empty:
         return
-    inset = ax.inset_axes([1.08, 0.22, 0.30, 0.52])
+    inset = ax.inset_axes([1.06, 0.12, 0.38, 0.70])
     periods = ["Before", "After"]
     x = np.arange(len(periods))
     bar_width = 0.22
@@ -182,6 +176,14 @@ def add_wage_inset(ax, wage_betas):
             period_betas[FIRM_CATEGORY] == category
         ].set_index("period")
         values = [category_data.loc[p, "ai_role_beta"] for p in periods]
+        lower_err = [
+            category_data.loc[p, "ai_role_beta"] - category_data.loc[p, "lower_ci"]
+            for p in periods
+        ]
+        upper_err = [
+            category_data.loc[p, "upper_ci"] - category_data.loc[p, "ai_role_beta"]
+            for p in periods
+        ]
         offset = (i - 1) * bar_width
         inset.bar(
             x + offset,
@@ -190,27 +192,21 @@ def add_wage_inset(ax, wage_betas):
             color=FIRM_CATEGORY_COLORS[category],
             alpha=0.85,
             label=category,
+            yerr=[lower_err, upper_err],
+            error_kw={"ecolor": "#333333", "elinewidth": 0.8, "capsize": 2, "capthick": 0.8},
         )
 
     inset.axhline(0, color="gray", linewidth=0.7, linestyle="--")
+    inset.yaxis.tick_right()
+    inset.yaxis.set_label_position("right")
     inset.set_xticks(x)
-    inset.set_xticklabels(periods, fontsize=8)
-    inset.set_xlabel("relative to GenAI (ChatGPT, Nov. 2022)", fontsize=6, style="italic")
-    inset.set_ylabel("Coef.", fontsize=7)
-    inset.tick_params(axis="both", labelsize=7)
-    inset.legend(fontsize=5.5, loc="upper left", framealpha=0.7)
+    inset.set_xticklabels(periods, fontsize=11)
+    inset.set_xlabel("relative to GenAI (ChatGPT, Nov. 2022)", fontsize=9, style="italic")
+    inset.set_ylabel("Coef.", fontsize=10)
+    inset.tick_params(axis="both", labelsize=10)
+    inset.legend(fontsize=8.5, loc="upper left", framealpha=0.7)
     inset.grid(axis="y", alpha=0.18)
-    inset.text(
-        0.98,
-        0.97,
-        "Wage Premium\nby Firm Type",
-        transform=inset.transAxes,
-        fontsize=7,
-        ha="right",
-        va="top",
-        fontstyle="italic",
-        color="#333333",
-    )
+    inset.set_title("Wage Premium by Firm Type", fontsize=10, style="italic", color="#333333")
 
 
 def main():
@@ -236,6 +232,13 @@ def main():
     wage_betas = pd.read_csv(betas_path)
     wage_betas["QUARTER"] = wage_betas["QUARTER"].apply(lambda x: pd.Period(x, freq="Q"))
     print(f"Loaded {len(wage_betas)} wage beta rows from {betas_path}")
+
+    # --- Load pre-computed annual wage betas (used before ANNUAL_UNTIL) ---
+    annual_path = TABLES_DIR / "annual_ai_wage_betas_by_firm_category.csv"
+    if not annual_path.exists():
+        raise FileNotFoundError(f"Annual wage betas CSV not found: {annual_path}")
+    annual_betas = pd.read_csv(annual_path)
+    print(f"Loaded {len(annual_betas)} annual wage beta rows from {annual_path}")
 
     # --- Plot ---
     fig, (demand_ax, wage_ax) = plt.subplots(nrows=2, ncols=1, figsize=(17, 9), sharex=True)
@@ -268,25 +271,58 @@ def main():
     demand_ax.grid(alpha=0.25)
     add_demand_inset(demand_ax, demand_wide)
 
+    # Pre-2021 quarterly estimates are too sparse (esp. S&P 500); show annual
+    # estimates with 95% CIs before ANNUAL_UNTIL and quarterly ones after.
     plotted = wage_betas[wage_betas["status"] == "ok"].copy()
     plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
+    plotted["year"] = plotted["QUARTER"].apply(lambda p: p.year)
+    annual = annual_betas[annual_betas["status"] == "ok"].copy()
+    # Place each annual point at the middle of its year (between Q2 and Q3).
+    annual["x"] = annual["YEAR"].apply(
+        lambda y: quarter_position_map.get(pd.Period(f"{y}Q2", freq="Q"), np.nan) + 0.5
+    )
     for category in FIRM_CATEGORY_ORDER:
-        line = plotted[plotted[FIRM_CATEGORY] == category].sort_values("QUARTER")
-        if line.empty:
-            continue
-        wage_ax.plot(
-            line["x"],
-            line["ai_role_beta"],
-            marker=FIRM_CATEGORY_MARKERS[category],
-            markersize=4,
-            linewidth=1.5,
-            label=category,
-            color=FIRM_CATEGORY_COLORS[category],
-        )
+        color = FIRM_CATEGORY_COLORS[category]
+        pre = annual[
+            (annual[FIRM_CATEGORY] == category) & (annual["YEAR"] < ANNUAL_UNTIL)
+        ].sort_values("YEAR")
+        post = plotted[
+            (plotted[FIRM_CATEGORY] == category) & (plotted["year"] >= ANNUAL_UNTIL)
+        ].sort_values("QUARTER")
+        if not pre.empty:
+            wage_ax.plot(
+                pre["x"],
+                pre["ai_role_beta"],
+                marker=FIRM_CATEGORY_MARKERS[category],
+                markersize=5,
+                linewidth=1.5,
+                linestyle="--",
+                color=color,
+            )
+        if not post.empty:
+            wage_ax.plot(
+                post["x"],
+                post["ai_role_beta"],
+                marker=FIRM_CATEGORY_MARKERS[category],
+                markersize=4,
+                linewidth=1.5,
+                label=category,
+                color=color,
+            )
+        if not pre.empty and not post.empty:
+            # Connect the last annual point to the first quarterly point.
+            wage_ax.plot(
+                [pre["x"].iloc[-1], post["x"].iloc[0]],
+                [pre["ai_role_beta"].iloc[-1], post["ai_role_beta"].iloc[0]],
+                linewidth=1.2,
+                linestyle="--",
+                color=color,
+                alpha=0.7,
+            )
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_chatgpt_quarter_line(wage_ax, demand_wide.index)
-    wage_ax.set_ylim(0, 0.48)
+    wage_ax.set_ylim(0.1, 0.35)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.text(
         0.5, 0.96, "Adjusted AI-Skills Wage Premium by Firm Category",

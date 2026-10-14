@@ -9,3 +9,7 @@ exports/
 .env
 config.yaml
 results/figures/
+results/tables/
+results/figures_2026/
+results/tables_2026/*
+data/*

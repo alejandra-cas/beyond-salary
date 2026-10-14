@@ -174,6 +174,19 @@ def quarterly_betas_by_category(wage: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values(["FIRM_CATEGORY", "QUARTER"])
 
 
+def annual_betas_by_category(wage: pd.DataFrame) -> pd.DataFrame:
+    """Annual betas estimated separately within each firm category."""
+    rows = []
+    for cat in FIRM_CATEGORY_ORDER:
+        sub = wage[wage["FIRM_CATEGORY"] == cat]
+        for year, grp in sub.groupby(sub["P"].dt.year):
+            r = estimate_quarter(grp)
+            r["YEAR"] = int(year)
+            r["FIRM_CATEGORY"] = cat
+            rows.append(r)
+    return pd.DataFrame(rows).sort_values(["FIRM_CATEGORY", "YEAR"])
+
+
 def demand_frame(counter: dict) -> pd.DataFrame:
     """quarter -> % AI from a {quarter: [postings, ai]} counter."""
     df = pd.DataFrame([(k, 100 * v[1] / v[0]) for k, v in counter.items()],
@@ -297,6 +310,8 @@ def main():
 
     quarterly_betas_by_category(wage).to_csv(
         TABLES / "quarterly_ai_wage_betas_by_firm_category.csv", index=False)
+    annual_betas_by_category(wage).to_csv(
+        TABLES / "annual_ai_wage_betas_by_firm_category.csv", index=False)
 
     # --- aggregate betas CSV + aggregate figure ---
     agg_betas = quarterly_betas(wage)
