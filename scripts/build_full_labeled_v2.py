@@ -31,10 +31,20 @@ POST_COLUMNS = [
     "MIN_YEARS_EXPERIENCE", "SALARY", "REMOTE_TYPE_NAME", "STATE_NAME",
     "NAICS_2022_6", "NAICS_2022_6_NAME", "ONET", "BENEFIT_SUBCATEGORY_NAME", "QUARTER",
 ]
+INTEGER_COLUMNS = ["COMPANY", "NAICS_2022_6", "QUARTER"]
 POST_TYPES = {name: pa.string() for name in POST_COLUMNS}
-POST_TYPES.update({"COMPANY": pa.int64(), "SALARY": pa.float64(),
-                   "MIN_YEARS_EXPERIENCE": pa.float64(), "NAICS_2022_6": pa.int64(),
-                   "QUARTER": pa.int64()})
+# Read integer codes as floats so values such as "541511.0" parse, then restore
+# int64 for complete, integral columns, matching pandas.read_csv on the
+# integer-formatted Lightcast exports.
+POST_TYPES.update({name: pa.float64() for name in INTEGER_COLUMNS + ["SALARY", "MIN_YEARS_EXPERIENCE"]})
+
+
+def restore_integer_columns(frame):
+    for name in INTEGER_COLUMNS:
+        values = frame[name]
+        if values.notna().all() and values.eq(values.round()).all():
+            frame[name] = values.astype("int64")
+    return frame
 
 
 def check_ids(table, name):
@@ -134,7 +144,7 @@ def assemble_dataset(posts, benefits, remote, ai_counts, *, sp500=None, wham=Non
     table = join_one_to_one(table, remote_table)
     table = join_one_to_one(table, ai_table)
     del benefits_table, remote_table, ai_table
-    frame = table.to_pandas()
+    frame = restore_integer_columns(table.to_pandas())
     del table
     for name in BENEFIT_NAMES + ["REMOTE_KW"]:
         frame[name] = frame[name].astype("boolean").fillna(False).astype(bool)

@@ -219,6 +219,203 @@ class FullDataPipelineTests(unittest.TestCase):
             self.assertTrue(pd.isna(missing["EDU_ASSISTANCE_POSITION"]))
             self.assertEqual(audit["posts_without_body"], 1)
 
+    def test_nan_and_blank_bodies_get_false_labels_and_no_positions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "body.csv"
+            pd.DataFrame({"ID": ["a", "b", "c"], "BODY": [None, "   ", "Fully remote; tuition assistance."]}).to_csv(
+                source, index=False)
+            for kind, flags, positions in [
+                ("benefits", pipeline.BENEFIT_NAMES, pipeline.POSITION_NAMES),
+                ("remote", ["REMOTE_KW"], ["REMOTE_KW_POSITION"]),
+            ]:
+                output = root / f"{kind}.parquet"
+                pipeline.stream_labels(source, output, kind, batch_rows=2)
+                result = pd.read_parquet(output).set_index("ID")
+                self.assertFalse(result.loc[["a", "b"], flags].to_numpy().any())
+                self.assertTrue(result.loc[["a", "b"], positions].isna().to_numpy().all())
+            self.assertTrue(pd.read_parquet(root / "remote.parquet").set_index("ID").loc["c", "REMOTE_KW"])
+            self.assertTrue(pd.read_parquet(root / "benefits.parquet").set_index("ID").loc["c", "EDU_ASSISTANCE"])
+
+    def test_assembly_rejects_duplicate_body_label_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            posts, benefits, remote, ai_counts, sp500, wham = self.build_inputs(root)
+            for name, path in [("benefits", benefits), ("remote", remote)]:
+                labels = pd.read_parquet(path)
+                duplicated = root / f"duplicate-{name}.parquet"
+                pd.concat([labels, labels.iloc[[0]]]).to_parquet(duplicated, index=False)
+                arguments = {"benefits": benefits, "remote": remote, name: duplicated}
+                with self.assertRaisesRegex(ValueError, "duplicate IDs"):
+                    assemble_dataset(posts, arguments["benefits"], arguments["remote"], ai_counts,
+                                     sp500=sp500, wham=wham)
+
+    def test_checkpoint_resume_rejects_changed_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = self.write_body(root)
+            output = root / "labels.parquet"
+            original = pipeline.write_label_part
+
+            def fail_after_first(batch, path, kind, positions, correction):
+                if path.name != "part-000000.parquet":
+                    raise RuntimeError("interrupted")
+                return original(batch, path, kind, positions, correction)
+
+            with patch.object(pipeline, "write_label_part", side_effect=fail_after_first):
+                with self.assertRaisesRegex(RuntimeError, "interrupted"):
+                    pipeline.stream_labels(source, output, "remote", batch_rows=1)
+            self.write_body(root, ["Changed body.", "Another.", "Third.", "Fourth."])
+            with self.assertRaisesRegex(ValueError, "Checkpoint input"):
+                pipeline.stream_labels(source, output, "remote", batch_rows=1)
+            self.assertFalse(output.exists())
+
+    def test_cli_without_arguments_runs_legacy_pipeline(self):
+        from scripts import label_benefits_remote
+
+        for module, kind in [(label_benefits, "benefits"), (label_benefits_remote, "remote")]:
+            with self.subTest(kind=kind):
+                with patch.object(module, "legacy_main", return_value="legacy") as legacy, \
+                        patch.object(pipeline, "stream_labels") as streamed, \
+                        patch("sys.argv", [f"{module.__name__}.py"]):
+                    self.assertEqual(module.main(), "legacy")
+                legacy.assert_called_once_with()
+                streamed.assert_not_called()
+
+                with patch.object(module, "legacy_main") as legacy, \
+                        patch("sys.argv", ["script.py", "--workers", "4"]), \
+                        patch("sys.stderr"):
+                    with self.assertRaises(SystemExit):
+                        module.main()
+                legacy.assert_not_called()
+
+        with patch.object(label_benefits_remote, "legacy_main") as legacy, \
+                patch.object(pipeline, "stream_labels") as streamed, \
+                patch("sys.argv", ["script.py", "--stream", "--input", "in.csv", "--output", "out.parquet"]):
+            label_benefits_remote.main()
+        legacy.assert_not_called()
+        self.assertFalse(streamed.call_args.kwargs["correct_remote_keywords"])
+
+    def test_assembly_accepts_float_formatted_integer_codes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = self.build_inputs(root)
+            posts = pd.read_csv(inputs[0])
+            posts["NAICS_2022_6"] = posts["NAICS_2022_6"].astype(float)
+            posts["COMPANY"] = posts["COMPANY"].astype(float)
+            posts.loc[0, "QUARTER"] = np.nan
+            posts.to_csv(inputs[0], index=False)
+            self.assertIn("541511.0", inputs[0].read_text())
+            frame, _ = assemble_dataset(*inputs[:4], sp500=inputs[4], wham=inputs[5])
+            self.assertEqual(frame["COMPANY"].dtype, np.int64)
+            self.assertEqual(frame["NAICS_2022_6"].dtype, np.int64)
+            self.assertEqual(frame["QUARTER"].dtype, np.float64)
+            self.assertEqual(frame.loc[0, "NAICS_2022_3_DIGIT"], "541")
+            self.assertEqual(frame.set_index("ID").loc["post-06", "FIRM_SIZE_BUCKET"], "S&P 500 firms")
+
+
+def write_legacy_comparison_inputs(root, rows=240):
+    """Synthetic raw inputs covering the cases where the two paths could diverge."""
+    rng = np.random.default_rng(7)
+    ids = [f"{index:040x}" for index in range(rows)]  # SHA-1-like string IDs
+    companies = rng.choice([0, 1, 2, 3, 4, 5, 99], size=rows)
+    years = rng.choice([2018, 2019, 2023, 2025], size=rows)
+    years[companies == 99] = 2025  # firm absent from 2018 keeps unknown size
+    snippets = [
+        "Tuition Assistance offered.", "We offer paid time off and PTO.", "Mental   health support",
+        "PARENTAL LEAVE available", "inclusive culture", "This role is Fully Remote.",
+        "remote available, remote", "Remote Available", "WORK FROM\nHOME option", "",
+        "Health insurance and wellness program", "tuition reimbursement not offered",
+    ]
+    bodies = [" ".join(rng.choice(snippets, size=rng.integers(1, 5))) for _ in range(rows)]
+    for index in range(0, rows, 29):
+        bodies[index] = None
+    structured = [json.dumps(["Mental Health"]), json.dumps(["mental health"]),
+                  json.dumps(["Mental Health Extra"]), json.dumps(["Flexible Work Schedules", "Mentorships"]),
+                  "[]", None, "not json"]
+    posts = pd.DataFrame({
+        "ID": ids,
+        "POSTED": [f"{year}-0{rng.integers(1, 9)}-15" for year in years],
+        "TITLE_RAW": "title", "COMPANY": companies, "COMPANY_NAME": [f"Firm {c}" for c in companies],
+        "MIN_EDULEVELS_NAME": "Bachelor's degree", "EMPLOYMENT_TYPE_NAME": "Full-time",
+        "MIN_YEARS_EXPERIENCE": rng.choice([np.nan, 0, 1, 3, 7, 15, 25], size=rows),
+        "SALARY": rng.choice([np.nan, 50_000.0, 120_000.0], size=rows),
+        "REMOTE_TYPE_NAME": rng.choice(["Remote", "Hybrid Remote", "On-site", None], size=rows),
+        "CITY_NAME": "city", "STATE_NAME": "California",
+        "NAICS_2022_6": rng.choice([541511, 622110, 921110], size=rows),
+        "NAICS_2022_6_NAME": "industry", "ONET": rng.choice(["15-1252.00", "29-1141.00", None], size=rows),
+        "ONET_NAME": "occupation", "BENEFIT_NAME": "benefit",
+        "BENEFIT_SUBCATEGORY_NAME": rng.choice(structured, size=rows),
+        "BENEFIT_CATEGORIES_NAME": "category", "YEAR": years, "QUARTER": rng.integers(1, 5, size=rows),
+    })
+    paths = {name: root / f"{name}.csv" for name in ["posts", "body", "skills", "sp500", "wham"]}
+    posts.to_csv(paths["posts"], index=False)
+    pd.DataFrame({"ID": ids, "BODY": bodies}).to_csv(paths["body"], index=False)
+    ai = "Artificial Intelligence and Machine Learning (AI/ML)"
+    pd.DataFrame({"ID": rng.choice(ids, size=360), "SKILL_SUBCATEGORY_NAME": rng.choice([ai, "Other"], size=360)}
+                 ).to_csv(paths["skills"], index=False)
+    pd.DataFrame({"COMPANY": [2, 5], "COMPANY_NAME": ["Firm 2", "Firm 5"]}).to_csv(paths["sp500"], index=False)
+    pd.DataFrame({"id": ids[::2] + ["non-us"], "country2": ["US"] * len(ids[::2]) + ["CA"],
+                  "wfh_wham_prob": 0.5, "wfh_wham": True}).to_csv(paths["wham"], index=False)
+    return paths
+
+
+class LegacyEquivalenceTests(unittest.TestCase):
+    # Columns the full-data builder intentionally omits; only exploratory notebooks use them.
+    OMITTED = {"BODY", "TITLE_RAW", "EMPLOYMENT_TYPE_NAME", "CITY_NAME", "ONET_NAME",
+               "BENEFIT_NAME", "BENEFIT_CATEGORIES_NAME"}
+
+    def test_streaming_path_matches_legacy_prepare_and_label_scripts(self):
+        from scripts import label_benefits_remote, prepare_data
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = write_legacy_comparison_inputs(root)
+            processed = root / "processed"
+            processed.mkdir()
+            legacy_paths = {
+                "posts_csv": raw["posts"], "skills_csv": raw["skills"], "body_csv": raw["body"],
+                "wham_data": raw["wham"], "sp500_csv": raw["sp500"],
+                "output_parquet": processed / "data_v1.parquet", "sp500_audit_csv": processed / "audit.csv",
+            }
+            with patch.object(prepare_data, "load_data_paths", return_value=legacy_paths), \
+                    patch.object(label_benefits, "input_path", processed / "data_v1.parquet"), \
+                    patch.object(label_benefits, "output_path", processed / "labeled_v1.parquet"), \
+                    patch.object(label_benefits_remote, "input_path", processed / "labeled_v1.parquet"), \
+                    patch.object(label_benefits_remote, "output_path", processed / "labeled_v2.parquet"), \
+                    patch("sys.stdout"):
+                prepare_data.main()
+                label_benefits.legacy_main()
+                label_benefits_remote.legacy_main()
+                pipeline.stream_labels(raw["body"], root / "benefits.parquet", "benefits", batch_rows=17, workers=2)
+                pipeline.stream_labels(raw["body"], root / "remote.parquet", "remote", batch_rows=23, workers=2)
+                pipeline.count_ai_skills(raw["skills"], root / "ai.parquet", batch_rows=50)
+                streamed, audit = assemble_dataset(
+                    raw["posts"], root / "benefits.parquet", root / "remote.parquet", root / "ai.parquet",
+                    sp500=raw["sp500"], wham=raw["wham"], batch_rows=31,
+                )
+            legacy = pd.read_parquet(processed / "labeled_v2.parquet")
+
+            self.assertEqual(streamed["ID"].tolist(), legacy["ID"].tolist())
+            self.assertEqual(set(legacy.columns) - set(streamed.columns), self.OMITTED)
+            self.assertEqual(set(streamed.columns) - set(legacy.columns), set())
+            for column in legacy.columns.drop(list(self.OMITTED)):
+                with self.subTest(column=column):
+                    expected, actual = legacy[column], streamed[column]
+                    if pd.api.types.is_float_dtype(expected) or pd.api.types.is_float_dtype(actual):
+                        np.testing.assert_allclose(actual.astype(float), expected.astype(float), equal_nan=True)
+                    else:
+                        self.assertEqual(actual.astype(object).where(actual.notna(), None).tolist(),
+                                         expected.astype(object).where(expected.notna(), None).tolist())
+
+            # Make sure the synthetic data actually exercised the risky cases.
+            self.assertGreater(audit["ai_postings"], 0)
+            self.assertTrue(legacy["BODY"].isna().any())
+            self.assertTrue(legacy["REMOTE_KW"].any() and not legacy["REMOTE_KW"].all())
+            self.assertTrue(legacy.loc[legacy["COMPANY"].eq(99), "FIRM_SIZE_BUCKET"].isna().all())
+            self.assertIn("S&P 500 firms", set(legacy["FIRM_SIZE_BUCKET"].dropna()))
+            self.assertTrue(legacy["wfh_wham_prob"].notna().any() and legacy["wfh_wham_prob"].isna().any())
+
 
 if __name__ == "__main__":
     unittest.main()
