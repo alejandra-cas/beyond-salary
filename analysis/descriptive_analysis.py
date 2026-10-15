@@ -23,7 +23,9 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 from package_files.config_utils import get_processed_dir, get_repo_root
 from package_files.firm_size import FIRM_SIZE_CUTOFF
 from package_files.firm_category_figure import (
+    draw_quarterly_wage_series,
     draw_mixed_wage_series,
+    set_quarterly_wage_ylim,
     set_zero_inclusive_wage_ylim,
 )
 
@@ -1085,69 +1087,94 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf, annual_wage_betas=No
         index=False,
     )
 
-    fig, (demand_ax, wage_ax) = plt.subplots(
-        nrows=2,
-        ncols=1,
-        figsize=(11, 9),
-        sharex=True,
-    )
     quarter_positions = np.arange(len(demand_wide.index))
     quarter_position_map = {quarter: idx for idx, quarter in enumerate(demand_wide.index)}
-
-    for category in FIRM_CATEGORY_ORDER:
-        if category not in demand_wide:
-            continue
-        demand_ax.plot(
-            quarter_positions,
-            demand_wide[category],
-            marker=FIRM_CATEGORY_MARKERS[category],
-            markersize=3,
-            linewidth=1.6,
-            label=category,
-            color=FIRM_CATEGORY_COLORS[category],
-        )
-
-    demand_ax.set_ylabel("% AI Roles", fontsize=15)
-    demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
-    add_genai_quarter_line(demand_ax, demand_wide.index)
-    set_zero_based_ylim(demand_ax, demand_wide.stack())
-    demand_ax.legend(title=None, fontsize=11, loc="lower right")
-    demand_ax.grid(alpha=0.25)
-    add_firm_category_demand_inset(demand_ax, category_df)
-
     if annual_wage_betas is None:
         annual_wage_betas = estimate_annual_ai_wage_premium_by_firm_category(
             category_df
         )
-    annual_plotted, quarterly_plotted = draw_mixed_wage_series(
-        wage_ax,
-        annual_wage_betas,
-        wage_betas,
-        quarter_position_map,
-        FIRM_CATEGORY_ORDER,
-        FIRM_CATEGORY_COLORS,
-        FIRM_CATEGORY_MARKERS,
-    )
 
-    wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
-    add_genai_quarter_line(wage_ax, demand_wide.index)
-    set_zero_inclusive_wage_ylim(wage_ax, annual_plotted, quarterly_plotted)
-    wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
-    wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
-    wage_ax.grid(alpha=0.25)
-    wage_ax.legend(title=None, fontsize=11, loc="lower left")
-    add_firm_category_wage_inset(wage_ax, category_df)
+    for mixed_frequency in (False, True):
+        fig, (demand_ax, wage_ax) = plt.subplots(
+            nrows=2,
+            ncols=1,
+            figsize=(11, 9),
+            sharex=True,
+        )
+        for category in FIRM_CATEGORY_ORDER:
+            if category not in demand_wide:
+                continue
+            demand_ax.plot(
+                quarter_positions,
+                demand_wide[category],
+                marker=FIRM_CATEGORY_MARKERS[category],
+                markersize=3,
+                linewidth=1.6,
+                label=category,
+                color=FIRM_CATEGORY_COLORS[category],
+            )
 
-    tick_positions = list(range(0, len(demand_wide.index), 4))
-    wage_ax.set_xticks(tick_positions)
-    wage_ax.set_xticklabels([str(demand_wide.index[idx]) for idx in tick_positions], rotation=45)
-    wage_ax.set_xlabel("Period", fontsize=13)
+        demand_ax.set_ylabel("% AI Roles", fontsize=15)
+        demand_ax.set_title("Demand for AI Skills by Firm Category", fontsize=15)
+        add_genai_quarter_line(demand_ax, demand_wide.index)
+        set_zero_based_ylim(demand_ax, demand_wide.stack())
+        demand_ax.legend(title=None, fontsize=11, loc="lower right")
+        demand_ax.grid(alpha=0.25)
+        add_firm_category_demand_inset(demand_ax, category_df)
 
-    plt.tight_layout()
-    output_path = FIRM_CATEGORY_DIR / "figure1_ai_demand_wage_beta_by_firm_category.png"
-    plt.savefig(output_path, bbox_inches="tight", dpi=300)
-    plt.close()
-    print(f"Saved: {output_path}")
+        if mixed_frequency:
+            annual_plotted, quarterly_plotted = draw_mixed_wage_series(
+                wage_ax,
+                annual_wage_betas,
+                wage_betas,
+                quarter_position_map,
+                FIRM_CATEGORY_ORDER,
+                FIRM_CATEGORY_COLORS,
+                FIRM_CATEGORY_MARKERS,
+            )
+            set_zero_inclusive_wage_ylim(
+                wage_ax,
+                annual_plotted,
+                quarterly_plotted,
+            )
+            wage_ax.legend(title=None, fontsize=11, loc="lower left")
+            wage_ax.set_xlabel("Period", fontsize=13)
+            output_name = (
+                "figure1_ai_demand_wage_beta_by_firm_category_mixed_frequency.png"
+            )
+        else:
+            quarterly_plotted = draw_quarterly_wage_series(
+                wage_ax,
+                wage_betas,
+                quarter_position_map,
+                FIRM_CATEGORY_ORDER,
+                FIRM_CATEGORY_COLORS,
+                FIRM_CATEGORY_MARKERS,
+            )
+            set_quarterly_wage_ylim(wage_ax, quarterly_plotted)
+            wage_ax.legend(title=None, fontsize=11, loc="upper left")
+            wage_ax.set_xlabel("Quarter", fontsize=13)
+            output_name = "figure1_ai_demand_wage_beta_by_firm_category.png"
+
+        wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+        add_genai_quarter_line(wage_ax, demand_wide.index)
+        wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
+        wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
+        wage_ax.grid(alpha=0.25)
+        add_firm_category_wage_inset(wage_ax, category_df)
+
+        tick_positions = list(range(0, len(demand_wide.index), 4))
+        wage_ax.set_xticks(tick_positions)
+        wage_ax.set_xticklabels(
+            [str(demand_wide.index[idx]) for idx in tick_positions],
+            rotation=45,
+        )
+
+        plt.tight_layout()
+        output_path = FIRM_CATEGORY_DIR / output_name
+        plt.savefig(output_path, bbox_inches="tight", dpi=300)
+        plt.close()
+        print(f"Saved: {output_path}")
 
 
 def count_benefits(data, benefit, period):

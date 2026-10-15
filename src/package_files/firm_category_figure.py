@@ -8,6 +8,54 @@ ANNUAL_WAGE_END_YEAR = 2020
 QUARTERLY_WAGE_START_YEAR = 2021
 
 
+def draw_quarterly_wage_series(
+    ax,
+    quarterly_betas,
+    quarter_position_map,
+    categories,
+    colors,
+    markers,
+    confidence_bands_from="2022Q1",
+):
+    """Draw the original all-quarterly wage series."""
+    quarterly = quarterly_betas.copy()
+    if not isinstance(quarterly["QUARTER"].dtype, pd.PeriodDtype):
+        quarterly["QUARTER"] = quarterly["QUARTER"].map(
+            lambda value: pd.Period(value, freq="Q")
+        )
+    if "status" in quarterly.columns:
+        quarterly = quarterly[quarterly["status"] == "ok"].copy()
+    quarterly["x"] = quarterly["QUARTER"].map(quarter_position_map)
+    quarterly = quarterly.dropna(subset=["x"])
+    band_start = pd.Period(confidence_bands_from, freq="Q")
+
+    for category in categories:
+        line = quarterly[quarterly["FIRM_CATEGORY"] == category].sort_values(
+            "QUARTER"
+        )
+        if line.empty:
+            continue
+        band = line[line["QUARTER"] >= band_start]
+        ax.fill_between(
+            band["x"],
+            band["lower_ci"],
+            band["upper_ci"],
+            color=colors[category],
+            alpha=0.12,
+            linewidth=0,
+        )
+        ax.plot(
+            line["x"],
+            line["ai_role_beta"],
+            marker=markers[category],
+            markersize=4,
+            linewidth=1.5,
+            color=colors[category],
+            label=category,
+        )
+    return quarterly
+
+
 def prepare_mixed_wage_series(annual_betas, quarterly_betas, quarter_position_map):
     """Return annual pre-2021 and quarterly post-2020 estimates on one x-axis."""
     annual = annual_betas.copy()
@@ -160,3 +208,18 @@ def set_zero_inclusive_wage_ylim(ax, annual, quarterly, lower_pad=0.03, upper_pa
     upper = max(0.0, float(values.max()))
     span = max(upper - lower, 0.02)
     ax.set_ylim(lower - lower_pad * span, upper + upper_pad * span)
+
+
+def set_quarterly_wage_ylim(ax, quarterly, confidence_bands_from="2022Q1"):
+    """Reproduce the original quarterly coefficient scale."""
+    band_start = pd.Period(confidence_bands_from, freq="Q")
+    band = quarterly[quarterly["QUARTER"] >= band_start]
+    values = pd.concat(
+        [quarterly["ai_role_beta"], band["lower_ci"], band["upper_ci"]],
+        ignore_index=True,
+    ).dropna()
+    if values.empty:
+        return
+    limit = max(float(values.abs().max()) * 1.08, 0.02)
+    ax.set_ylim(-limit, limit)
+    ax.set_ylim(bottom=-0.1)

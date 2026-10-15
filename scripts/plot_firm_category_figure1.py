@@ -23,7 +23,9 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 from package_files.config_utils import get_processed_dir, get_repo_root
 from package_files.firm_size import FIRM_SIZE_CUTOFF
 from package_files.firm_category_figure import (
+    draw_quarterly_wage_series,
     draw_mixed_wage_series,
+    set_quarterly_wage_ylim,
     set_zero_inclusive_wage_ylim,
 )
 
@@ -275,25 +277,8 @@ def load_demand_wide():
     )
 
 
-def main():
-    # --- Load pre-computed descriptive tables ---
-    demand_wide = load_demand_wide()
-
-    # --- Load pre-computed wage betas ---
-    betas_path = TABLES_DIR / "quarterly_ai_wage_betas_by_firm_category.csv"
-    if not betas_path.exists():
-        raise FileNotFoundError(f"Wage betas CSV not found: {betas_path}")
-    wage_betas = pd.read_csv(betas_path)
-    wage_betas["QUARTER"] = wage_betas["QUARTER"].apply(lambda x: pd.Period(x, freq="Q"))
-    print(f"Loaded {len(wage_betas)} wage beta rows from {betas_path}")
-
-    annual_path = TABLES_DIR / "annual_ai_wage_premium_by_firm_category.csv"
-    if not annual_path.exists():
-        raise FileNotFoundError(f"Annual wage betas CSV not found: {annual_path}")
-    annual_betas = pd.read_csv(annual_path)
-    print(f"Loaded {len(annual_betas)} annual wage beta rows from {annual_path}")
-
-    # --- Plot ---
+def render_figure(demand_wide, wage_betas, annual_betas, mixed_frequency):
+    """Render either the original quarterly or comparison mixed-frequency figure."""
     fig, (demand_ax, wage_ax) = plt.subplots(nrows=2, ncols=1, figsize=(11, 9), sharex=True)
     quarter_positions = np.arange(len(demand_wide.index))
     quarter_position_map = {q: i for i, q in enumerate(demand_wide.index)}
@@ -319,36 +304,71 @@ def main():
     demand_ax.grid(alpha=0.25)
     add_demand_inset(demand_ax, demand_wide)
 
-    annual_plotted, quarterly_plotted = draw_mixed_wage_series(
-        wage_ax,
-        annual_betas,
-        wage_betas,
-        quarter_position_map,
-        FIRM_CATEGORY_ORDER,
-        FIRM_CATEGORY_COLORS,
-        FIRM_CATEGORY_MARKERS,
-    )
+    if mixed_frequency:
+        annual_plotted, quarterly_plotted = draw_mixed_wage_series(
+            wage_ax,
+            annual_betas,
+            wage_betas,
+            quarter_position_map,
+            FIRM_CATEGORY_ORDER,
+            FIRM_CATEGORY_COLORS,
+            FIRM_CATEGORY_MARKERS,
+        )
+        set_zero_inclusive_wage_ylim(wage_ax, annual_plotted, quarterly_plotted)
+        wage_ax.legend(title=None, fontsize=11, loc="lower left")
+        wage_ax.set_xlabel("Period", fontsize=13)
+        output_name = "figure1_ai_demand_wage_beta_by_firm_category_mixed_frequency.png"
+    else:
+        quarterly_plotted = draw_quarterly_wage_series(
+            wage_ax,
+            wage_betas,
+            quarter_position_map,
+            FIRM_CATEGORY_ORDER,
+            FIRM_CATEGORY_COLORS,
+            FIRM_CATEGORY_MARKERS,
+        )
+        set_quarterly_wage_ylim(wage_ax, quarterly_plotted)
+        wage_ax.legend(title=None, fontsize=11, loc="upper left")
+        wage_ax.set_xlabel("Quarter", fontsize=13)
+        output_name = "figure1_ai_demand_wage_beta_by_firm_category.png"
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_chatgpt_quarter_line(wage_ax, demand_wide.index)
-    set_zero_inclusive_wage_ylim(wage_ax, annual_plotted, quarterly_plotted)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
     wage_ax.grid(alpha=0.25)
-    wage_ax.legend(title=None, fontsize=11, loc="lower left")
     add_wage_inset(wage_ax, wage_betas)
 
     tick_positions = list(range(0, len(demand_wide.index), 4))
     wage_ax.set_xticks(tick_positions)
     wage_ax.set_xticklabels([str(demand_wide.index[i]) for i in tick_positions], rotation=45)
-    wage_ax.set_xlabel("Period", fontsize=13)
 
     plt.tight_layout()
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = FIG_DIR / "figure1_ai_demand_wage_beta_by_firm_category.png"
+    output_path = FIG_DIR / output_name
     plt.savefig(output_path, bbox_inches="tight", dpi=300)
     plt.close()
     print(f"Saved: {output_path}")
+
+
+def main():
+    demand_wide = load_demand_wide()
+
+    betas_path = TABLES_DIR / "quarterly_ai_wage_betas_by_firm_category.csv"
+    if not betas_path.exists():
+        raise FileNotFoundError(f"Wage betas CSV not found: {betas_path}")
+    wage_betas = pd.read_csv(betas_path)
+    wage_betas["QUARTER"] = wage_betas["QUARTER"].apply(lambda x: pd.Period(x, freq="Q"))
+    print(f"Loaded {len(wage_betas)} wage beta rows from {betas_path}")
+
+    annual_path = TABLES_DIR / "annual_ai_wage_premium_by_firm_category.csv"
+    if not annual_path.exists():
+        raise FileNotFoundError(f"Annual wage betas CSV not found: {annual_path}")
+    annual_betas = pd.read_csv(annual_path)
+    print(f"Loaded {len(annual_betas)} annual wage beta rows from {annual_path}")
+
+    render_figure(demand_wide, wage_betas, annual_betas, mixed_frequency=False)
+    render_figure(demand_wide, wage_betas, annual_betas, mixed_frequency=True)
 
 
 if __name__ == "__main__":

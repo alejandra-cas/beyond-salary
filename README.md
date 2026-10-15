@@ -367,7 +367,8 @@ Additional reproducibility tooling:
 - **Firm-category through-2022/post-2022 H1 logit plot**: `results/figures_2026/regression/firm_category_period_ai_role_logit_coefficients.png`
 - **Structured-benefit coefficients plot**: `results/figures_2026/regression/structured_benefits_ai_role_coef.png`
 - **Figure 1 — AI demand and wage coefficients**: `results/figures_2026/descriptive/figure1_ai_demand_wage_beta.png`
-- **Figure 1 by firm category**: `results/figures_2026/descriptive/firm_categories/figure1_ai_demand_wage_beta_by_firm_category.png`
+- **Figure 1 by firm category (all quarterly)**: `results/figures_2026/descriptive/firm_categories/figure1_ai_demand_wage_beta_by_firm_category.png`
+- **Figure 1 by firm category (annual through 2020, quarterly from 2021)**: `results/figures_2026/descriptive/firm_categories/figure1_ai_demand_wage_beta_by_firm_category_mixed_frequency.png`
 - **Sample composition by firm category**: `results/figures_2026/descriptive/firm_categories/firm_category_sample_sizes.png`
 - **AI wage premium by firm category (pooled)**: `results/figures_2026/descriptive/firm_categories/ai_wage_premium_by_firm_category.png`
 - **AI wage premium by firm category (annual)**: `results/figures_2026/descriptive/firm_categories/ai_wage_premium_by_firm_category_annual.png`
