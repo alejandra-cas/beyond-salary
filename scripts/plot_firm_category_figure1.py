@@ -22,6 +22,10 @@ import pandas as pd
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 from package_files.config_utils import get_processed_dir, get_repo_root
 from package_files.firm_size import FIRM_SIZE_CUTOFF
+from package_files.firm_category_figure import (
+    draw_mixed_wage_series,
+    set_zero_inclusive_wage_ylim,
+)
 
 REPO_ROOT = get_repo_root()
 TABLES_DIR = REPO_ROOT / "results" / "tables_2026" / "descriptive"
@@ -92,19 +96,6 @@ def add_chatgpt_quarter_line(ax, period_index, add_label=False):
             fontweight="bold",
             color="black",
         )
-
-
-def set_tight_symmetric_ylim(ax, values, lower_values=None, upper_values=None, pad=0.08, floor=0.02):
-    pieces = [pd.Series(values).dropna()]
-    if lower_values is not None:
-        pieces.append(pd.Series(lower_values).dropna())
-    if upper_values is not None:
-        pieces.append(pd.Series(upper_values).dropna())
-    combined = pd.concat(pieces, ignore_index=True)
-    if combined.empty:
-        return
-    limit = max(float(combined.abs().max()) * (1 + pad), floor)
-    ax.set_ylim(-limit, limit)
 
 
 def set_zero_based_ylim(ax, values, upper_values=None, pad=0.10, floor=0.02, min_upper=None):
@@ -296,6 +287,12 @@ def main():
     wage_betas["QUARTER"] = wage_betas["QUARTER"].apply(lambda x: pd.Period(x, freq="Q"))
     print(f"Loaded {len(wage_betas)} wage beta rows from {betas_path}")
 
+    annual_path = TABLES_DIR / "annual_ai_wage_premium_by_firm_category.csv"
+    if not annual_path.exists():
+        raise FileNotFoundError(f"Annual wage betas CSV not found: {annual_path}")
+    annual_betas = pd.read_csv(annual_path)
+    print(f"Loaded {len(annual_betas)} annual wage beta rows from {annual_path}")
+
     # --- Plot ---
     fig, (demand_ax, wage_ax) = plt.subplots(nrows=2, ncols=1, figsize=(11, 9), sharex=True)
     quarter_positions = np.arange(len(demand_wide.index))
@@ -322,42 +319,29 @@ def main():
     demand_ax.grid(alpha=0.25)
     add_demand_inset(demand_ax, demand_wide)
 
-    plotted = wage_betas[wage_betas["status"] == "ok"].copy()
-    plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
-    for category in FIRM_CATEGORY_ORDER:
-        line = plotted[plotted[FIRM_CATEGORY] == category].sort_values("QUARTER")
-        if line.empty:
-            continue
-        wage_ax.plot(
-            line["x"],
-            line["ai_role_beta"],
-            marker=FIRM_CATEGORY_MARKERS[category],
-            markersize=4,
-            linewidth=1.5,
-            label=category,
-            color=FIRM_CATEGORY_COLORS[category],
-        )
+    annual_plotted, quarterly_plotted = draw_mixed_wage_series(
+        wage_ax,
+        annual_betas,
+        wage_betas,
+        quarter_position_map,
+        FIRM_CATEGORY_ORDER,
+        FIRM_CATEGORY_COLORS,
+        FIRM_CATEGORY_MARKERS,
+    )
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_chatgpt_quarter_line(wage_ax, demand_wide.index)
-    post_ci = plotted[plotted["QUARTER"] >= pd.Period("2022Q1", freq="Q")]
-    set_tight_symmetric_ylim(
-        wage_ax,
-        plotted["ai_role_beta"],
-        post_ci["lower_ci"],
-        post_ci["upper_ci"],
-    )
-    wage_ax.set_ylim(bottom=-0.1)
+    set_zero_inclusive_wage_ylim(wage_ax, annual_plotted, quarterly_plotted)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
     wage_ax.grid(alpha=0.25)
-    wage_ax.legend(title=None, fontsize=11, loc="upper left")
+    wage_ax.legend(title=None, fontsize=11, loc="lower left")
     add_wage_inset(wage_ax, wage_betas)
 
     tick_positions = list(range(0, len(demand_wide.index), 4))
     wage_ax.set_xticks(tick_positions)
     wage_ax.set_xticklabels([str(demand_wide.index[i]) for i in tick_positions], rotation=45)
-    wage_ax.set_xlabel("Quarter", fontsize=13)
+    wage_ax.set_xlabel("Period", fontsize=13)
 
     plt.tight_layout()
     FIG_DIR.mkdir(parents=True, exist_ok=True)

@@ -22,6 +22,10 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from package_files.config_utils import get_processed_dir, get_repo_root
 from package_files.firm_size import FIRM_SIZE_CUTOFF
+from package_files.firm_category_figure import (
+    draw_mixed_wage_series,
+    set_zero_inclusive_wage_ylim,
+)
 
 # Benefit definitions and colors
 benefits4 = [
@@ -145,20 +149,6 @@ def add_genai_year_line(ax, label="Nov. 2022"):
         alpha=0.75,
         label=label,
     )
-
-
-def set_tight_symmetric_ylim(ax, values, lower_values=None, upper_values=None, pad=0.08, floor=0.02):
-    """Use a tighter symmetric y-axis around zero for coefficient plots."""
-    pieces = [pd.Series(values).dropna()]
-    if lower_values is not None:
-        pieces.append(pd.Series(lower_values).dropna())
-    if upper_values is not None:
-        pieces.append(pd.Series(upper_values).dropna())
-    combined = pd.concat(pieces, ignore_index=True)
-    if combined.empty:
-        return
-    limit = max(float(combined.abs().max()) * (1 + pad), floor)
-    ax.set_ylim(-limit, limit)
 
 
 def set_zero_based_ylim(ax, values, upper_values=None, pad=0.10, floor=0.02, min_upper=None):
@@ -1073,8 +1063,8 @@ def estimate_quarterly_ai_wage_betas_by_firm_category(usdf, min_ai_wage_postings
     return pd.concat(rows, ignore_index=True)
 
 
-def generate_ai_roles_over_time_by_firm_category_plot(usdf):
-    """Replicate Figure 1 separately for SME, large, and S&P 500 firms."""
+def generate_ai_roles_over_time_by_firm_category_plot(usdf, annual_wage_betas=None):
+    """Plot quarterly demand and mixed-frequency wage estimates by firm category."""
     print("Generating firm-category AI demand and wage premium plot...")
     category_df = usdf.dropna(subset=[FIRM_CATEGORY]).copy()
     demand = (
@@ -1125,51 +1115,33 @@ def generate_ai_roles_over_time_by_firm_category_plot(usdf):
     demand_ax.grid(alpha=0.25)
     add_firm_category_demand_inset(demand_ax, category_df)
 
-    plotted = wage_betas[wage_betas["status"] == "ok"].copy()
-    plotted["x"] = plotted["QUARTER"].map(quarter_position_map)
-    for category in FIRM_CATEGORY_ORDER:
-        line = plotted[plotted[FIRM_CATEGORY] == category].sort_values("QUARTER")
-        if line.empty:
-            continue
-        post_2021 = line["QUARTER"] >= pd.Period("2022Q1", freq="Q")
-        wage_ax.fill_between(
-            line.loc[post_2021, "x"],
-            line.loc[post_2021, "lower_ci"],
-            line.loc[post_2021, "upper_ci"],
-            color=FIRM_CATEGORY_COLORS[category],
-            alpha=0.12,
-            linewidth=0,
+    if annual_wage_betas is None:
+        annual_wage_betas = estimate_annual_ai_wage_premium_by_firm_category(
+            category_df
         )
-        wage_ax.plot(
-            line["x"],
-            line["ai_role_beta"],
-            marker=FIRM_CATEGORY_MARKERS[category],
-            markersize=4,
-            linewidth=1.5,
-            label=category,
-            color=FIRM_CATEGORY_COLORS[category],
-        )
+    annual_plotted, quarterly_plotted = draw_mixed_wage_series(
+        wage_ax,
+        annual_wage_betas,
+        wage_betas,
+        quarter_position_map,
+        FIRM_CATEGORY_ORDER,
+        FIRM_CATEGORY_COLORS,
+        FIRM_CATEGORY_MARKERS,
+    )
 
     wage_ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     add_genai_quarter_line(wage_ax, demand_wide.index)
-    post_ci = plotted[plotted["QUARTER"] >= pd.Period("2022Q1", freq="Q")]
-    set_tight_symmetric_ylim(
-        wage_ax,
-        plotted["ai_role_beta"],
-        post_ci["lower_ci"],
-        post_ci["upper_ci"],
-    )
-    wage_ax.set_ylim(bottom=-0.1)
+    set_zero_inclusive_wage_ylim(wage_ax, annual_plotted, quarterly_plotted)
     wage_ax.set_ylabel("AI-Role Wage Coefficient\n(log points)", fontsize=13)
     wage_ax.set_title("Adjusted AI-Skills Wage Premium by Firm Category", fontsize=15)
     wage_ax.grid(alpha=0.25)
-    wage_ax.legend(title=None, fontsize=11, loc="upper left")
+    wage_ax.legend(title=None, fontsize=11, loc="lower left")
     add_firm_category_wage_inset(wage_ax, category_df)
 
     tick_positions = list(range(0, len(demand_wide.index), 4))
     wage_ax.set_xticks(tick_positions)
     wage_ax.set_xticklabels([str(demand_wide.index[idx]) for idx in tick_positions], rotation=45)
-    wage_ax.set_xlabel("Quarter", fontsize=13)
+    wage_ax.set_xlabel("Period", fontsize=13)
 
     plt.tight_layout()
     output_path = FIRM_CATEGORY_DIR / "figure1_ai_demand_wage_beta_by_firm_category.png"
@@ -1719,7 +1691,7 @@ def main(include_structured=False, use_existing_betas=False):
     plot_ai_wage_premium_by_firm_category(premium_df)
     annual_df = estimate_annual_ai_wage_premium_by_firm_category(usdf)
     plot_annual_ai_wage_premium_by_firm_category(annual_df)
-    generate_ai_roles_over_time_by_firm_category_plot(usdf)
+    generate_ai_roles_over_time_by_firm_category_plot(usdf, annual_df)
 
     # Figure 2: Difference in percent jobs with benefit
     generate_benefit_differences_plot(usdf)
