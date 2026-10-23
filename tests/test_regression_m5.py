@@ -131,6 +131,7 @@ class M5Tests(unittest.TestCase):
                 self.assertIn('SP500', model.params)
                 self.assertIn('LOG_SALARY', model.params)
             self.assertTrue((output / 'figures' / 'm5_ai_role_coefficients.png').exists())
+            self.assertTrue((output / 'tables' / 'm5_model_summary.tex').exists())
             self.assertEqual(len(list((output / 'tables').glob('*_m5.html'))), 6)
 
 

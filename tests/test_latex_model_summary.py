@@ -35,6 +35,22 @@ def example_models():
 
 
 class LatexSummaryTests(unittest.TestCase):
+    def test_standalone_m5_has_correct_model_number_and_all_fixed_effects(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'm5.tex'
+            regressions.generate_m5_latex_table(example_models()[4], path)
+            text = path.read_text()
+        self.assertEqual(text.count('(5)'), 6)
+        self.assertNotIn('(1)', text)
+        self.assertIn('0.56$^{***}$', text)
+        self.assertIn('0.555$^{***}$', text)
+        self.assertIn('3559853', text)
+        self.assertIn(r'\label{tab:m5_all_benefits}', text)
+        for label in ['Year', 'Industry', 'State', 'SOC2']:
+            row = next(line for line in text.splitlines() if line.startswith(r'\quad ' + label))
+            self.assertNotIn('No', row)
+            self.assertEqual(row.count('Yes'), 6)
+
     def test_five_models_keep_original_layout_and_use_actual_values(self):
         text = regressions.html_to_latex_table_dynamic(example_models())
         self.assertTrue(text.startswith('\\begin{table}[!htbp]\n\\centering\n\\tiny\n'))

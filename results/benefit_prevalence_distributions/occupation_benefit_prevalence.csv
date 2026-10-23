@@ -1,0 +1,265 @@
+SOC_MAJOR_GROUP,POSTINGS,ROLE_TYPE,BENEFIT,BENEFIT_LABEL,VALID_POSTINGS,BENEFIT_POSTINGS,PREVALENCE_PERCENT
+Architecture and Engineering Occupations,203422,Non-AI,EDU_ASSISTANCE,Tuition Assistance,203422,21114,10.379408323583487
+Architecture and Engineering Occupations,6235,AI,EDU_ASSISTANCE,Tuition Assistance,6235,657,10.53728949478749
+"Arts, Design, Entertainment, Sports, and Media Occupations",244880,Non-AI,EDU_ASSISTANCE,Tuition Assistance,244880,10838,4.425841228356746
+"Arts, Design, Entertainment, Sports, and Media Occupations",2819,AI,EDU_ASSISTANCE,Tuition Assistance,2819,165,5.853139411138701
+Building and Grounds Cleaning and Maintenance Occupations,232178,Non-AI,EDU_ASSISTANCE,Tuition Assistance,232178,14634,6.302922757539474
+Building and Grounds Cleaning and Maintenance Occupations,126,AI,EDU_ASSISTANCE,Tuition Assistance,126,11,8.73015873015873
+Business and Financial Operations Occupations,689861,Non-AI,EDU_ASSISTANCE,Tuition Assistance,689861,61009,8.843665607999293
+Business and Financial Operations Occupations,12259,AI,EDU_ASSISTANCE,Tuition Assistance,12259,1089,8.883269434701036
+Community and Social Service Occupations,170138,Non-AI,EDU_ASSISTANCE,Tuition Assistance,170138,17616,10.353947971646546
+Community and Social Service Occupations,1050,AI,EDU_ASSISTANCE,Tuition Assistance,1050,80,7.619047619047619
+Computer and Mathematical Occupations,649802,Non-AI,EDU_ASSISTANCE,Tuition Assistance,649802,46139,7.100470604891952
+Computer and Mathematical Occupations,61976,AI,EDU_ASSISTANCE,Tuition Assistance,61976,5580,9.003485220085194
+Construction and Extraction Occupations,169047,Non-AI,EDU_ASSISTANCE,Tuition Assistance,169047,10228,6.0503883535348155
+Construction and Extraction Occupations,537,AI,EDU_ASSISTANCE,Tuition Assistance,537,64,11.91806331471136
+Educational Instruction and Library Occupations,320403,Non-AI,EDU_ASSISTANCE,Tuition Assistance,320403,25745,8.035193178590712
+Educational Instruction and Library Occupations,2978,AI,EDU_ASSISTANCE,Tuition Assistance,2978,162,5.439892545332438
+"Farming, Fishing, and Forestry Occupations",21046,Non-AI,EDU_ASSISTANCE,Tuition Assistance,21046,1005,4.7752542050745985
+"Farming, Fishing, and Forestry Occupations",76,AI,EDU_ASSISTANCE,Tuition Assistance,76,3,3.9473684210526314
+Food Preparation and Serving Related Occupations,557989,Non-AI,EDU_ASSISTANCE,Tuition Assistance,557989,39664,7.108383857029439
+Food Preparation and Serving Related Occupations,241,AI,EDU_ASSISTANCE,Tuition Assistance,241,37,15.352697095435685
+Healthcare Practitioners and Technical Occupations,1122731,Non-AI,EDU_ASSISTANCE,Tuition Assistance,1122731,172677,15.380086592425078
+Healthcare Practitioners and Technical Occupations,2751,AI,EDU_ASSISTANCE,Tuition Assistance,2751,260,9.45110868774991
+Healthcare Support Occupations,369117,Non-AI,EDU_ASSISTANCE,Tuition Assistance,369117,42690,11.565438600768863
+Healthcare Support Occupations,535,AI,EDU_ASSISTANCE,Tuition Assistance,535,75,14.018691588785046
+"Installation, Maintenance, and Repair Occupations",418150,Non-AI,EDU_ASSISTANCE,Tuition Assistance,418150,47832,11.43895731196939
+"Installation, Maintenance, and Repair Occupations",1589,AI,EDU_ASSISTANCE,Tuition Assistance,1589,177,11.139081183134046
+Legal Occupations,59733,Non-AI,EDU_ASSISTANCE,Tuition Assistance,59733,2800,4.687526158070079
+Legal Occupations,742,AI,EDU_ASSISTANCE,Tuition Assistance,742,64,8.625336927223719
+"Life, Physical, and Social Science Occupations",143839,Non-AI,EDU_ASSISTANCE,Tuition Assistance,143839,11622,8.079867073603126
+"Life, Physical, and Social Science Occupations",4877,AI,EDU_ASSISTANCE,Tuition Assistance,4877,420,8.611851548082837
+Management Occupations,1028560,Non-AI,EDU_ASSISTANCE,Tuition Assistance,1028560,93975,9.136559850665007
+Management Occupations,19067,AI,EDU_ASSISTANCE,Tuition Assistance,19067,1649,8.648450201919546
+Office and Administrative Support Occupations,877294,Non-AI,EDU_ASSISTANCE,Tuition Assistance,877294,69306,7.8999742389666405
+Office and Administrative Support Occupations,4524,AI,EDU_ASSISTANCE,Tuition Assistance,4524,334,7.3828470380194515
+Personal Care and Service Occupations,156789,Non-AI,EDU_ASSISTANCE,Tuition Assistance,156789,7499,4.782861042547628
+Personal Care and Service Occupations,266,AI,EDU_ASSISTANCE,Tuition Assistance,266,6,2.255639097744361
+Production Occupations,290825,Non-AI,EDU_ASSISTANCE,Tuition Assistance,290825,27156,9.337574142525574
+Production Occupations,791,AI,EDU_ASSISTANCE,Tuition Assistance,791,78,9.860935524652339
+Protective Service Occupations,140391,Non-AI,EDU_ASSISTANCE,Tuition Assistance,140391,6169,4.3941563205618595
+Protective Service Occupations,357,AI,EDU_ASSISTANCE,Tuition Assistance,357,42,11.764705882352942
+Sales and Related Occupations,1152451,Non-AI,EDU_ASSISTANCE,Tuition Assistance,1152451,99171,8.605224864224162
+Sales and Related Occupations,6214,AI,EDU_ASSISTANCE,Tuition Assistance,6214,398,6.404892178950757
+Transportation and Material Moving Occupations,691969,Non-AI,EDU_ASSISTANCE,Tuition Assistance,691969,59401,8.584344096339576
+Transportation and Material Moving Occupations,696,AI,EDU_ASSISTANCE,Tuition Assistance,696,74,10.632183908045977
+Architecture and Engineering Occupations,203422,Non-AI,PAID LEAVE,Paid Leave,203422,50502,24.82622331901171
+Architecture and Engineering Occupations,6235,AI,PAID LEAVE,Paid Leave,6235,1432,22.967121090617482
+"Arts, Design, Entertainment, Sports, and Media Occupations",244880,Non-AI,PAID LEAVE,Paid Leave,244880,41107,16.78658934988566
+"Arts, Design, Entertainment, Sports, and Media Occupations",2819,AI,PAID LEAVE,Paid Leave,2819,667,23.66087264987584
+Building and Grounds Cleaning and Maintenance Occupations,232178,Non-AI,PAID LEAVE,Paid Leave,232178,67635,29.13066698825901
+Building and Grounds Cleaning and Maintenance Occupations,126,AI,PAID LEAVE,Paid Leave,126,37,29.365079365079364
+Business and Financial Operations Occupations,689861,Non-AI,PAID LEAVE,Paid Leave,689861,170423,24.703962102510506
+Business and Financial Operations Occupations,12259,AI,PAID LEAVE,Paid Leave,12259,3117,25.42621747287707
+Community and Social Service Occupations,170138,Non-AI,PAID LEAVE,Paid Leave,170138,57081,33.54982426030634
+Community and Social Service Occupations,1050,AI,PAID LEAVE,Paid Leave,1050,381,36.285714285714285
+Computer and Mathematical Occupations,649802,Non-AI,PAID LEAVE,Paid Leave,649802,118000,18.159377779692893
+Computer and Mathematical Occupations,61976,AI,PAID LEAVE,Paid Leave,61976,13553,21.868142506776817
+Construction and Extraction Occupations,169047,Non-AI,PAID LEAVE,Paid Leave,169047,54874,32.46079492685466
+Construction and Extraction Occupations,537,AI,PAID LEAVE,Paid Leave,537,217,40.4096834264432
+Educational Instruction and Library Occupations,320403,Non-AI,PAID LEAVE,Paid Leave,320403,63967,19.964544651579416
+Educational Instruction and Library Occupations,2978,AI,PAID LEAVE,Paid Leave,2978,507,17.02484889187374
+"Farming, Fishing, and Forestry Occupations",21046,Non-AI,PAID LEAVE,Paid Leave,21046,4881,23.192055497481707
+"Farming, Fishing, and Forestry Occupations",76,AI,PAID LEAVE,Paid Leave,76,22,28.94736842105263
+Food Preparation and Serving Related Occupations,557989,Non-AI,PAID LEAVE,Paid Leave,557989,132808,23.80118604488619
+Food Preparation and Serving Related Occupations,241,AI,PAID LEAVE,Paid Leave,241,102,42.32365145228216
+Healthcare Practitioners and Technical Occupations,1122731,Non-AI,PAID LEAVE,Paid Leave,1122731,338053,30.109883845729744
+Healthcare Practitioners and Technical Occupations,2751,AI,PAID LEAVE,Paid Leave,2751,992,36.05961468556888
+Healthcare Support Occupations,369117,Non-AI,PAID LEAVE,Paid Leave,369117,129081,34.9702126967872
+Healthcare Support Occupations,535,AI,PAID LEAVE,Paid Leave,535,157,29.345794392523363
+"Installation, Maintenance, and Repair Occupations",418150,Non-AI,PAID LEAVE,Paid Leave,418150,168691,40.34222169078082
+"Installation, Maintenance, and Repair Occupations",1589,AI,PAID LEAVE,Paid Leave,1589,623,39.20704845814978
+Legal Occupations,59733,Non-AI,PAID LEAVE,Paid Leave,59733,21093,35.31213901863292
+Legal Occupations,742,AI,PAID LEAVE,Paid Leave,742,233,31.401617250673855
+"Life, Physical, and Social Science Occupations",143839,Non-AI,PAID LEAVE,Paid Leave,143839,32249,22.420205924679678
+"Life, Physical, and Social Science Occupations",4877,AI,PAID LEAVE,Paid Leave,4877,929,19.048595448021324
+Management Occupations,1028560,Non-AI,PAID LEAVE,Paid Leave,1028560,308309,29.974819164657386
+Management Occupations,19067,AI,PAID LEAVE,Paid Leave,19067,5348,28.048460691246657
+Office and Administrative Support Occupations,877294,Non-AI,PAID LEAVE,Paid Leave,877294,279309,31.837559586638
+Office and Administrative Support Occupations,4524,AI,PAID LEAVE,Paid Leave,4524,1532,33.863837312113176
+Personal Care and Service Occupations,156789,Non-AI,PAID LEAVE,Paid Leave,156789,34261,21.851660511898157
+Personal Care and Service Occupations,266,AI,PAID LEAVE,Paid Leave,266,81,30.451127819548873
+Production Occupations,290825,Non-AI,PAID LEAVE,Paid Leave,290825,90868,31.244906730851888
+Production Occupations,791,AI,PAID LEAVE,Paid Leave,791,251,31.731984829329964
+Protective Service Occupations,140391,Non-AI,PAID LEAVE,Paid Leave,140391,29228,20.818998368841307
+Protective Service Occupations,357,AI,PAID LEAVE,Paid Leave,357,98,27.45098039215686
+Sales and Related Occupations,1152451,Non-AI,PAID LEAVE,Paid Leave,1152451,320444,27.80543381020104
+Sales and Related Occupations,6214,AI,PAID LEAVE,Paid Leave,6214,1730,27.84036047634374
+Transportation and Material Moving Occupations,691969,Non-AI,PAID LEAVE,Paid Leave,691969,243824,35.236260583927894
+Transportation and Material Moving Occupations,696,AI,PAID LEAVE,Paid Leave,696,219,31.46551724137931
+Architecture and Engineering Occupations,203422,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,203422,10535,5.178889205690633
+Architecture and Engineering Occupations,6235,AI,HEALTH_WELLBEING,Health and Wellbeing,6235,401,6.431435445068163
+"Arts, Design, Entertainment, Sports, and Media Occupations",244880,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,244880,10305,4.208183600130676
+"Arts, Design, Entertainment, Sports, and Media Occupations",2819,AI,HEALTH_WELLBEING,Health and Wellbeing,2819,143,5.0727208229868745
+Building and Grounds Cleaning and Maintenance Occupations,232178,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,232178,10253,4.416008407342642
+Building and Grounds Cleaning and Maintenance Occupations,126,AI,HEALTH_WELLBEING,Health and Wellbeing,126,11,8.73015873015873
+Business and Financial Operations Occupations,689861,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,689861,38055,5.516328651713896
+Business and Financial Operations Occupations,12259,AI,HEALTH_WELLBEING,Health and Wellbeing,12259,811,6.615547760828779
+Community and Social Service Occupations,170138,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,170138,9466,5.563718863510797
+Community and Social Service Occupations,1050,AI,HEALTH_WELLBEING,Health and Wellbeing,1050,64,6.095238095238095
+Computer and Mathematical Occupations,649802,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,649802,28494,4.385028054699739
+Computer and Mathematical Occupations,61976,AI,HEALTH_WELLBEING,Health and Wellbeing,61976,3914,6.315347876597393
+Construction and Extraction Occupations,169047,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,169047,8770,5.187906321910474
+Construction and Extraction Occupations,537,AI,HEALTH_WELLBEING,Health and Wellbeing,537,19,3.538175046554935
+Educational Instruction and Library Occupations,320403,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,320403,12090,3.773372908493366
+Educational Instruction and Library Occupations,2978,AI,HEALTH_WELLBEING,Health and Wellbeing,2978,107,3.593015446608462
+"Farming, Fishing, and Forestry Occupations",21046,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,21046,721,3.425829136177896
+"Farming, Fishing, and Forestry Occupations",76,AI,HEALTH_WELLBEING,Health and Wellbeing,76,1,1.3157894736842106
+Food Preparation and Serving Related Occupations,557989,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,557989,33896,6.074671722919269
+Food Preparation and Serving Related Occupations,241,AI,HEALTH_WELLBEING,Health and Wellbeing,241,29,12.033195020746888
+Healthcare Practitioners and Technical Occupations,1122731,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,1122731,54266,4.833392860801029
+Healthcare Practitioners and Technical Occupations,2751,AI,HEALTH_WELLBEING,Health and Wellbeing,2751,157,5.707015630679753
+Healthcare Support Occupations,369117,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,369117,15031,4.07215056472609
+Healthcare Support Occupations,535,AI,HEALTH_WELLBEING,Health and Wellbeing,535,23,4.299065420560748
+"Installation, Maintenance, and Repair Occupations",418150,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,418150,21659,5.1797201961018775
+"Installation, Maintenance, and Repair Occupations",1589,AI,HEALTH_WELLBEING,Health and Wellbeing,1589,87,5.475141598489616
+Legal Occupations,59733,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,59733,2676,4.479935713926975
+Legal Occupations,742,AI,HEALTH_WELLBEING,Health and Wellbeing,742,59,7.951482479784366
+"Life, Physical, and Social Science Occupations",143839,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,143839,7564,5.258657248729483
+"Life, Physical, and Social Science Occupations",4877,AI,HEALTH_WELLBEING,Health and Wellbeing,4877,290,5.946278449866721
+Management Occupations,1028560,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,1028560,56189,5.462880143112701
+Management Occupations,19067,AI,HEALTH_WELLBEING,Health and Wellbeing,19067,1555,8.15545182776525
+Office and Administrative Support Occupations,877294,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,877294,43675,4.978376690140363
+Office and Administrative Support Occupations,4524,AI,HEALTH_WELLBEING,Health and Wellbeing,4524,302,6.675508399646331
+Personal Care and Service Occupations,156789,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,156789,5743,3.6628845135819477
+Personal Care and Service Occupations,266,AI,HEALTH_WELLBEING,Health and Wellbeing,266,15,5.639097744360902
+Production Occupations,290825,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,290825,13718,4.716925986417949
+Production Occupations,791,AI,HEALTH_WELLBEING,Health and Wellbeing,791,31,3.9190897597977243
+Protective Service Occupations,140391,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,140391,5444,3.877741450662792
+Protective Service Occupations,357,AI,HEALTH_WELLBEING,Health and Wellbeing,357,29,8.123249299719888
+Sales and Related Occupations,1152451,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,1152451,56419,4.895566058773865
+Sales and Related Occupations,6214,AI,HEALTH_WELLBEING,Health and Wellbeing,6214,315,5.069198583842935
+Transportation and Material Moving Occupations,691969,Non-AI,HEALTH_WELLBEING,Health and Wellbeing,691969,42576,6.152876790723284
+Transportation and Material Moving Occupations,696,AI,HEALTH_WELLBEING,Health and Wellbeing,696,60,8.620689655172415
+Architecture and Engineering Occupations,203422,Non-AI,PARENTAL_LEAVE,Parental Leave,203422,13156,6.467343748463785
+Architecture and Engineering Occupations,6235,AI,PARENTAL_LEAVE,Parental Leave,6235,645,10.344827586206897
+"Arts, Design, Entertainment, Sports, and Media Occupations",244880,Non-AI,PARENTAL_LEAVE,Parental Leave,244880,9903,4.044021561581182
+"Arts, Design, Entertainment, Sports, and Media Occupations",2819,AI,PARENTAL_LEAVE,Parental Leave,2819,215,7.626818020574672
+Building and Grounds Cleaning and Maintenance Occupations,232178,Non-AI,PARENTAL_LEAVE,Parental Leave,232178,5455,2.349490477133923
+Building and Grounds Cleaning and Maintenance Occupations,126,AI,PARENTAL_LEAVE,Parental Leave,126,5,3.9682539682539684
+Business and Financial Operations Occupations,689861,Non-AI,PARENTAL_LEAVE,Parental Leave,689861,39452,5.718833214227214
+Business and Financial Operations Occupations,12259,AI,PARENTAL_LEAVE,Parental Leave,12259,1214,9.902928460722734
+Community and Social Service Occupations,170138,Non-AI,PARENTAL_LEAVE,Parental Leave,170138,11164,6.561732240886809
+Community and Social Service Occupations,1050,AI,PARENTAL_LEAVE,Parental Leave,1050,85,8.095238095238095
+Computer and Mathematical Occupations,649802,Non-AI,PARENTAL_LEAVE,Parental Leave,649802,37967,5.8428567471322035
+Computer and Mathematical Occupations,61976,AI,PARENTAL_LEAVE,Parental Leave,61976,6471,10.44113850522783
+Construction and Extraction Occupations,169047,Non-AI,PARENTAL_LEAVE,Parental Leave,169047,3633,2.1491064615166198
+Construction and Extraction Occupations,537,AI,PARENTAL_LEAVE,Parental Leave,537,23,4.283054003724395
+Educational Instruction and Library Occupations,320403,Non-AI,PARENTAL_LEAVE,Parental Leave,320403,7204,2.248418398079918
+Educational Instruction and Library Occupations,2978,AI,PARENTAL_LEAVE,Parental Leave,2978,101,3.3915379449294827
+"Farming, Fishing, and Forestry Occupations",21046,Non-AI,PARENTAL_LEAVE,Parental Leave,21046,601,2.8556495296018247
+"Farming, Fishing, and Forestry Occupations",76,AI,PARENTAL_LEAVE,Parental Leave,76,2,2.6315789473684212
+Food Preparation and Serving Related Occupations,557989,Non-AI,PARENTAL_LEAVE,Parental Leave,557989,16040,2.874608639238408
+Food Preparation and Serving Related Occupations,241,AI,PARENTAL_LEAVE,Parental Leave,241,10,4.149377593360996
+Healthcare Practitioners and Technical Occupations,1122731,Non-AI,PARENTAL_LEAVE,Parental Leave,1122731,55969,4.985076567762002
+Healthcare Practitioners and Technical Occupations,2751,AI,PARENTAL_LEAVE,Parental Leave,2751,203,7.379134860050891
+Healthcare Support Occupations,369117,Non-AI,PARENTAL_LEAVE,Parental Leave,369117,8954,2.4257891129370903
+Healthcare Support Occupations,535,AI,PARENTAL_LEAVE,Parental Leave,535,17,3.177570093457944
+"Installation, Maintenance, and Repair Occupations",418150,Non-AI,PARENTAL_LEAVE,Parental Leave,418150,18449,4.4120530909960545
+"Installation, Maintenance, and Repair Occupations",1589,AI,PARENTAL_LEAVE,Parental Leave,1589,114,7.174323473882946
+Legal Occupations,59733,Non-AI,PARENTAL_LEAVE,Parental Leave,59733,3799,6.359968526610081
+Legal Occupations,742,AI,PARENTAL_LEAVE,Parental Leave,742,105,14.150943396226415
+"Life, Physical, and Social Science Occupations",143839,Non-AI,PARENTAL_LEAVE,Parental Leave,143839,6809,4.733764834293898
+"Life, Physical, and Social Science Occupations",4877,AI,PARENTAL_LEAVE,Parental Leave,4877,429,8.796391224113185
+Management Occupations,1028560,Non-AI,PARENTAL_LEAVE,Parental Leave,1028560,57550,5.595201057789531
+Management Occupations,19067,AI,PARENTAL_LEAVE,Parental Leave,19067,2286,11.989300886348142
+Office and Administrative Support Occupations,877294,Non-AI,PARENTAL_LEAVE,Parental Leave,877294,37359,4.258435598556471
+Office and Administrative Support Occupations,4524,AI,PARENTAL_LEAVE,Parental Leave,4524,319,7.051282051282051
+Personal Care and Service Occupations,156789,Non-AI,PARENTAL_LEAVE,Parental Leave,156789,3267,2.083692095746513
+Personal Care and Service Occupations,266,AI,PARENTAL_LEAVE,Parental Leave,266,5,1.8796992481203008
+Production Occupations,290825,Non-AI,PARENTAL_LEAVE,Parental Leave,290825,10958,3.767901659073326
+Production Occupations,791,AI,PARENTAL_LEAVE,Parental Leave,791,50,6.321112515802781
+Protective Service Occupations,140391,Non-AI,PARENTAL_LEAVE,Parental Leave,140391,3055,2.1760654172988296
+Protective Service Occupations,357,AI,PARENTAL_LEAVE,Parental Leave,357,28,7.8431372549019605
+Sales and Related Occupations,1152451,Non-AI,PARENTAL_LEAVE,Parental Leave,1152451,63503,5.510255967498835
+Sales and Related Occupations,6214,AI,PARENTAL_LEAVE,Parental Leave,6214,693,11.152236884454458
+Transportation and Material Moving Occupations,691969,Non-AI,PARENTAL_LEAVE,Parental Leave,691969,29775,4.302938426432398
+Transportation and Material Moving Occupations,696,AI,PARENTAL_LEAVE,Parental Leave,696,53,7.614942528735632
+Architecture and Engineering Occupations,203422,Non-AI,CULTURE,Inclusive Workplace,203422,28432,13.976855993943625
+Architecture and Engineering Occupations,6235,AI,CULTURE,Inclusive Workplace,6235,1463,23.464314354450682
+"Arts, Design, Entertainment, Sports, and Media Occupations",244880,Non-AI,CULTURE,Inclusive Workplace,244880,20771,8.482113688337146
+"Arts, Design, Entertainment, Sports, and Media Occupations",2819,AI,CULTURE,Inclusive Workplace,2819,507,17.985101099680737
+Building and Grounds Cleaning and Maintenance Occupations,232178,Non-AI,CULTURE,Inclusive Workplace,232178,13761,5.926918140392285
+Building and Grounds Cleaning and Maintenance Occupations,126,AI,CULTURE,Inclusive Workplace,126,8,6.349206349206349
+Business and Financial Operations Occupations,689861,Non-AI,CULTURE,Inclusive Workplace,689861,98807,14.322740378134146
+Business and Financial Operations Occupations,12259,AI,CULTURE,Inclusive Workplace,12259,2876,23.460314870707236
+Community and Social Service Occupations,170138,Non-AI,CULTURE,Inclusive Workplace,170138,19508,11.465986434541373
+Community and Social Service Occupations,1050,AI,CULTURE,Inclusive Workplace,1050,189,18.0
+Computer and Mathematical Occupations,649802,Non-AI,CULTURE,Inclusive Workplace,649802,92915,14.29897107118784
+Computer and Mathematical Occupations,61976,AI,CULTURE,Inclusive Workplace,61976,15010,24.21905253646573
+Construction and Extraction Occupations,169047,Non-AI,CULTURE,Inclusive Workplace,169047,8081,4.780327364579081
+Construction and Extraction Occupations,537,AI,CULTURE,Inclusive Workplace,537,79,14.711359404096834
+Educational Instruction and Library Occupations,320403,Non-AI,CULTURE,Inclusive Workplace,320403,33116,10.33573343570441
+Educational Instruction and Library Occupations,2978,AI,CULTURE,Inclusive Workplace,2978,856,28.744123572867696
+"Farming, Fishing, and Forestry Occupations",21046,Non-AI,CULTURE,Inclusive Workplace,21046,1196,5.682790078874846
+"Farming, Fishing, and Forestry Occupations",76,AI,CULTURE,Inclusive Workplace,76,13,17.105263157894736
+Food Preparation and Serving Related Occupations,557989,Non-AI,CULTURE,Inclusive Workplace,557989,35890,6.432026437797161
+Food Preparation and Serving Related Occupations,241,AI,CULTURE,Inclusive Workplace,241,27,11.203319502074688
+Healthcare Practitioners and Technical Occupations,1122731,Non-AI,CULTURE,Inclusive Workplace,1122731,120700,10.750571597292673
+Healthcare Practitioners and Technical Occupations,2751,AI,CULTURE,Inclusive Workplace,2751,332,12.068338785896037
+Healthcare Support Occupations,369117,Non-AI,CULTURE,Inclusive Workplace,369117,25427,6.888601717070739
+Healthcare Support Occupations,535,AI,CULTURE,Inclusive Workplace,535,52,9.719626168224298
+"Installation, Maintenance, and Repair Occupations",418150,Non-AI,CULTURE,Inclusive Workplace,418150,25670,6.138945354537845
+"Installation, Maintenance, and Repair Occupations",1589,AI,CULTURE,Inclusive Workplace,1589,272,17.1176840780365
+Legal Occupations,59733,Non-AI,CULTURE,Inclusive Workplace,59733,6590,11.032427636314935
+Legal Occupations,742,AI,CULTURE,Inclusive Workplace,742,194,26.1455525606469
+"Life, Physical, and Social Science Occupations",143839,Non-AI,CULTURE,Inclusive Workplace,143839,21117,14.68099750415395
+"Life, Physical, and Social Science Occupations",4877,AI,CULTURE,Inclusive Workplace,4877,1282,26.286651630100472
+Management Occupations,1028560,Non-AI,CULTURE,Inclusive Workplace,1028560,149747,14.558897876643075
+Management Occupations,19067,AI,CULTURE,Inclusive Workplace,19067,5020,26.328211045261448
+Office and Administrative Support Occupations,877294,Non-AI,CULTURE,Inclusive Workplace,877294,75635,8.621397159903065
+Office and Administrative Support Occupations,4524,AI,CULTURE,Inclusive Workplace,4524,829,18.32449160035367
+Personal Care and Service Occupations,156789,Non-AI,CULTURE,Inclusive Workplace,156789,9191,5.862018381391552
+Personal Care and Service Occupations,266,AI,CULTURE,Inclusive Workplace,266,37,13.909774436090226
+Production Occupations,290825,Non-AI,CULTURE,Inclusive Workplace,290825,20399,7.014183787501074
+Production Occupations,791,AI,CULTURE,Inclusive Workplace,791,135,17.06700379266751
+Protective Service Occupations,140391,Non-AI,CULTURE,Inclusive Workplace,140391,19247,13.709568277168765
+Protective Service Occupations,357,AI,CULTURE,Inclusive Workplace,357,56,15.686274509803921
+Sales and Related Occupations,1152451,Non-AI,CULTURE,Inclusive Workplace,1152451,137843,11.960855602537547
+Sales and Related Occupations,6214,AI,CULTURE,Inclusive Workplace,6214,1335,21.48374637914387
+Transportation and Material Moving Occupations,691969,Non-AI,CULTURE,Inclusive Workplace,691969,40684,5.879454137396328
+Transportation and Material Moving Occupations,696,AI,CULTURE,Inclusive Workplace,696,99,14.224137931034482
+Architecture and Engineering Occupations,203422,Non-AI,REMOTE_KW,Remote Work,203422,18676,9.180914552015023
+Architecture and Engineering Occupations,6235,AI,REMOTE_KW,Remote Work,6235,793,12.718524458700882
+"Arts, Design, Entertainment, Sports, and Media Occupations",244880,Non-AI,REMOTE_KW,Remote Work,244880,16142,6.591800065338125
+"Arts, Design, Entertainment, Sports, and Media Occupations",2819,AI,REMOTE_KW,Remote Work,2819,702,24.90244767648102
+Building and Grounds Cleaning and Maintenance Occupations,232178,Non-AI,REMOTE_KW,Remote Work,232178,2442,1.0517792383429954
+Building and Grounds Cleaning and Maintenance Occupations,126,AI,REMOTE_KW,Remote Work,126,2,1.5873015873015872
+Business and Financial Operations Occupations,689861,Non-AI,REMOTE_KW,Remote Work,689861,97724,14.165752231246584
+Business and Financial Operations Occupations,12259,AI,REMOTE_KW,Remote Work,12259,2595,21.168121380210458
+Community and Social Service Occupations,170138,Non-AI,REMOTE_KW,Remote Work,170138,17355,10.200543088551646
+Community and Social Service Occupations,1050,AI,REMOTE_KW,Remote Work,1050,171,16.285714285714285
+Computer and Mathematical Occupations,649802,Non-AI,REMOTE_KW,Remote Work,649802,102442,15.765109987349993
+Computer and Mathematical Occupations,61976,AI,REMOTE_KW,Remote Work,61976,11727,18.921840712533886
+Construction and Extraction Occupations,169047,Non-AI,REMOTE_KW,Remote Work,169047,3186,1.8846829579939306
+Construction and Extraction Occupations,537,AI,REMOTE_KW,Remote Work,537,30,5.58659217877095
+Educational Instruction and Library Occupations,320403,Non-AI,REMOTE_KW,Remote Work,320403,12163,3.7961567151368745
+Educational Instruction and Library Occupations,2978,AI,REMOTE_KW,Remote Work,2978,283,9.503022162525184
+"Farming, Fishing, and Forestry Occupations",21046,Non-AI,REMOTE_KW,Remote Work,21046,529,2.5135417656561816
+"Farming, Fishing, and Forestry Occupations",76,AI,REMOTE_KW,Remote Work,76,5,6.578947368421052
+Food Preparation and Serving Related Occupations,557989,Non-AI,REMOTE_KW,Remote Work,557989,6684,1.1978730763509675
+Food Preparation and Serving Related Occupations,241,AI,REMOTE_KW,Remote Work,241,17,7.053941908713693
+Healthcare Practitioners and Technical Occupations,1122731,Non-AI,REMOTE_KW,Remote Work,1122731,37568,3.3461265432236216
+Healthcare Practitioners and Technical Occupations,2751,AI,REMOTE_KW,Remote Work,2751,240,8.724100327153762
+Healthcare Support Occupations,369117,Non-AI,REMOTE_KW,Remote Work,369117,5154,1.3963052365510122
+Healthcare Support Occupations,535,AI,REMOTE_KW,Remote Work,535,35,6.542056074766355
+"Installation, Maintenance, and Repair Occupations",418150,Non-AI,REMOTE_KW,Remote Work,418150,9567,2.287934951572402
+"Installation, Maintenance, and Repair Occupations",1589,AI,REMOTE_KW,Remote Work,1589,74,4.657016991818754
+Legal Occupations,59733,Non-AI,REMOTE_KW,Remote Work,59733,9749,16.320961612509
+Legal Occupations,742,AI,REMOTE_KW,Remote Work,742,175,23.58490566037736
+"Life, Physical, and Social Science Occupations",143839,Non-AI,REMOTE_KW,Remote Work,143839,14716,10.230883140177559
+"Life, Physical, and Social Science Occupations",4877,AI,REMOTE_KW,Remote Work,4877,711,14.578634406397375
+Management Occupations,1028560,Non-AI,REMOTE_KW,Remote Work,1028560,93249,9.0659757330637
+Management Occupations,19067,AI,REMOTE_KW,Remote Work,19067,3738,19.604552367965596
+Office and Administrative Support Occupations,877294,Non-AI,REMOTE_KW,Remote Work,877294,61849,7.049974124979768
+Office and Administrative Support Occupations,4524,AI,REMOTE_KW,Remote Work,4524,998,22.060123784261716
+Personal Care and Service Occupations,156789,Non-AI,REMOTE_KW,Remote Work,156789,3504,2.2348506591661406
+Personal Care and Service Occupations,266,AI,REMOTE_KW,Remote Work,266,17,6.390977443609023
+Production Occupations,290825,Non-AI,REMOTE_KW,Remote Work,290825,5843,2.0091120089400842
+Production Occupations,791,AI,REMOTE_KW,Remote Work,791,86,10.872313527180784
+Protective Service Occupations,140391,Non-AI,REMOTE_KW,Remote Work,140391,3586,2.5542947909766296
+Protective Service Occupations,357,AI,REMOTE_KW,Remote Work,357,26,7.282913165266106
+Sales and Related Occupations,1152451,Non-AI,REMOTE_KW,Remote Work,1152451,69631,6.041992240884862
+Sales and Related Occupations,6214,AI,REMOTE_KW,Remote Work,6214,1184,19.053749597682653
+Transportation and Material Moving Occupations,691969,Non-AI,REMOTE_KW,Remote Work,691969,6548,0.9462851659539662
+Transportation and Material Moving Occupations,696,AI,REMOTE_KW,Remote Work,696,25,3.5919540229885056

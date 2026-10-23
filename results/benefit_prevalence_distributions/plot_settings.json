@@ -1,0 +1,12 @@
+{
+  "bandwidth_percentage_points": 2.0,
+  "min_postings": 1,
+  "min_firm_postings": 100,
+  "firms_before_posting_filter": 124439,
+  "firms_after_posting_filter": 8350,
+  "paired_only": true,
+  "view": "difference",
+  "difference_definition": "AI prevalence minus non-AI prevalence, in percentage points",
+  "mean_test": "unadjusted two-sided one-sample t-test against zero",
+  "significance_level": 0.05
+}

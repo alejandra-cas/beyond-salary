@@ -3,10 +3,15 @@
 import math
 
 
-def render_latex_model_summary(panels, benefit_labels):
+def render_latex_model_summary(panels, benefit_labels, *, model_numbers=None,
+                               caption='Regression Results - All Benefits',
+                               table_label='tab:results_all_benefits'):
     count = len(panels)
     if not count or any(len(panel) != len(benefit_labels) for panel in panels):
         raise ValueError('Each model panel must contain one result per benefit.')
+    model_numbers = list(range(1, count + 1)) if model_numbers is None else list(model_numbers)
+    if len(model_numbers) != count or any(number < 1 or number > 5 for number in model_numbers):
+        raise ValueError('Supply one model number from 1 to 5 per panel.')
     progressions = [[panel[i] for panel in panels] for i in range(len(benefit_labels))]
     models = [model for progression in progressions for model in progression]
     columns = len(models)
@@ -16,7 +21,7 @@ def render_latex_model_summary(panels, benefit_labels):
     labels = [label.replace('&', r'\&').replace('Health and Wellbeing', r'Health \& Wellbeing') for label in benefit_labels]
     lines.append(' & ' + ' & '.join(r'\multicolumn{' + str(count) + r'}{c}{\textbf{' + label + '}}' for label in labels) + end_row)
     lines.append(' '.join(r'\cmidrule(lr){' + f'{2 + i * count}-{1 + (i + 1) * count}' + '}' for i in range(len(labels))))
-    lines.append(' & ' + ' & '.join(f'({i + 1})' for _ in labels for i in range(count)) + end_row)
+    lines.append(' & ' + ' & '.join(f'({number})' for _ in labels for number in model_numbers) + end_row)
     lines.append(r'\midrule')
 
     def numeric(value, precision):
@@ -52,13 +57,13 @@ def render_latex_model_summary(panels, benefit_labels):
             coefficient(term, label)
     lines.extend([r'\midrule', r'\textbf{Fixed Effects} & ' + ' & '.join([''] * columns) + end_row])
     for label, present in [('Year', lambda i: True), ('Industry', lambda i: True),
-                           ('State', lambda i: i >= 1), ('SOC2', lambda i: i >= 4)]:
-        cells = ['Yes' if present(i) else 'No' for _ in labels for i in range(count)]
+                           ('State', lambda number: number >= 2), ('SOC2', lambda number: number >= 5)]:
+        cells = ['Yes' if present(number) else 'No' for _ in labels for number in model_numbers]
         lines.append(r'\quad ' + label + ' & ' + ' & '.join(cells) + end_row)
     lines.append(r'\midrule')
     lines.append('Observations & ' + ' & '.join(str(int(model.nobs)) if not isinstance(model, str) and math.isfinite(model.nobs) else '' for model in models) + end_row)
     lines.append(r'Pseudo R$^2$ & ' + ' & '.join(f'{model.prsquared:.3f}' if not isinstance(model, str) else '' for model in models) + end_row)
-    lines.extend([r'\bottomrule', r'\end{tabular}', r'\caption{Regression Results - All Benefits}',
-                  r'\label{tab:results_all_benefits}', r'\begin{tablenotes}', r'\small',
+    lines.extend([r'\bottomrule', r'\end{tabular}', r'\caption{' + caption + '}',
+                  r'\label{' + table_label + '}', r'\begin{tablenotes}', r'\small',
                   r'\item Note: *p$<$0.1; **p$<$0.05; ***p$<$0.01', r'\end{tablenotes}', r'\end{table}'])
     return '\n'.join(lines) + '\n'

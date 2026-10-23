@@ -1,0 +1,25 @@
+{
+  "input_path": "/VData/scro4406/beyond-salary/processed/labeled_v2.parquet",
+  "occupation_column": "SOC_MAJOR_GROUP",
+  "benefits": [
+    "EDU_ASSISTANCE",
+    "PAID LEAVE",
+    "HEALTH_WELLBEING",
+    "PARENTAL_LEAVE",
+    "CULTURE",
+    "REMOTE_KW"
+  ],
+  "rows_read": 9999673,
+  "missing_ai_flag_postings_excluded": 0,
+  "missing_occupation_postings_excluded": 158352,
+  "unclassified_firm_postings_excluded": 1298254,
+  "firms_absent_in_2018_excluded": 575206,
+  "occupations": 22,
+  "firms": 124439,
+  "firm_baseline_year": 2018,
+  "posting_years": "All available years; 2018 determines firm eligibility only.",
+  "sp500": "Included among individual firms if observed in 2018.",
+  "denominator": "Within group and AI/non-AI type, postings with a known flag for the given benefit.",
+  "zero_denominators": "Prevalence is NA, never zero; excluded from density estimates.",
+  "distribution_weighting": "Each occupation/firm has equal weight."
+}

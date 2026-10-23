@@ -652,6 +652,19 @@ def run_m5_models(data):
     return models
 
 
+def generate_m5_latex_table(models, output_path):
+    """Render a standalone six-benefit M5 table from fitted or cached results."""
+    text = render_latex_model_summary(
+        [models], benefits4_labels, model_numbers=[5],
+        caption='Model 5: M4 + SOC2 Fixed Effects - All Benefits',
+        table_label='tab:m5_all_benefits',
+    )
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(text)
+    print(f'M5 LaTeX table saved: {output_path}')
+
+
 def run_m5_only(args):
     """Save a standalone M5 run without writing to any existing output path."""
     output_dir = args.output_dir or (
@@ -673,6 +686,7 @@ def run_m5_only(args):
     tables_dir.mkdir()
     summary.to_csv(tables_dir / 'm5_ai_role_summary.csv', index=False)
     summary.to_html(tables_dir / 'm5_ai_role_summary.html', index=False)
+    generate_m5_latex_table(models, tables_dir / 'm5_model_summary.tex')
 
     coefficient_tables = []
     for benefit, model in zip(benefits4, models):
